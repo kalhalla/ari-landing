@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Tally embed script -->
+  <script async src="https://tally.so/widgets/embed.js"></script>
   <style>
     * {
       margin: 0;
@@ -199,76 +201,21 @@
       font-size: 20px;
       color: var(--brown-mid);
       line-height: 1.6;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
       max-width: 520px;
     }
 
-    /* Email Capture Form */
-    .email-form {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    /* Tally Form Container */
+    .tally-form-container {
       max-width: 440px;
-    }
-
-    .email-input-wrapper {
-      display: flex;
-      gap: 12px;
-    }
-
-    .email-input {
-      flex: 1;
-      padding: 18px 24px;
-      border: 2px solid var(--peach-warm);
-      border-radius: 16px;
-      font-family: 'Nunito', sans-serif;
-      font-size: 16px;
       background: white;
-      color: var(--brown-dark);
-      transition: all 0.3s ease;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(120, 80, 50, 0.1);
     }
 
-    .email-input:focus {
-      outline: none;
-      border-color: var(--orange-primary);
-      box-shadow: 0 0 0 4px rgba(255, 140, 66, 0.15);
-    }
-
-    .email-input::placeholder {
-      color: var(--brown-light);
-    }
-
-    .cta-button {
-      background: linear-gradient(135deg, var(--orange-primary) 0%, var(--orange-dark) 100%);
-      border: none;
-      border-radius: 16px;
-      padding: 18px 32px;
-      color: white;
-      font-family: 'Nunito', sans-serif;
-      font-weight: 800;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 0 8px 24px rgba(255, 140, 66, 0.35);
-      transition: all 0.3s ease;
-      white-space: nowrap;
-    }
-
-    .cta-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 32px rgba(255, 140, 66, 0.45);
-    }
-
-    .cta-button:active {
-      transform: translateY(0);
-    }
-
-    .form-note {
-      font-size: 13px;
-      color: var(--brown-light);
-    }
-
-    .form-note strong {
-      color: var(--orange-dark);
+    .tally-form-container iframe {
+      border: none !important;
     }
 
     /* Hero Visual */
@@ -625,16 +572,13 @@
       margin-bottom: 40px;
     }
 
-    .final-form {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
+    .final-form-container {
       max-width: 500px;
       margin: 0 auto;
-    }
-
-    .final-form .email-input {
-      flex: 1;
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(120, 80, 50, 0.1);
     }
 
     /* Footer */
@@ -678,21 +622,6 @@
       font-size: 14px;
     }
 
-    /* Success Message */
-    .success-message {
-      display: none;
-      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-      color: white;
-      padding: 16px 24px;
-      border-radius: 16px;
-      font-weight: 700;
-      animation: scaleIn 0.3s ease-out;
-    }
-
-    .success-message.show {
-      display: block;
-    }
-
     /* Mobile Responsive */
     @media (max-width: 1024px) {
       .hero {
@@ -720,7 +649,7 @@
         margin-right: auto;
       }
 
-      .email-form {
+      .tally-form-container {
         margin: 0 auto;
       }
 
@@ -762,8 +691,8 @@
         font-size: 17px;
       }
 
-      .email-input-wrapper {
-        flex-direction: column;
+      .tally-form-container {
+        padding: 16px;
       }
 
       .paths-section,
@@ -787,10 +716,6 @@
 
       .final-cta h2 {
         font-size: 32px;
-      }
-
-      .final-form {
-        flex-direction: column;
       }
 
       footer {
@@ -818,7 +743,7 @@
       <div class="logo-icon">🦉</div>
       Ari
     </div>
-    <button class="nav-cta" onclick="document.getElementById('hero-email').focus()">Join Waitlist</button>
+    <button class="nav-cta" onclick="document.getElementById('tally-hero').scrollIntoView({behavior: 'smooth', block: 'center'})">Join Waitlist</button>
   </nav>
 
   <!-- Hero Section -->
@@ -828,14 +753,9 @@
       <h1>The skill schools <span>won't teach</span> for years</h1>
       <p class="hero-sub">AI is reshaping everything. The national curriculum won't catch up until your child is in secondary school. Ari teaches them now — through stories, games, and creative play.</p>
       
-      <form class="email-form" id="waitlist-form-hero" onsubmit="handleSubmit(event, 'hero')">
-        <div class="email-input-wrapper">
-          <input type="email" class="email-input" id="hero-email" placeholder="Enter your email" required>
-          <button type="submit" class="cta-button">Join the Waitlist</button>
-        </div>
-        <p class="form-note"><strong>First 100 families</strong> get 3 months free when we launch</p>
-        <div class="success-message" id="success-hero">You're on the list! We'll be in touch soon.</div>
-      </form>
+      <div class="tally-form-container" id="tally-hero">
+        <iframe data-tally-src="https://tally.so/embed/q45EaG?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="150" frameborder="0" marginheight="0" marginwidth="0" title="Ari Waitlist"></iframe>
+      </div>
     </div>
 
     <div class="hero-visual">
@@ -995,11 +915,9 @@
   <section class="final-cta">
     <h2>The curriculum will catch up eventually.</h2>
     <p>Your child doesn't have to wait.</p>
-    <form class="final-form" id="waitlist-form-footer" onsubmit="handleSubmit(event, 'footer')">
-      <input type="email" class="email-input" id="footer-email" placeholder="Enter your email" required>
-      <button type="submit" class="cta-button">Join the Waitlist</button>
-    </form>
-    <div class="success-message" id="success-footer" style="max-width: 500px; margin: 16px auto 0;">You're on the list! We'll be in touch soon.</div>
+    <div class="final-form-container">
+      <iframe data-tally-src="https://tally.so/embed/q45EaG?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="150" frameborder="0" marginheight="0" marginwidth="0" title="Ari Waitlist"></iframe>
+    </div>
   </section>
 
   <!-- Footer -->
@@ -1014,42 +932,10 @@
   </footer>
 
   <script>
-    // Simple email collection - stores to localStorage and shows success
-    // Replace this with Tally embed or your preferred email service
-    
-    function handleSubmit(event, formId) {
-      event.preventDefault();
-      
-      const emailInput = document.getElementById(formId + '-email');
-      const email = emailInput.value;
-      const successMsg = document.getElementById('success-' + formId);
-      
-      // Store email (you'll replace this with Tally or your email service)
-      const emails = JSON.parse(localStorage.getItem('ari-waitlist') || '[]');
-      if (!emails.includes(email)) {
-        emails.push(email);
-        localStorage.setItem('ari-waitlist', JSON.stringify(emails));
-      }
-      
-      // Show success message
-      emailInput.style.display = 'none';
-      event.target.querySelector('.cta-button').style.display = 'none';
-      if (event.target.querySelector('.form-note')) {
-        event.target.querySelector('.form-note').style.display = 'none';
-      }
-      successMsg.classList.add('show');
-      
-      // Log for demo purposes - remove in production
-      console.log('Email captured:', email);
-      console.log('All emails:', emails);
+    // Initialize Tally embeds
+    if (typeof Tally !== 'undefined') {
+      Tally.loadEmbeds();
     }
-
-    // Smooth scroll for nav button
-    document.querySelector('.nav-cta').addEventListener('click', function(e) {
-      e.preventDefault();
-      document.getElementById('hero-email').scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setTimeout(() => document.getElementById('hero-email').focus(), 500);
-    });
   </script>
 </body>
 </html>
