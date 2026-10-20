@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – How does sunlight turn into electricity?</title>
+  <meta name="description" content="Aim a solar panel, power a house and make the battery last until sunrise. Ari makes playable machines that show children aged 7–12 how things work.">
+  <meta property="og:title" content="How does sunlight turn into electricity?">
+  <meta property="og:description" content="Aim the panel, do the washing on sunshine, and keep the lights on until sunrise.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="#signup">Get the next one</a>
+    </nav>
+
+    <header class="intro">
+      <div class="eyebrow">Fig. 03 · The solar panel</div>
+      <h1>How does sunlight turn into <em>electricity</em>?</h1>
+      <p class="lede">This house has no mains power, just a solar panel and a battery. <b>Catch the sun, do the washing, and keep the lights on until morning.</b></p>
+    </header>
+
+    <section class="rig" aria-label="A playable solar-powered house">
+      <div class="screens">
+        <div class="screen">
+          <div class="screen-bar">
+            <div class="clock" id="clock">06:00<small>DAY 1</small></div>
+            <div class="screen-tools">
+              <button class="tool" id="pauseBtn" aria-pressed="false">Pause</button>
+              <button class="tool" id="fastBtn" aria-pressed="false">Fast ×4</button>
+            </div>
+          </div>
+          <canvas id="scene" aria-label="A house with a solar panel and battery. Touch the sky to point the panel."></canvas>
+        </div>
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">Zoom: inside one solar cell</div></div>
+          <canvas id="cell" aria-label="Cross-section of a solar cell: sunlight knocks electrons loose, and they flow out through a wire."></canvas>
+        </div>
+      </div>
+
+      <div class="cockpit">
+        <div class="gauges">
+          <div class="gauge" id="gSun"></div>
+          <div class="gauge" id="gPanel"></div>
+          <div class="gauge" id="gBatt"></div>
+        </div>
+
+        <div class="panel-box">
+          <div class="box-head"><span>AIM THE PANEL</span><b id="aimVal">Facing the sun: –</b></div>
+          <input type="range" id="tilt" min="-70" max="70" value="0" aria-label="Panel tilt">
+          <div class="box-foot"><span>← morning sun</span><span>or touch the sky</span><span>evening sun →</span></div>
+        </div>
+
+        <div class="apps">
+          <button class="app" id="washBtn"><span class="ic">🧺</span>Washing<small>0.8 kW · 1 hr</small><span class="bar" id="washBar"></span></button>
+          <button class="app" id="kettleBtn"><span class="ic">☕</span>Kettle<small>3 kW · 3 min</small><span class="bar" id="kettleBar"></span></button>
+          <button class="app" id="tvBtn" aria-pressed="false"><span class="ic">📺</span>TV<small>0.15 kW</small></button>
+        </div>
+
+        <div class="ari" id="ari" aria-live="polite">
+          <div class="owl">🦉</div>
+          <div><p id="ariText"></p><button class="again" id="againBtn">Try the day again</button></div>
+        </div>
+
+        <div class="missions">
+          <div class="mission now"><i>01</i>Aim it</div>
+          <div class="mission"><i>02</i>Wash on sun</div>
+          <div class="mission"><i>03</i>Last the night</div>
+          <div class="mission"><i>04</i>Break it</div>
+        </div>
+
+        <div class="experiments">
+          <span>BREAK IT:</span>
+          <button class="chip" id="leafBtn" aria-pressed="false">Drop a leaf on one cell</button>
+          <button class="chip fix hidden" id="diodeBtn" aria-pressed="false">Add bypass diodes</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <h2>From sunshine to a cup of tea</h2>
+      <p>What's happening inside the panel, step by step.</p>
+      <div class="stage-grid">
+        <div class="stage"><div class="k">01 · LIGHT</div><h3>Sunlight lands</h3><p>Light arrives in tiny packets of energy called photons. Point the panel straight at the sun and the most packets land on it.</p></div>
+        <div class="stage"><div class="k">02 · SILICON</div><h3>Electrons shake loose</h3><p>A photon can knock an electron free inside the silicon, like one snooker ball knocking another. Tap the zoomed-in cell to try it.</p></div>
+        <div class="stage"><div class="k">03 · JUNCTION</div><h3>A one-way push</h3><p>The cell is made of two layers of silicon. Where they meet, the electrons get pushed in one direction only, towards the top.</p></div>
+        <div class="stage"><div class="k">04 · CIRCUIT</div><h3>Out through the wire</h3><p>The electrons flow out through a wire, through your kettle or lights, and back into the bottom of the cell. That flow is electricity.</p></div>
+      </div>
+      <p class="big-idea"><b>The big idea:</b> a solar cell doesn't store anything. It only makes electricity while light is landing on it, which is why houses with solar panels use batteries, and why it's smart to run the washing machine at lunchtime.</p>
+    </section>
+
+    <section class="signup" id="signup">
+      <div>
+        <h2>Made it to sunrise? There's a whole workshop of these.</h2>
+        <p>Every week we make a new machine your child can start, push and break. Engines, gears, hearts, rockets. We'll email you the next one.</p>
+        <p class="fine">One email a week. No spam. Unsubscribe in one click.</p>
+      </div>
+      <div class="form-box">
+        <iframe id="tallyForm" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Get the next Ari machine"></iframe>
+      </div>
+    </section>
+
+    <section class="next">
+      <h2>More machines</h2>
+      <p>Each one starts with a question a curious kid would ask.</p>
+      <div class="figs">
+        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
+        <a class="fig" href="/toilet.html"><span class="tag go">Play</span><div class="no">FIG. 02</div><h3>The toilet</h3><p>Why does it stop filling by itself?</p></a>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 04</div><h3>Electric car</h3><p>How does a motor make the wheels turn?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 05</div><h3>Bicycle gears</h3><p>Why is a low gear easier up a hill?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>The heart</h3><p>Why doesn't blood flow backwards?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>Why do rockets drop pieces on the way up?</p></div>
+      </div>
+    </section>
+
+    <section class="why">
+      <h2>Why parents like it</h2>
+      <p>Built for children aged roughly 7 to 12.</p>
+      <div class="why-grid">
+        <div class="why-item"><h3>Ten minutes, not two hours</h3><p>One day in the house lasts about two minutes. Then it's done, and they can tell you how it works.</p></div>
+        <div class="why-item"><h3>Real decisions</h3><p>When to do the washing, what to switch off at night. The same choices real households with solar panels make.</p></div>
+        <div class="why-item"><h3>No ads. No accounts.</h3><p>Children don't sign up for anything. Only you get the email, and only if you ask for it.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari Learning Ltd</div>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== Sign-up form =====================
+  var params = new URLSearchParams(location.search);
+  var src = { object: 'solar-panel' };
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ref'].forEach(function (k) { if (params.get(k)) src[k] = params.get(k); });
+  var stats = { interactions: 0 };
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'solar-panel' }); } catch (e) {} }
+  function loadForm() {
+    var q = new URLSearchParams({ alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1' });
+    Object.keys(src).forEach(function (k) { q.set(k, src[k]); });
+    q.set('interactions', String(stats.interactions));
+    q.set('missions', String(S.missions.filter(Boolean).length));
+    var f = document.getElementById('tallyForm');
+    f.setAttribute('data-tally-src', 'https://tally.so/embed/q45EaG?' + q.toString());
+    if (window.Tally) window.Tally.loadEmbeds(); else f.src = f.getAttribute('data-tally-src');
+  }
+  var formLoaded = false;
+  var io = new IntersectionObserver(function (e) { if (!formLoaded && e[0].isIntersecting) { formLoaded = true; loadForm(); io.disconnect(); } }, { rootMargin: '200px' });
+  io.observe(document.getElementById('signup'));
+
+  // ===================== Model =====================
+  // Numbers: 800 W of panels, 5 kWh battery. Loads in kW.
+  var PANEL_W = 600, BATT_KWH = 3.5;
+  var LOAD = { fridge: 0.10, lights: 0.20, tv: 0.15, wash: 0.8, kettle: 3.0 };
+  var DAY_SECONDS = 120;               // one 24 h day at normal speed
+
+  var S;
+  function freshState(keepMissions) {
+    var m = S ? S.missions : [false, false, false, false];
+    S = {
+      h: 6, day: 1, paused: false, fast: false,
+      tilt: 0, batt: 0.2 * BATT_KWH,
+      wash: 0, washKWh: 0, washSun: 0, washDone: false, washedToday: false,
+      kettle: 0, tv: false, lights: false,
+      leaf: false, leafDrop: 0, diodes: false,
+      blackout: false, blackoutAt: null,
+      pv: 0, load: 0, G: 0, aim: 0, sunUp: false,
+      missions: keepMissions ? m : [false, false, false, false],
+      result: null, flash: 0
+    };
+  }
+  freshState(false);
+
+  function elev(h) { return Math.sin(Math.PI * (h - 6) / 12); }       // >0 by day, <0 by night
+  function smooth(a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
+
+  // ===================== Canvas =====================
+  var cv = document.getElementById('scene'), ctx = cv.getContext('2d');
+  var cc = document.getElementById('cell'), cctx = cc.getContext('2d');
+  var W, H, CW, CH, dpr, groundY, pv0, sunArc, house, battBox, panelLen;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    W = cv.clientWidth; H = Math.max(230, Math.round(W * (W < 600 ? 0.72 : 0.56)));
+    cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    CW = cc.clientWidth; CH = W < 600 ? 150 : 170;
+    cc.style.height = CH + 'px'; cc.width = Math.round(CW * dpr); cc.height = Math.round(CH * dpr);
+    cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    groundY = H * 0.8;
+    sunArc = { cx: W * 0.5, rx: W * 0.45, ry: groundY * 0.82 };
+    panelLen = Math.min(W * 0.27, 230);
+    pv0 = { x: W * 0.25, y: groundY - Math.max(panelLen * 0.5 + 8, H * 0.18) };
+    var hw = Math.min(W * 0.38, 330);
+    house = { x0: W * 0.96 - hw, x1: W * 0.96, y: groundY, wall: Math.min(H * 0.36, hw * 0.62), roof: Math.min(H * 0.15, hw * 0.28) };
+    battBox = { x: house.x0 - Math.max(26, W * 0.06) - 8, w: Math.max(26, W * 0.06), h: Math.max(36, H * 0.15) };
+    seedStars();
+  }
+
+  function sunPos(h) {
+    var th = Math.PI * (h - 6) / 12;
+    return { x: sunArc.cx - sunArc.rx * Math.cos(th), y: groundY - sunArc.ry * Math.sin(th) };
+  }
+
+  // ===================== Weather =====================
+  var clouds = [];
+  function seedClouds() {
+    clouds = [];
+    for (var i = 0; i < 4; i++) clouds.push(newCloud(Math.random()));
+  }
+  function newCloud(f) {
+    return { x: -0.2 + f * 1.4, y: 0.1 + Math.random() * 0.32, w: 0.12 + Math.random() * 0.12, thick: 0.45 + Math.random() * 0.5, v: 0.008 + Math.random() * 0.012 };
+  }
+  seedClouds();
+  function cloudFactor(sp) {
+    var f = 1;
+    clouds.forEach(function (c) {
+      var cx = c.x * W, cy = c.y * groundY, cw = c.w * W, ch = cw * 0.35;
+      var dx = (sp.x - cx) / (cw * 0.55), dy = (sp.y - cy) / (ch * 0.9);
+      var d = dx * dx + dy * dy;
+      if (d < 1) f *= 1 - c.thick * 0.85 * (1 - d);
+    });
+    return f;
+  }
+
+  // ===================== Physics step =====================
+  function physics(dtH) {
+    var e = elev(S.h), sp = sunPos(S.h);
+    S.sunUp = e > 0.01;
+    // Direct sunlight (W/m² on a surface facing the sun), thinner when the sun is low.
+    var dni = 0;
+    if (S.sunUp) { var am = 1 / Math.max(0.06, e); dni = 1353 * Math.pow(0.7, Math.pow(am, 0.678)); }
+    var cf = cloudFactor(sp);
+    // aim: angle between panel face and the direction to the sun
+    var pc = panelCentre();
+    var dx = sp.x - pc.x, dy = sp.y - pc.y, len = Math.hypot(dx, dy) || 1;
+    var t = S.tilt * Math.PI / 180, nx = Math.sin(t), ny = -Math.cos(t);
+    var cosI = (nx * dx + ny * dy) / len;
+    S.aim = S.sunUp ? Math.max(0, cosI) : 0;
+    var diffuse = S.sunUp ? 0.12 * dni * (0.6 + 0.4 * cf) + (1 - cf) * 0.12 * dni : 0;
+    S.G = dni * cf * S.aim + diffuse;
+    var shade = !S.leaf ? 1 : (S.diodes ? 0.66 : 0.1);
+    var leafF = S.leaf ? 1 - Math.min(1, S.leafDrop) * (1 - shade) : 1;
+    S.pv = PANEL_W * Math.min(1.05, S.G / 1000) * leafF;
+
+    // loads
+    var dark = e < 0.05;
+    var hourOfDay = ((S.h % 24) + 24) % 24;
+    S.lights = dark && hourOfDay >= 12 && hourOfDay < 23 && !S.blackout;
+    if ((hourOfDay >= 23 || hourOfDay < 6) && S.tv) { S.tv = false; tvRender(); }
+    var load = LOAD.fridge + (S.lights ? LOAD.lights : 0) + (S.tv ? LOAD.tv : 0) + (S.wash > 0 ? LOAD.wash : 0) + (S.kettle > 0 ? LOAD.kettle : 0);
+    if (S.blackout) load = 0;
+    S.load = load;
+
+    // energy balance
+    var pvKW = S.pv / 1000;
+    var net = (pvKW - load) * dtH;
+    if (!S.blackout) {
+      S.batt = Math.min(BATT_KWH, S.batt + net);
+      if (S.batt <= 0) {
+        S.batt = 0; S.blackout = true; S.blackoutAt = S.h;
+        S.wash = 0; S.kettle = 0; S.tv = false; tvRender(); track('blackout');
+      }
+    } else {
+      S.batt = Math.min(BATT_KWH, S.batt + pvKW * dtH);
+      if (S.batt > 0.25) S.blackout = false;          // sun brings power back
+    }
+
+    // washing machine bookkeeping
+    if (S.wash > 0) {
+      var used = LOAD.wash * dtH;
+      S.washKWh += used; S.washSun += Math.min(used, pvKW * dtH);
+      S.wash -= dtH;
+      if (S.wash <= 0) {
+        S.wash = 0; S.washedToday = true;
+        var share = S.washSun / Math.max(0.001, S.washKWh);
+        S.lastWashShare = share; S.washMsgUntil = S.h + 2.5;
+        if (share >= 0.5 && !S.missions[1]) complete(1);
+        washRender();
+      }
+    }
+    if (S.kettle > 0) { S.kettle -= dtH; if (S.kettle <= 0) { S.kettle = 0; kettleRender(); } }
+
+    if (S.aim > 0.9 && S.sunUp && S.G > 250) complete(0);
+  }
+
+  function panelCentre() { return { x: pv0.x, y: pv0.y }; }
+
+  // ===================== Particles =====================
+  var photons = [], sparks = [], flowA = 0, flowB = 0, stars = [];
+  function seedStars() { stars = []; for (var i = 0; i < 60; i++) stars.push([Math.random() * W, Math.random() * groundY * 0.9, Math.random()]); }
+
+  // ===================== Colour helpers =====================
+  function mix(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+  function rgb(c, a) { return 'rgba(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ',' + (a == null ? 1 : a) + ')'; }
+
+  // ===================== Scene drawing =====================
+  var clockT = 0;
+  function drawScene(dt) {
+    var e = elev(S.h), L = smooth(-0.15, 0.35, e), warm = Math.exp(-Math.pow(e / 0.2, 2));
+    var sp = sunPos(S.h);
+
+    // sky
+    var top = mix([14, 17, 44], [74, 162, 222], L), bot = mix([30, 34, 76], [198, 232, 250], L);
+    top = mix(top, [70, 60, 120], warm * 0.5); bot = mix(bot, [255, 168, 112], warm * 0.85);
+    var g = ctx.createLinearGradient(0, 0, 0, groundY);
+    g.addColorStop(0, rgb(top)); g.addColorStop(1, rgb(bot));
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, groundY + 2);
+
+    // stars
+    var starA = 1 - smooth(-0.25, 0.05, e);
+    if (starA > 0.01) {
+      ctx.fillStyle = '#FFFFFF';
+      stars.forEach(function (s) { ctx.globalAlpha = starA * (0.4 + 0.6 * Math.abs(Math.sin(clockT * 1.5 + s[2] * 9))); ctx.fillRect(s[0], s[1], 1.6, 1.6); });
+      ctx.globalAlpha = 1;
+    }
+
+    // sun
+    if (e > -0.2) {
+      ctx.globalCompositeOperation = 'lighter';
+      var sr = Math.max(14, W * 0.032);
+      var halo = ctx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sr * 5);
+      halo.addColorStop(0, 'rgba(255,230,150,.55)'); halo.addColorStop(1, 'rgba(255,200,120,0)');
+      ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(sp.x, sp.y, sr * 5, 0, 6.3); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = e < 0.15 ? '#FFB45E' : '#FFE27A'; ctx.strokeStyle = '#3A2A06'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(sp.x, sp.y, sr, 0, 6.3); ctx.fill(); ctx.stroke();
+      // rays
+      ctx.strokeStyle = 'rgba(255,220,120,.9)'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+      for (var r = 0; r < 10; r++) {
+        var a = r * Math.PI / 5 + clockT * 0.3;
+        ctx.beginPath(); ctx.moveTo(sp.x + Math.cos(a) * sr * 1.35, sp.y + Math.sin(a) * sr * 1.35); ctx.lineTo(sp.x + Math.cos(a) * sr * 1.75, sp.y + Math.sin(a) * sr * 1.75); ctx.stroke();
+      }
+    } else {
+      // moon opposite the sun's path
+      var mp = sunPos(S.h + 12);
+      ctx.fillStyle = '#F4F1E4'; ctx.beginPath(); ctx.arc(mp.x, mp.y, Math.max(9, W * 0.02), 0, 6.3); ctx.fill();
+      ctx.fillStyle = rgb(top); ctx.beginPath(); ctx.arc(mp.x + 5, mp.y - 3, Math.max(8, W * 0.018), 0, 6.3); ctx.fill();
+    }
+
+    // clouds
+    clouds.forEach(function (c, i) {
+      c.x += c.v * dt * (S.fast ? 3 : 1) * (S.paused ? 0 : 1);
+      if (c.x > 1.25) clouds[i] = newCloud(0), clouds[i].x = -0.25;
+      var cx = c.x * W, cy = c.y * groundY, cw = c.w * W;
+      var col = mix([60, 66, 110], [255, 255, 255], L);
+      col = mix(col, [255, 200, 180], warm * 0.5);
+      ctx.fillStyle = rgb(col, 0.55 + 0.4 * c.thick);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, cw * 0.5, cw * 0.16, 0, 0, 6.3);
+      ctx.ellipse(cx - cw * 0.18, cy - cw * 0.08, cw * 0.2, cw * 0.15, 0, 0, 6.3);
+      ctx.ellipse(cx + cw * 0.1, cy - cw * 0.12, cw * 0.24, cw * 0.19, 0, 0, 6.3);
+      ctx.fill();
+    });
+
+    // hills + ground
+    var gcol = mix([24, 38, 48], [126, 196, 120], L), gcol2 = mix([18, 28, 38], [98, 168, 98], L);
+    ctx.fillStyle = rgb(mix(gcol2, bot, 0.35));
+    ctx.beginPath(); ctx.moveTo(0, groundY);
+    for (var x = 0; x <= W; x += 10) ctx.lineTo(x, groundY - 14 - 12 * Math.sin(x / W * 5 + 1) - 8 * Math.sin(x / W * 11));
+    ctx.lineTo(W, groundY); ctx.fill();
+    ctx.fillStyle = rgb(gcol); ctx.fillRect(0, groundY, W, H - groundY);
+    ctx.fillStyle = rgb(gcol2); ctx.fillRect(0, groundY, W, 3);
+
+    // photons
+    if (!S.paused) {
+      var rate = S.sunUp ? (S.G / 1000) * 70 * cloudFactor(sp) + (S.sunUp ? 4 : 0) : 0;
+      if (Math.random() < rate * dt) photons.push({ x: sp.x, y: sp.y, t: 0, off: (Math.random() - 0.5) });
+      if (Math.random() < rate * dt) photons.push({ x: sp.x, y: sp.y, t: 0, off: (Math.random() - 0.5) });
+    }
+    var pc = panelCentre(), tr = S.tilt * Math.PI / 180;
+    ctx.strokeStyle = 'rgba(255,226,110,.95)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    for (var i = photons.length - 1; i >= 0; i--) {
+      var p = photons[i];
+      var tx = pc.x + Math.cos(tr) * p.off * panelLen * 0.9, ty = pc.y + Math.sin(tr) * p.off * panelLen * 0.9;
+      var dx = tx - sp.x, dy = ty - sp.y, d = Math.hypot(dx, dy);
+      if (!S.paused) p.t += dt * 520 / d;
+      if (p.t >= 1) {
+        photons.splice(i, 1);
+        if (S.aim > 0.05) for (var s = 0; s < 2; s++) sparks.push({ x: tx, y: ty, vx: (Math.random() - 0.5) * 60, vy: -Math.random() * 50, life: 0.5 });
+        continue;
+      }
+      var px = sp.x + dx * p.t, py = sp.y + dy * p.t, ux = dx / d, uy = dy / d, wig = Math.sin(p.t * 40) * 2.5;
+      ctx.beginPath(); ctx.moveTo(px - ux * 8 - uy * wig, py - uy * 8 + ux * wig); ctx.lineTo(px + uy * wig, py - ux * wig); ctx.stroke();
+    }
+
+    // wire: panel → battery → house
+    var wireY = groundY + 6, bx = battBox.x, bmid = bx + battBox.w / 2;
+    ctx.strokeStyle = '#1B1E33'; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(pc.x, pc.y + 6); ctx.lineTo(pc.x, wireY); ctx.lineTo(bmid, wireY); ctx.lineTo(bmid, groundY - 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx + battBox.w, groundY - battBox.h * 0.5); ctx.lineTo(house.x0 + 6, groundY - battBox.h * 0.5); ctx.stroke();
+    // flow dots
+    if (!S.paused) { flowA += (S.pv / PANEL_W) * 90 * dt; flowB += Math.min(1, S.load / 2) * 90 * dt + (S.load > 0 ? 15 * dt : 0); }
+    if (S.pv > 5) dotsAlong([[pc.x, pc.y + 6], [pc.x, wireY], [bmid, wireY], [bmid, groundY - 4]], flowA, '#FFE27A');
+    if (S.load > 0 && !S.blackout) dotsAlong([[bx + battBox.w, groundY - battBox.h * 0.5], [house.x0 + 6, groundY - battBox.h * 0.5]], flowB, '#7CF0BC');
+
+    // panel mount + panel
+    ctx.strokeStyle = '#1B1E33'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(pc.x, pc.y); ctx.lineTo(pc.x, groundY); ctx.stroke();
+    ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(pc.x - 14, groundY); ctx.lineTo(pc.x + 14, groundY); ctx.stroke();
+    drawPanel(pc, tr, L);
+
+    // battery box
+    drawBattery(L);
+
+    // house
+    drawHouse(L, e);
+
+    // sparks
+    ctx.globalCompositeOperation = 'lighter';
+    for (i = sparks.length - 1; i >= 0; i--) {
+      var k = sparks[i]; k.life -= dt; if (k.life <= 0) { sparks.splice(i, 1); continue; }
+      k.x += k.vx * dt; k.y += k.vy * dt;
+      ctx.fillStyle = 'rgba(255,240,170,' + k.life * 1.8 + ')'; ctx.fillRect(k.x - 1, k.y - 1, 2.4, 2.4);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    // labels
+    ctx.font = '600 ' + (W < 560 ? 9.5 : 11) + 'px "IBM Plex Mono", monospace';
+    ctx.textAlign = 'center'; ctx.fillStyle = L > 0.5 ? 'rgba(20,30,40,.75)' : 'rgba(220,224,250,.75)';
+    ctx.fillText(PANEL_W + ' W panel', pc.x, groundY + (W < 560 ? 24 : 28));
+    ctx.fillText('battery', bmid, groundY + (W < 560 ? 24 : 28));
+    if (S.sunUp && S.aim < 0.5 && S.missions[0] === false) {
+      ctx.fillStyle = 'rgba(255,240,200,.95)';
+      ctx.fillText('touch the sun ↗', Math.max(60, Math.min(W - 60, sp.x)), sp.y + Math.max(30, W * 0.06));
+    }
+
+    // blackout overlay
+    if (S.blackout) {
+      ctx.fillStyle = 'rgba(5,6,15,.35)'; ctx.fillRect(0, 0, W, H);
+      ctx.font = '700 ' + (W < 560 ? 18 : 24) + 'px Fredoka, sans-serif';
+      ctx.fillStyle = '#FF8F7A'; ctx.fillText('POWER CUT', W / 2, H * 0.22);
+    }
+
+    // celebration
+    drawConfetti(dt);
+  }
+
+  function dotsAlong(pts, off, col) {
+    var segs = [], total = 0;
+    for (var i = 1; i < pts.length; i++) { var l = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); segs.push(l); total += l; }
+    ctx.fillStyle = col;
+    for (var d = (off % 16); d < total; d += 16) {
+      var acc = 0;
+      for (i = 0; i < segs.length; i++) {
+        if (d <= acc + segs[i]) {
+          var f = (d - acc) / segs[i], x = pts[i][0] + (pts[i + 1][0] - pts[i][0]) * f, y = pts[i][1] + (pts[i + 1][1] - pts[i][1]) * f;
+          ctx.beginPath(); ctx.arc(x, y, 2.2, 0, 6.3); ctx.fill(); break;
+        }
+        acc += segs[i];
+      }
+    }
+  }
+
+  function drawPanel(pc, tr, L) {
+    var u = [Math.cos(tr) * panelLen / 2, Math.sin(tr) * panelLen / 2];
+    var k = [0, -panelLen * 0.26];                          // seen from slightly above, so the cells show
+    var c0 = [pc.x - u[0] - k[0] / 2, pc.y - u[1] - k[1] / 2];
+    function P(a, b) { return [c0[0] + 2 * u[0] * a + k[0] * b, c0[1] + 2 * u[1] * a + k[1] * b]; }
+    // frame thickness (edge)
+    ctx.fillStyle = '#9AA3B8'; ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2;
+    var e0 = P(0, 0), e1 = P(1, 0);
+    ctx.beginPath(); ctx.moveTo(e0[0], e0[1]); ctx.lineTo(e1[0], e1[1]); ctx.lineTo(e1[0], e1[1] + 6); ctx.lineTo(e0[0], e0[1] + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // cells
+    var cols = 6, rows = 3, glow = Math.min(1, S.pv / PANEL_W);
+    for (var i = 0; i < cols; i++) for (var j = 0; j < rows; j++) {
+      var a = P(i / cols, j / rows), b = P((i + 1) / cols, j / rows), c = P((i + 1) / cols, (j + 1) / rows), d = P(i / cols, (j + 1) / rows);
+      var shaded = S.leaf && i === 2 && j === 1 && S.leafDrop >= 1;
+      var base = mix([28, 44, 110], [56, 92, 196], 0.35 + 0.65 * L);
+      base = mix(base, [120, 170, 255], glow * 0.45 * (shaded ? 0 : 1));
+      if (S.leaf && !S.diodes && S.leafDrop >= 1) base = mix(base, [28, 40, 90], 0.6);
+      if (S.leaf && S.diodes && S.leafDrop >= 1 && j === 1) base = mix(base, [28, 40, 90], 0.6);
+      ctx.fillStyle = rgb(base);
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.lineTo(d[0], d[1]); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(210,225,255,.55)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    // reflection streak
+    var r0 = P(0.18, 0), r1 = P(0.34, 0), r2 = P(0.24, 1), r3 = P(0.08, 1);
+    ctx.fillStyle = 'rgba(255,255,255,' + (0.08 + 0.12 * L) + ')';
+    ctx.beginPath(); ctx.moveTo(r0[0], r0[1]); ctx.lineTo(r1[0], r1[1]); ctx.lineTo(r2[0], r2[1]); ctx.lineTo(r3[0], r3[1]); ctx.closePath(); ctx.fill();
+    // outline
+    var q = [P(0, 0), P(1, 0), P(1, 1), P(0, 1)];
+    ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(q[0][0], q[0][1]); for (var n = 1; n < 4; n++) ctx.lineTo(q[n][0], q[n][1]); ctx.closePath(); ctx.stroke();
+    // leaf
+    if (S.leaf) {
+      var target = P(2.5 / cols, 1.5 / rows), lf = Math.min(1, S.leafDrop);
+      var lx = target[0] + (1 - lf) * 30 * Math.sin(clockT * 6), ly = target[1] - (1 - lf) * 120;
+      ctx.save(); ctx.translate(lx, ly); ctx.rotate(tr + (1 - lf) * Math.sin(clockT * 5) * 0.8 - 0.4);
+      var ls = panelLen / 22;
+      ctx.fillStyle = '#E07B2E'; ctx.strokeStyle = '#4A2208'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(-ls * 1.6, 0); ctx.quadraticCurveTo(0, -ls * 1.3, ls * 1.6, 0); ctx.quadraticCurveTo(0, ls * 1.3, -ls * 1.6, 0); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-ls * 1.6, 0); ctx.lineTo(ls * 1.9, 0); ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawBattery(L) {
+    var b = battBox, x = b.x, y = groundY - b.h, f = S.batt / BATT_KWH;
+    ctx.fillStyle = '#E9ECF5'; ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2;
+    ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, b.w, b.h, 5); else ctx.rect(x, y, b.w, b.h); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#11132A'; ctx.fillRect(x + b.w * 0.3, y - 4, b.w * 0.4, 4);
+    var ih = b.h - 8, fill = ih * f;
+    ctx.fillStyle = '#2B2F4A'; ctx.fillRect(x + 4, y + 4, b.w - 8, ih);
+    ctx.fillStyle = f > 0.3 ? '#6FD3A8' : (f > 0.12 ? '#FFC845' : '#FF4D3D');
+    ctx.fillRect(x + 4, y + 4 + ih - fill, b.w - 8, fill);
+    ctx.font = '700 ' + Math.max(9, b.w * 0.32) + 'px "IBM Plex Mono", monospace';
+    ctx.textAlign = 'center'; ctx.fillStyle = '#FFFFFF';
+    ctx.fillText(Math.round(f * 100) + '%', x + b.w / 2, y + b.h / 2 + 4);
+  }
+
+  function drawHouse(L, e) {
+    var h = house, x0 = h.x0, x1 = h.x1, y = h.y, top = y - h.wall, hw = x1 - x0, mid = x0 + hw * 0.5;
+    var lit = S.lights && !S.blackout, dayIn = 0.25 + 0.6 * L;
+    // roof
+    ctx.fillStyle = '#C8664A'; ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2.2;
+    ctx.beginPath(); ctx.moveTo(x0 - 10, top); ctx.lineTo(x0 + hw / 2, top - h.roof); ctx.lineTo(x1 + 10, top); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(80,30,20,.35)'; ctx.lineWidth = 1;
+    for (var r = 1; r < 4; r++) { var ry = top - h.roof * r / 4; var half = (hw / 2 + 10) * (1 - r / 4); ctx.beginPath(); ctx.moveTo(x0 + hw / 2 - half, ry); ctx.lineTo(x0 + hw / 2 + half, ry); ctx.stroke(); }
+    // rooms
+    var inside = lit ? [255, 214, 150] : mix([28, 32, 55], [236, 228, 214], dayIn);
+    if (S.blackout) inside = [16, 18, 32];
+    ctx.fillStyle = rgb(inside); ctx.fillRect(x0, top, hw, h.wall);
+    if (lit) {
+      ctx.globalCompositeOperation = 'lighter';
+      [x0 + hw * 0.25, x0 + hw * 0.75].forEach(function (lx) {
+        var lg = ctx.createRadialGradient(lx, top + 10, 0, lx, top + 10, hw * 0.45);
+        lg.addColorStop(0, 'rgba(255,220,140,.5)'); lg.addColorStop(1, 'rgba(255,200,120,0)');
+        ctx.fillStyle = lg; ctx.fillRect(x0, top, hw, h.wall);
+      });
+      ctx.globalCompositeOperation = 'source-over';
+    }
+    // floor + wall lines
+    ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2.2;
+    ctx.strokeRect(x0, top, hw, h.wall);
+    ctx.beginPath(); ctx.moveTo(mid, top); ctx.lineTo(mid, y - h.wall * 0.28); ctx.stroke();
+    var s = hw / 300;   // scale for furniture
+    var fl = y - 2;
+    // --- kitchen (left room) ---
+    // fridge
+    var fw = 34 * s, fh = h.wall * 0.62, fx = x0 + 8 * s;
+    ctx.fillStyle = '#F5F7FB'; ctx.fillRect(fx, fl - fh, fw, fh); ctx.strokeRect(fx, fl - fh, fw, fh);
+    ctx.beginPath(); ctx.moveTo(fx, fl - fh * 0.62); ctx.lineTo(fx + fw, fl - fh * 0.62); ctx.stroke();
+    ctx.fillStyle = S.blackout ? '#FF4D3D' : '#6FD3A8'; ctx.beginPath(); ctx.arc(fx + fw * 0.75, fl - fh * 0.85, 2.5 * s + 1, 0, 6.3); ctx.fill();
+    // washing machine
+    var wx = fx + fw + 8 * s, ww = 40 * s, wh = 44 * s;
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(wx, fl - wh, ww, wh); ctx.strokeRect(wx, fl - wh, ww, wh);
+    ctx.fillStyle = '#9CC9E8'; ctx.beginPath(); ctx.arc(wx + ww / 2, fl - wh * 0.45, ww * 0.3, 0, 6.3); ctx.fill(); ctx.stroke();
+    if (S.wash > 0) {
+      ctx.save(); ctx.translate(wx + ww / 2, fl - wh * 0.45); ctx.rotate(clockT * 9);
+      ctx.fillStyle = '#E86A8A'; ctx.fillRect(-ww * 0.18, -ww * 0.06, ww * 0.2, ww * 0.12);
+      ctx.fillStyle = '#FFC845'; ctx.fillRect(0, ww * 0.02, ww * 0.16, ww * 0.1);
+      ctx.restore();
+    }
+    // counter + kettle
+    var kx = wx + ww + 8 * s, kw = Math.max(0, mid - kx - 6 * s);
+    if (kw > 10) {
+      ctx.fillStyle = '#B98B6A'; ctx.fillRect(kx, fl - 30 * s, kw, 30 * s); ctx.strokeRect(kx, fl - 30 * s, kw, 30 * s);
+      var kcx = kx + kw / 2, kcy = fl - 30 * s;
+      ctx.fillStyle = S.kettle > 0 ? '#FF8C42' : '#DCE2EE';
+      ctx.beginPath(); ctx.moveTo(kcx - 9 * s, kcy); ctx.lineTo(kcx - 7 * s, kcy - 16 * s); ctx.lineTo(kcx + 7 * s, kcy - 16 * s); ctx.lineTo(kcx + 9 * s, kcy); ctx.closePath(); ctx.fill(); ctx.stroke();
+      if (S.kettle > 0) {
+        ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 2;
+        for (var st = 0; st < 3; st++) { ctx.beginPath(); var sy = kcy - 20 * s - ((clockT * 30 + st * 9) % 24) * s; ctx.moveTo(kcx + Math.sin(clockT * 8 + st) * 3, sy); ctx.lineTo(kcx + Math.sin(clockT * 8 + st + 1) * 3, sy - 6 * s); ctx.stroke(); }
+        ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2.2;
+      }
+    }
+    // --- living room (right) ---
+    // pendant lamps
+    [x0 + hw * 0.25, x0 + hw * 0.75].forEach(function (lx) {
+      ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(lx, top); ctx.lineTo(lx, top + 10 * s + 4); ctx.stroke();
+      ctx.fillStyle = lit ? '#FFF2B0' : '#8A8FA8'; ctx.beginPath(); ctx.arc(lx, top + 14 * s + 4, 5 * s + 2, 0, 6.3); ctx.fill(); ctx.lineWidth = 1.6; ctx.stroke();
+    });
+    ctx.lineWidth = 2.2;
+    // sofa
+    var sx = mid + 10 * s, sw = hw * 0.26, sh = 22 * s;
+    ctx.fillStyle = '#7F8BD8'; ctx.fillRect(sx, fl - sh, sw, sh); ctx.strokeRect(sx, fl - sh, sw, sh);
+    ctx.fillRect(sx, fl - sh * 1.6, 8 * s, sh * 1.6); ctx.strokeRect(sx, fl - sh * 1.6, 8 * s, sh * 1.6);
+    // TV
+    var tvw = hw * 0.15, tvh = tvw * 0.62, tvx = x1 - tvw - 8 * s, tvy = fl - 22 * s - tvh;
+    ctx.fillStyle = '#6B5B4E'; ctx.fillRect(tvx - 2, fl - 22 * s, tvw + 4, 22 * s); ctx.strokeRect(tvx - 2, fl - 22 * s, tvw + 4, 22 * s);
+    var on = S.tv && !S.blackout;
+    ctx.fillStyle = on ? (Math.sin(clockT * 7) > 0 ? '#7FD4FF' : '#A7E6FF') : '#1D2135';
+    ctx.fillRect(tvx, tvy, tvw, tvh); ctx.strokeRect(tvx, tvy, tvw, tvh);
+  }
+
+  // ===================== Inside one cell =====================
+  var carriers = [], cPhotons = [], bursts = [], tapQueue = [], cellGeom = null, taps = 0, tapMsgUntil = 0;
+  function drawCell(dt) {
+    var w = CW, h = CH, c = cctx;
+    c.clearRect(0, 0, w, h);
+    var bulbX = w - Math.max(46, w * 0.09), cx1 = bulbX - 34;
+    var yGlass = 34, yN = 46, yBack = h - 22, yJ = yN + (yBack - yN) * 0.3;
+    // background
+    c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
+    // light from above
+    var bright = Math.min(1, S.G / 1000);
+    var sky = c.createLinearGradient(0, 0, 0, yGlass);
+    sky.addColorStop(0, 'rgba(255,220,120,' + (0.05 + 0.25 * bright) + ')'); sky.addColorStop(1, 'rgba(255,220,120,0)');
+    c.fillStyle = sky; c.fillRect(10, 0, cx1 - 10, yGlass);
+    // layers
+    c.fillStyle = '#4F7BD9'; c.fillRect(10, yGlass, cx1 - 10, yN - yGlass);                 // anti-reflective coating
+    c.fillStyle = '#7AA7F0'; c.fillRect(10, yN, cx1 - 10, yJ - yN);                           // n-type
+    c.fillStyle = '#3550A8'; c.fillRect(10, yJ, cx1 - 10, yBack - yJ);                         // p-type
+    c.fillStyle = '#B9C0D8'; c.fillRect(10, yBack, cx1 - 10, 8);                               // back contact
+    c.strokeStyle = 'rgba(255,255,255,.75)'; c.setLineDash([5, 4]); c.lineWidth = 1.5;
+    c.beginPath(); c.moveTo(10, yJ); c.lineTo(cx1, yJ); c.stroke(); c.setLineDash([]);
+    // junction field arrows (push electrons up)
+    c.fillStyle = 'rgba(255,255,255,.4)';
+    for (var ax = 30; ax < cx1 - 20; ax += 46) { c.beginPath(); c.moveTo(ax, yJ - 7); c.lineTo(ax - 4, yJ + 1); c.lineTo(ax + 4, yJ + 1); c.closePath(); c.fill(); }
+    // finger contacts on top
+    var fingers = [];
+    for (var fx = 40; fx < cx1 - 10; fx += Math.max(70, (cx1 - 40) / 4)) fingers.push(fx);
+    c.fillStyle = '#DDE2EF'; c.strokeStyle = '#11132A'; c.lineWidth = 1.5;
+    fingers.forEach(function (f) { c.fillRect(f - 5, yGlass - 6, 10, 8); c.strokeRect(f - 5, yGlass - 6, 10, 8); });
+    // circuit wire: top busbar → bulb → back contact
+    c.strokeStyle = '#DDE2EF'; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(fingers[0], yGlass - 10); c.lineTo(bulbX, yGlass - 10); c.lineTo(bulbX, h / 2 - 14); c.moveTo(bulbX, h / 2 + 14); c.lineTo(bulbX, yBack + 4); c.lineTo(cx1, yBack + 4); c.stroke();
+    // bulb
+    var out = S.pv / PANEL_W;
+    if (out > 0.02) {
+      c.globalCompositeOperation = 'lighter';
+      var bg = c.createRadialGradient(bulbX, h / 2, 0, bulbX, h / 2, 40);
+      bg.addColorStop(0, 'rgba(255,230,140,' + Math.min(0.9, out * 1.2) + ')'); bg.addColorStop(1, 'rgba(255,200,100,0)');
+      c.fillStyle = bg; c.beginPath(); c.arc(bulbX, h / 2, 40, 0, 6.3); c.fill();
+      c.globalCompositeOperation = 'source-over';
+    }
+    c.fillStyle = out > 0.02 ? '#FFF2B0' : '#5A6080'; c.strokeStyle = '#11132A'; c.lineWidth = 2;
+    c.beginPath(); c.arc(bulbX, h / 2 - 2, 12, 0, 6.3); c.fill(); c.stroke();
+    c.fillStyle = '#B9C0D8'; c.fillRect(bulbX - 6, h / 2 + 9, 12, 7); c.strokeRect(bulbX - 6, h / 2 + 9, 12, 7);
+
+    // photons arriving
+    var shadeCell = S.leaf && S.leafDrop >= 1;
+    var rate = (S.G / 1000) * 10;
+    if (!S.paused && Math.random() < rate * dt) cPhotons.push({ x: 20 + Math.random() * (cx1 - 40), y: -6, depth: yN + Math.random() * (yBack - yN - 6) });
+    cellGeom = { cx1: cx1, yN: yN, yBack: yBack };
+    while (tapQueue.length) { var tx = Math.max(16, Math.min(cx1 - 8, tapQueue.shift())); cPhotons.push({ x: tx, y: -6, depth: yN + 8 + Math.random() * (yBack - yN - 20), mine: true }); }
+    c.strokeStyle = '#FFE27A'; c.lineWidth = 2;
+    for (var i = cPhotons.length - 1; i >= 0; i--) {
+      var p = cPhotons[i];
+      if (!S.paused) p.y += 240 * dt;
+      if (p.y >= p.depth) {
+        cPhotons.splice(i, 1);
+        // In a chain, current through this cell is limited by the shaded cell
+        var keep = !shadeCell || S.diodes || Math.random() < 0.15;
+        if (p.mine) { c.globalCompositeOperation = 'lighter'; c.fillStyle = 'rgba(255,240,170,.9)'; c.beginPath(); c.arc(p.x, p.y, 9, 0, 6.3); c.fill(); c.globalCompositeOperation = 'source-over'; bursts.push({ x: p.x, y: p.y, life: 0.6 }); }
+        if (keep) {
+          var nf = fingers.reduce(function (a, b) { return Math.abs(b - p.x) < Math.abs(a - p.x) ? b : a; });
+          carriers.push({ kind: 'e', x: p.x, y: p.y, stage: 0, fx: nf, yN: yN, life: 0, mine: p.mine });
+          carriers.push({ kind: 'h', x: p.x, y: p.y, life: 0 });
+        } else {
+          carriers.push({ kind: 'stuck', x: p.x, y: p.y, life: 0 });
+        }
+        continue;
+      }
+      c.lineWidth = p.mine ? 3.5 : 2; c.strokeStyle = p.mine ? '#FFF3A8' : '#FFE27A';
+      c.beginPath();
+      for (var s = 0; s < (p.mine ? 7 : 4); s++) { var yy = p.y - s * 4; c.lineTo(p.x + Math.sin(yy * 0.6) * 3, yy); }
+      c.stroke();
+    }
+    // carriers
+    var spd = S.paused ? 0 : dt;
+    for (i = carriers.length - 1; i >= 0; i--) {
+      var q = carriers[i]; q.life += spd;
+      if (q.kind === 'h') {
+        q.y += 45 * spd; if (q.y > yBack) { carriers.splice(i, 1); continue; }
+        c.strokeStyle = '#FFB27A'; c.lineWidth = 1.6; c.beginPath(); c.arc(q.x, q.y, 3.2, 0, 6.3); c.stroke();
+        continue;
+      }
+      if (q.kind === 'stuck') {
+        if (q.life > 1.2) { carriers.splice(i, 1); continue; }
+        c.fillStyle = 'rgba(255,120,100,' + (1 - q.life / 1.2) + ')'; c.beginPath(); c.arc(q.x, q.y, 3, 0, 6.3); c.fill();
+        continue;
+      }
+      // electron: up through the junction, to the finger, along the wire, through the bulb, back in
+      if (q.stage === 0) { q.y -= 90 * spd; if (q.y <= yN + 4) q.stage = 1; }
+      else if (q.stage === 1) { var dx = q.fx - q.x; q.x += Math.sign(dx) * Math.min(Math.abs(dx), 110 * spd); q.y -= 30 * spd; if (Math.abs(dx) < 1) { q.y = yGlass - 10; q.stage = 2; } }
+      else if (q.stage === 2) { q.x += 160 * spd; if (q.x >= bulbX) { q.x = bulbX; q.stage = 3; } }
+      else if (q.stage === 3) { q.y += 120 * spd; if (q.y >= yBack + 4) { q.y = yBack + 4; q.stage = 4; } }
+      else { q.x -= 140 * spd; if (q.x < cx1 - 30) { carriers.splice(i, 1); continue; } }
+      c.fillStyle = '#E8F6FF'; c.beginPath(); c.arc(q.x, q.y, q.mine ? 4.5 : 3, 0, 6.3); c.fill();
+      if (q.mine) { c.strokeStyle = '#FFE27A'; c.lineWidth = 1.5; c.beginPath(); c.arc(q.x, q.y, 7, 0, 6.3); c.stroke(); }
+    }
+    if (carriers.length > 400) carriers.splice(0, carriers.length - 400);
+    for (i = bursts.length - 1; i >= 0; i--) {
+      var bb = bursts[i]; bb.life -= dt; if (bb.life <= 0) { bursts.splice(i, 1); continue; }
+      c.strokeStyle = 'rgba(255,240,170,' + bb.life * 1.6 + ')'; c.lineWidth = 2;
+      c.beginPath(); c.arc(bb.x, bb.y, (0.6 - bb.life) * 40 + 4, 0, 6.3); c.stroke();
+    }
+    c.font = '700 ' + (w < 560 ? 10 : 11) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'right';
+    c.fillStyle = 'rgba(255,243,168,' + (0.55 + 0.35 * Math.sin(clockT * 3)) + ')';
+    c.fillText('TAP TO FIRE A PHOTON', cx1 - 6, yJ - 8);
+
+    // labels
+    var small = w < 560;
+    c.font = '600 ' + (small ? 9 : 10.5) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'left';
+    function tag(t, x, y, col, align) {
+      c.textAlign = align || 'left';
+      var tw = c.measureText(t).width, bx = align === 'right' ? x - tw - 4 : x - 4;
+      c.fillStyle = 'rgba(14,16,34,.72)'; c.fillRect(bx, y - 10, tw + 8, 14);
+      c.fillStyle = col; c.fillText(t, x, y);
+    }
+    tag('n-type silicon', 16, yN + 13, '#FFFFFF');
+    tag('junction: pushes electrons up ↑', 16, yJ + 15, '#FFFFFF');
+    tag('p-type silicon', 16, yBack - 6, '#FFFFFF');
+    tag('sunlight ↓', 16, 14, '#FFE27A');
+    tag('● electron', cx1 - (small ? 62 : 110), 14, '#E8F6FF');
+    if (!small) tag('○ hole', cx1 - 40, 14, '#FFB27A');
+    c.textAlign = 'center';
+    if (shadeCell && !S.diodes) {
+      c.fillStyle = 'rgba(20,10,10,.55)'; c.fillRect(10, yGlass, cx1 - 10, yBack - yGlass);
+      c.font = '700 ' + (small ? 12 : 14) + 'px Nunito, sans-serif'; c.fillStyle = '#FFB0A0';
+      c.fillText('A shaded cell in the chain blocks the flow', (10 + cx1) / 2, (yJ + yBack) / 2 + 4);
+    }
+  }
+
+  // ===================== Confetti =====================
+  var confetti = [];
+  function party() {
+    for (var c = 0; c < 110; c++) confetti.push({ x: W * Math.random(), y: -10 - Math.random() * 80, vx: (Math.random() - 0.5) * 120, vy: Math.random() * 60, r: Math.random() * 6, vr: (Math.random() - 0.5) * 10, col: ['#FF8C42', '#6FD3A8', '#FFC845', '#8FD3F5', '#FF4D3D', '#E9E4F5'][c % 6] });
+  }
+  function drawConfetti(dt) {
+    for (var i = confetti.length - 1; i >= 0; i--) {
+      var c = confetti[i]; c.vy += 260 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.r += c.vr * dt;
+      if (c.y > H + 10) { confetti.splice(i, 1); continue; }
+      ctx.save(); ctx.translate(c.x, c.y); ctx.rotate(c.r); ctx.fillStyle = c.col; ctx.fillRect(-4, -2, 8, 4); ctx.restore();
+    }
+  }
+
+  // ===================== Gauges =====================
+  function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
+  function makeGauge(id, label, max, zone, zoneCol, needleCol) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
+    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
+    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+    el.innerHTML = html;
+    return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
+  }
+  var gSun = makeGauge('gSun', 'SUNLIGHT', 1100, null, null, '#FFC845');
+  var gPanel = makeGauge('gPanel', 'PANEL', PANEL_W, null, null, '#FFC845');
+  var gBatt = makeGauge('gBatt', 'BATTERY', 100, [0, 0.15], '#FF4D3D', '#6FD3A8');
+  function setGauge(g, v, fmt, dt) {
+    g.shown += (v - g.shown) * Math.min(1, dt * 8);
+    var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
+    g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.val.textContent = fmt(g.shown);
+  }
+
+  // ===================== Ari =====================
+  var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), againBtn = document.getElementById('againBtn'), lastMsg = '';
+  function say(html, again) {
+    againBtn.classList.toggle('show', !!again);
+    if (html === lastMsg) return;
+    lastMsg = html; ariText.innerHTML = html;
+    ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop');
+  }
+  var mEls = Array.prototype.slice.call(document.querySelectorAll('.mission'));
+  function complete(i) { if (S.missions[i]) return; S.missions[i] = true; track('mission_' + (i + 1)); renderMissions(); }
+  function renderMissions() {
+    var now = S.missions.indexOf(false);
+    mEls.forEach(function (el, i) { el.classList.toggle('done', S.missions[i]); el.classList.toggle('now', i === now); });
+  }
+  function hhmm(h) { h = ((h % 24) + 24) % 24; var hh = Math.floor(h), mm = Math.floor((h - hh) * 60); return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm; }
+
+  function coach() {
+    var hod = ((S.h % 24) + 24) % 24, e = elev(S.h);
+    if (S.result === 'win') return say('<b>You made it to sunrise!</b> The panel filled the battery by day, and the battery kept the house going all night. That\'s how real off-grid homes work.', true);
+    if (S.result === 'dirty') return say('You made it to sunrise, but <b>the washing never got done!</b> Try again: can you do the washing <b>and</b> keep the lights on?', true);
+    if (S.result === 'fail' || S.blackout && !S.sunUp) return say('<b>Power cut at ' + hhmm(S.blackoutAt) + '!</b> The battery ran flat. Tip: follow the sun all day to fill the battery, and do the washing while the sun is out.', true);
+    if (S.blackout) return say('The battery is flat, but the sun is charging it again. Point the panel at the sun to get the power back faster.');
+    if (clockT < tapMsgUntil) return say(taps < 3
+      ? '<b>Zap!</b> Your photon, a tiny packet of light energy, smashed into the silicon and <b>knocked an electron loose</b>. The junction pushes it up, and it escapes through the wire to light the bulb. That flow of electrons <b>is</b> electricity.'
+      : 'Every photon that knocks an electron free adds a little to the current. A sunny panel gets hit by <b>billions of billions</b> of photons every second. Keep firing!');
+    if (S.leaf && !S.diodes && S.leafDrop >= 1) return say('One leaf on <b>one</b> cell, and the power collapsed! The cells are joined in a chain, so the electricity has to squeeze through every one, and the shaded cell barely lets any through. Real panels have a fix: tap <b>Add bypass diodes</b>.');
+    if (S.leaf && S.diodes) return say('Bypass diodes let the electricity <b>skip around</b> the shaded group of cells. Now you only lose a third of the power, not nearly all of it. Tap the leaf button again to blow it away.');
+    if (S.kettle > 0) return say('Kettles are greedy: <b>3,000 watts</b>! That\'s more than the whole panel makes, so the battery has to help out.');
+    if (S.wash > 0 && S.pv / 1000 >= LOAD.wash * 0.5) return say('<b>Washing on sunshine.</b> The panel is powering most of it, so the battery doesn\'t have to.');
+    if (S.wash > 0) return say('The washing machine needs <b>800 watts</b>, and the panel isn\'t making much right now, so it\'s draining the battery. Is this the best time?');
+    if (S.lastWashShare != null && S.h < (S.washMsgUntil || 0)) return say(S.lastWashShare >= 0.5 ? '<b>Clean clothes, paid for by the sun.</b> Now keep the panel pointed at the sun to fill the battery before dark.' : 'Clean clothes, but most of that power came out of the battery. Try running it in the middle of the day next time.');
+    if (!S.sunUp && hod >= 17 || hod < 6) {
+      if (S.tv) return say('Night. No sun, so <b>everything runs from the battery</b>. The TV is using power. Do you need it?');
+      return say('Night. No sun, so everything runs from the battery: the fridge all night, and the lights until bedtime. Will it last until sunrise? <b>Fast ×4</b> to find out.');
+    }
+    if (S.sunUp && hod >= 15.5 && S.batt / BATT_KWH < 0.8) return say('The sun is getting low. Is the battery full enough to last the night? <b>Squeeze out every last bit of sunshine.</b>');
+    if (S.sunUp && !S.missions[0]) return say('It\'s 6am and the sun is coming up. This house has no mains power: just a solar panel and a battery. <b>Touch the sun</b> to point the panel at it.');
+    if (S.sunUp && S.aim < 0.75) return say('The sun has moved across the sky! <b>Tilt the panel</b> to follow it. Pointing straight at it catches the most light.');
+    if (!S.washedToday && hod >= 9) return say('The washing needs doing today. <b>When\'s the best time?</b> Hint: watch the PANEL needle.');
+    if (S.missions[0] && hod < 9) return say('Nice aim. Watch the <b>PANEL</b> needle: pointing straight at the sun catches the most light. The battery is filling up. See the yellow dots on the wire?');
+    return say('Keep following the sun. Every bit of sunshine you catch now goes into the battery for tonight.');
+  }
+
+  // ===================== Controls =====================
+  var tiltEl = document.getElementById('tilt'), aimVal = document.getElementById('aimVal');
+  var washBtn = document.getElementById('washBtn'), kettleBtn = document.getElementById('kettleBtn'), tvBtn = document.getElementById('tvBtn');
+  var washBar = document.getElementById('washBar'), kettleBar = document.getElementById('kettleBar');
+  var leafBtn = document.getElementById('leafBtn'), diodeBtn = document.getElementById('diodeBtn');
+  var pauseBtn = document.getElementById('pauseBtn'), fastBtn = document.getElementById('fastBtn'), clockEl = document.getElementById('clock');
+
+  cc.addEventListener('pointerdown', function (e) {
+    var r = cc.getBoundingClientRect(); tapQueue.push(e.clientX - r.left);
+    taps++; stats.interactions++; tapMsgUntil = clockT + 6;
+    if (taps === 1) track('photon_tap');
+  });
+  cc.style.cursor = 'pointer'; cc.style.touchAction = 'manipulation';
+  tiltEl.addEventListener('input', function () { S.tilt = Number(tiltEl.value); });
+  tiltEl.addEventListener('change', function () { stats.interactions++; });
+
+  var aiming = false;
+  function aimAt(ev) {
+    var r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+    var pc = panelCentre();
+    if (y > pc.y + 4) return;
+    var a = Math.atan2(x - pc.x, pc.y - y) * 180 / Math.PI;
+    S.tilt = Math.max(-70, Math.min(70, a)); tiltEl.value = Math.round(S.tilt);
+  }
+  cv.addEventListener('pointerdown', function (e) { aiming = true; cv.setPointerCapture(e.pointerId); aimAt(e); stats.interactions++; });
+  cv.addEventListener('pointermove', function (e) { if (aiming) aimAt(e); });
+  ['pointerup', 'pointercancel'].forEach(function (ev) { cv.addEventListener(ev, function () { aiming = false; }); });
+
+  function washRender() { washBtn.classList.toggle('on', S.wash > 0); washBar.style.width = S.wash > 0 ? ((1 - S.wash) * 100) + '%' : '0'; }
+  function kettleRender() { kettleBtn.classList.toggle('on', S.kettle > 0); }
+  function tvRender() { tvBtn.classList.toggle('on', S.tv); tvBtn.setAttribute('aria-pressed', String(S.tv)); }
+
+  washBtn.addEventListener('click', function () {
+    stats.interactions++;
+    if (S.blackout) return;
+    if (S.wash > 0) { S.wash = 0; washRender(); return; }
+    S.wash = 1; S.washKWh = 0; S.washSun = 0; washRender(); track('wash');
+  });
+  kettleBtn.addEventListener('click', function () { stats.interactions++; if (S.blackout) return; S.kettle = 0.05; kettleRender(); track('kettle'); });
+  tvBtn.addEventListener('click', function () {
+    stats.interactions++;
+    var hod = ((S.h % 24) + 24) % 24;
+    if (S.blackout) return;
+    if (!S.tv && (hod >= 23 || hod < 6)) { say('It\'s bedtime! No TV until the morning.'); return; }
+    S.tv = !S.tv; tvRender();
+  });
+  leafBtn.addEventListener('click', function () {
+    stats.interactions++;
+    S.leaf = !S.leaf; S.leafDrop = 0;
+    leafBtn.setAttribute('aria-pressed', String(S.leaf));
+    leafBtn.textContent = S.leaf ? 'Blow the leaf away' : 'Drop a leaf on one cell';
+    diodeBtn.classList.toggle('hidden', !S.leaf && !S.diodes);
+    if (S.leaf) { complete(3); track('leaf'); }
+  });
+  diodeBtn.addEventListener('click', function () {
+    stats.interactions++;
+    S.diodes = !S.diodes; diodeBtn.setAttribute('aria-pressed', String(S.diodes));
+    diodeBtn.textContent = S.diodes ? 'Remove bypass diodes' : 'Add bypass diodes';
+    track(S.diodes ? 'diodes_on' : 'diodes_off');
+  });
+  pauseBtn.addEventListener('click', function () { S.paused = !S.paused; pauseBtn.setAttribute('aria-pressed', String(S.paused)); pauseBtn.textContent = S.paused ? 'Play' : 'Pause'; });
+  fastBtn.addEventListener('click', function () { S.fast = !S.fast; fastBtn.setAttribute('aria-pressed', String(S.fast)); });
+  againBtn.addEventListener('click', function () {
+    stats.interactions++;
+    var leaf = S.leaf, diodes = S.diodes;
+    freshState(true); S.leaf = leaf; S.diodes = diodes; S.leafDrop = 1;
+    seedClouds(); washRender(); kettleRender(); tvRender(); renderMissions(); fastBtn.setAttribute('aria-pressed', 'false');
+    track('retry');
+  });
+
+  // ===================== Loop =====================
+  var last = performance.now();
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000); last = now; clockT += dt;
+    if (!S.paused && !S.result) {
+      var e = elev(S.h), speed = (S.fast ? 4 : 1) * (e < -0.05 ? 2.5 : 1);
+      var dtH = dt * speed * 24 / DAY_SECONDS;
+      var steps = Math.ceil(dtH / 0.02);
+      for (var i = 0; i < steps; i++) { physics(dtH / steps); S.h += dtH / steps; }
+      if (S.leaf && S.leafDrop < 1) S.leafDrop = Math.min(1, S.leafDrop + dt * 1.2);
+      // sunrise check
+      if (S.h >= 30) {
+        S.h = 30;
+        if (S.blackoutNight) S.result = 'fail';
+        else if (S.washedToday) { S.result = 'win'; complete(2); party(); track('survived'); }
+        else S.result = 'dirty';
+      }
+      if (S.blackout && !S.sunUp) S.blackoutNight = true;
+    } else if (S.paused && !S.result) { physics(0); }
+    if (S.result) physics(0);
+
+    drawScene(dt);
+    drawCell(S.paused ? 0 : dt);
+    setGauge(gSun, S.G, function (v) { return Math.round(v) + ' W/m²'; }, dt);
+    setGauge(gPanel, S.pv, function (v) { return Math.round(v) + ' W'; }, dt);
+    setGauge(gBatt, S.batt / BATT_KWH * 100, function (v) { return Math.round(v) + '%'; }, dt);
+    clockEl.innerHTML = hhmm(S.h) + '<small>' + (S.sunUp ? 'DAY' : 'NIGHT') + (S.fast || elev(S.h) < -0.05 ? ' · FAST' : '') + '</small>';
+    aimVal.textContent = S.sunUp ? 'Facing the sun: ' + Math.round(S.aim * 100) + '%' : 'Sun has set';
+    aimVal.classList.toggle('good', S.sunUp && S.aim > 0.9);
+    if (S.wash > 0) washBar.style.width = ((1 - S.wash) * 100) + '%';
+    var hod = ((S.h % 24) + 24) % 24;
+    washBtn.classList.toggle('nudge', !S.washedToday && S.wash === 0 && S.missions[0] && hod >= 9 && hod < 15 && S.pv > 450);
+    leafBtn.classList.toggle('nudge', S.missions[0] && S.missions[1] && !S.missions[3] && S.sunUp);
+    diodeBtn.classList.toggle('nudge', S.leaf && !S.diodes && S.leafDrop >= 1);
+    coach();
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', resize);
+  resize(); renderMissions(); washRender(); tvRender();
+  requestAnimationFrame(frame);
+  window.__ari = { state: function () { return S; }, sun: function () { return sunPos(S.h); }, pc: panelCentre };
+})();
+</script>
+</body>
+</html>
