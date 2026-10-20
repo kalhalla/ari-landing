@@ -250,7 +250,7 @@
             <div class="screen-tag">Fig. 01 — Turbojet, cut-away</div>
             <div class="screen-tools">
               <button class="tool" id="slowBtn" aria-pressed="false">Slow-mo</button>
-              <button class="tool" id="soundBtn" aria-pressed="true">Sound on</button>
+              <button class="tool" id="soundBtn" aria-pressed="false">Sound off</button>
             </div>
           </div>
           <canvas id="engine" aria-label="Cut-away jet engine. Air flows in at the front, gets squeezed, burned with fuel and blasted out of the back."></canvas>
@@ -1013,7 +1013,7 @@
   // =====================================================================
   //  Sound
   // =====================================================================
-  var AC = null, snd = { on: true };
+  var AC = null, snd = { on: false };
   function initAudio() {
     if (AC || !snd.on) return;
     try {
