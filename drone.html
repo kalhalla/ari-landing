@@ -628,7 +628,7 @@
   }
   function drawHUD() {
     // hint pill (top left)
-    var t = hintText(), fs = W < 420 ? 12 : 14;
+    var t = window.__noHint ? '' : hintText(), fs = W < 420 ? 12 : 14;
     if (t) {
       ctx.font = '800 ' + fs + 'px Nunito, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
       var tw = ctx.measureText(t).width, px = 10, py = 10, ph = fs + 14;
