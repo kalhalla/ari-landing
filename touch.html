@@ -743,7 +743,7 @@
   window.addEventListener('resize', resize);
   resize(); computeNodes();
   requestAnimationFrame(frame);
-  window.__ari = { M: M, pointers: pointers, detected: function () { return detected; }, setTool: function (t) { document.querySelector('.tool-btn[data-tool=' + t + ']').click(); } };
+  window.__ari = { P: function () { return P; }, xray: function (v) { xrayEl.value = v; xrayEl.dispatchEvent(new Event('input')); }, clear: function () { strokes = []; drops = []; }, M: M, pointers: pointers, detected: function () { return detected; }, setTool: function (t) { document.querySelector('.tool-btn[data-tool=' + t + ']').click(); } };
 })();
 </script>
 </body>
