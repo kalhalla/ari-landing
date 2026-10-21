@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/ig", "destination": "/?utm_source=instagram&utm_medium=social&utm_content=bio", "permanent": false },
+    { "source": "/fb", "destination": "/solar.html?utm_source=facebook&utm_medium=social&utm_content=group", "permanent": false }
+  ]
+}
