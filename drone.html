@@ -187,6 +187,23 @@
     .lab-controls b { color: white; font-weight: 600; }
     .lab-controls.nudge input { animation: padNudge 1.4s ease-in-out infinite; border-radius: 10px; }
     .hidden { display: none !important; }
+    body.flying { overflow: hidden; overscroll-behavior: none; position: fixed; left: 0; right: 0; }
+    .screen.fly { position: fixed; inset: 0; z-index: 1000; border-radius: 0; background: #14172A; }
+    .screen.fly .screen-bar { display: none; }
+    .screen.fly .pad-wrap { bottom: calc(14px + env(safe-area-inset-bottom)); }
+    .fly-ui { display: none; }
+    .screen.fly .fly-ui { display: block; }
+    .fly-exit { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 10px; z-index: 4; width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: rgba(25,28,48,.8); color: white; font-size: 20px; line-height: 40px; cursor: pointer; }
+    .fly-chips { position: absolute; left: 10px; right: 60px; top: calc(52px + env(safe-area-inset-top)); z-index: 4; display: flex; flex-wrap: wrap; gap: 6px; }
+    .fly-chips button { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 12px; color: white; background: rgba(25,28,48,.8); border: 1.5px solid rgba(255,255,255,.35); border-radius: 999px; padding: 6px 10px; cursor: pointer; }
+    .fly-chips button[aria-pressed="true"] { background: #FF4D3D; border-color: #FF4D3D; }
+    .fly-toast { position: absolute; left: 10px; right: 10px; top: calc(90px + env(safe-area-inset-top)); z-index: 4; background: rgba(255,248,243,.95); color: #4A3229; border-radius: 14px; padding: 9px 12px; font-size: 13.5px; line-height: 1.4; opacity: 0; transition: opacity .3s; pointer-events: none; }
+    .fly-toast.show { opacity: 1; }
+    .fly-toast b { color: #E8622C; }
+    .fly-enter { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 3; font-family: var(--mono); font-size: 10px; letter-spacing: .06em; font-weight: 600;
+      color: white; background: rgba(25,28,48,.8); border: 1.5px solid rgba(255,255,255,.4); border-radius: 999px; padding: 7px 10px; cursor: pointer; }
+    .screen.fly .fly-enter { display: none; }
   </style>
 </head>
 <body>
@@ -213,6 +230,17 @@
             </div>
           </div>
           <canvas id="scene" aria-label="A drone hovering over a field, seen from behind"></canvas>
+          <button class="fly-enter" id="flyEnter">⤢ FULL SCREEN</button>
+          <div class="fly-ui">
+            <button class="fly-exit" id="flyExit" aria-label="Exit full screen">✕</button>
+            <div class="fly-chips">
+              <button data-proxy="flatBtn">Flat blades</button>
+              <button data-proxy="sameBtn">Same way</button>
+              <button data-proxy="cutBtn">Cut motor</button>
+              <button data-proxy="resetBtn">Reset</button>
+            </div>
+            <div class="fly-toast" id="flyToast"></div>
+          </div>
           <div class="pad-wrap left"><div class="pad nudge" id="padL"><div class="knob"></div><span class="arr" style="top:3px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:3px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:5px;top:50%;transform:translateY(-50%)">↺</span><span class="arr" style="right:5px;top:50%;transform:translateY(-50%)">↻</span></div><div class="pad-lbl">UP · DOWN · TURN</div></div>
           <div class="pad-wrap right"><div class="pad" id="padR"><div class="knob"></div><span class="arr" style="top:3px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:3px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:5px;top:50%;transform:translateY(-50%)">◀</span><span class="arr" style="right:5px;top:50%;transform:translateY(-50%)">▶</span></div><div class="pad-lbl">FLY</div></div>
         </div>
@@ -447,14 +475,14 @@
   var cv = document.getElementById('scene'), ctx = cv.getContext('2d');
   var tv = document.getElementById('topview'), tctx = tv.getContext('2d');
   var lc = document.getElementById('lab'), lctx = lc.getContext('2d');
-  var W, H, TW, TH, LW, LH, dpr;
+  var W, H, TW, TH, LW, LH, dpr, flyMode = false;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    W = cv.clientWidth; H = Math.max(300, Math.round(W * (W < 600 ? 1.08 : 0.62)));
+    W = cv.clientWidth; H = flyMode ? Math.round((window.visualViewport ? window.visualViewport.height : innerHeight)) : Math.max(300, Math.round(W * (W < 600 ? 1.08 : 0.62)));
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    TW = cv.clientWidth; TH = W < 600 ? 190 : 210;
+    TW = flyMode ? document.querySelector('.screens').clientWidth : cv.clientWidth; TH = W < 600 ? 190 : 210;
     tv.style.height = TH + 'px'; tv.width = Math.round(TW * dpr); tv.height = Math.round(TH * dpr); tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    LW = cv.clientWidth; LH = W < 600 ? 230 : 250;
+    LW = TW; LH = W < 600 ? 230 : 250;
     lc.style.height = LH + 'px'; lc.width = Math.round(LW * dpr); lc.height = Math.round(LH * dpr); lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
@@ -586,10 +614,16 @@
 
   function hintText() {
     if (D.crashed) return '';
-    if (!M[0]) return '① Spin up the propeller test below ↓';
+    if (flyMode) {
+      if (!M[1]) return 'Push the left stick ▲ to take off';
+      if (!M[2]) return 'Left stick ◀ ▶ to turn all the way round';
+      if (!M[3]) return 'Break it: try the buttons above';
+      return bonus.pad ? 'Free flight' : 'Free flight: land on the orange pad';
+    }
+    if (!M[0]) return flyMode ? 'Push the left stick ▲ to take off' : '① Spin up the propeller test below ↓';
     if (!M[1]) return '② Push the left stick ▲ to take off';
     if (!M[2]) return '③ Left stick ◀ ▶ to turn all the way round';
-    if (!M[3]) return '④ Break it: try the buttons below ↓';
+    if (!M[3]) return flyMode ? '④ Break it: try the buttons above' : '④ Break it: try the buttons below ↓';
     return bonus.pad ? 'Free flight' : 'Free flight: land on the orange pad';
   }
   function drawHUD() {
@@ -604,6 +638,7 @@
     // motor inset (top right)
     var s = W < 420 ? 66 : 84, x0 = W - s - 10, y0 = t ? 10 + fs + 22 : 10;
     if (W >= 420) y0 = 10;
+    if (flyMode) { x0 = W / 2 - s / 2; y0 = H - s - 14 - 30; }
     ctx.fillStyle = 'rgba(25,28,48,.78)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x0, y0, s, s + 14, 10); else ctx.rect(x0, y0, s, s + 14); ctx.fill();
     var cx = x0 + s / 2, cy = y0 + s / 2 + 2, arm = s * 0.27;
     ctx.strokeStyle = '#5D6386'; ctx.lineWidth = 3;
@@ -910,7 +945,11 @@
 
   // ===================== Ari =====================
   var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), lastMsg = '';
-  function say(html) { if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop'); }
+  var toastEl = document.getElementById('flyToast'), toastTimer = null;
+  function say(html) {
+    if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop');
+    if (flyMode) { toastEl.innerHTML = html; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 6500); }
+  }
   var mEls = Array.prototype.slice.call(document.querySelectorAll('.mission'));
   function complete(i) {
     if (M[i]) return; M[i] = true; track('mission_' + (i + 1)); renderMissions();
@@ -930,19 +969,21 @@
     if (flat && (lab.u > 0.3 || input.climb > 0.2 || D.y > 0.2)) return say('The propeller is spinning fast, but <b>flat blades just slice through the air</b>. No air is thrown down, so there\'s no push up. The tilt of the blade is what makes it work.');
     if (flags.same && Math.abs(D.yawRate) > 2) return say('It\'s <b>spinning out of control!</b> Every propeller twists the drone the opposite way to its own spin. Normally two spin each way, so the twists cancel. Now all four twist the same way, and nothing can stop it.');
     if (flags.same) return say('All four propellers now spin the <b>same way</b>. Guess what happens, then take off and find out.');
-    if (!M[0]) {
+    if (!M[0] && !flyMode) {
       if (lab.tab !== 'lab') return say('First, find out how one propeller pushes. Tap <b>Inside a propeller</b>.');
       if (lab.u < 0.05) return say('Every drone flight starts here: <b>one propeller on a test stand</b>, sitting on a scale. Slide <b>SPEED</b> up and watch the scale.');
       if (lab.angle < 6) return say('That blade is nearly flat, so it can\'t throw much air. <b>Turn the blade angle up</b>.');
       return say('Each blade is a small <b>tilted wing</b>. As it swings round, it scoops up air and <b>throws it downwards</b>. Throw air down, and the air pushes back up. Each propeller needs to push <b>300 g</b>. Keep going!');
     }
     if (!M[1]) {
+      if (input.climb > 0.1 && flyMode) return 'All four propellers are speeding up. When their push beats the drone\'s weight, it lifts off. <b>Keep pushing up.</b>';
+      if (flyMode) return 'This drone has no wings, just four propellers. <b>Push the left stick up</b> to take off.';
       if (input.climb > 0.1) return say('All four propellers are speeding up. When their push beats the drone\'s weight, it lifts off. <b>Keep pushing up.</b>');
       return say('<b>300 g!</b> The drone weighs 1.2 kg, so four propellers pushing 300 g each can just hold it up. Now fly the real one: <b>push the left stick up</b>.');
     }
     if (!M[2]) {
-      if (Math.abs(input.yaw) > 0.2) return say('Turning! There\'s no rudder. The drone speeds up the two propellers that spin one way and slows the other two. <b>Watch the top view.</b>');
-      return say('You\'re flying! Now <b>turn all the way round</b>: left stick, left or right. Watch the <b>top view</b> to see how it does it.');
+      if (Math.abs(input.yaw) > 0.2) return say('Turning! There\'s no rudder. The drone speeds up the two propellers that spin one way and slows the other two. <b>Watch the ' + (flyMode ? 'motor speeds' : 'top view') + '.</b>');
+      return say('You\'re flying! Now <b>turn all the way round</b>: left stick, left or right. Watch the <b>' + (flyMode ? 'motor speeds' : 'top view') + '</b> to see how it does it.');
     }
     if (!M[3]) return say('Full circle! Now be a scientist. Two ways to break it: <b>Flatten the blades</b>, or <b>Spin all props the same way</b>. Guess what will happen first.');
     if (bonus.pad && D.landed) return say('<b>Perfect landing!</b> You know how a drone flies now: tilted blades throw air down, and changing their speeds tips and turns it.');
@@ -960,12 +1001,37 @@
       knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
       onMove(dx / R, -dy / R);
     }
-    pad.addEventListener('pointerdown', function (e) { e.preventDefault(); active = e.pointerId; pad.setPointerCapture(e.pointerId); move(e); stats.interactions++; initAudio(); if (AC && AC.state === 'suspended') AC.resume(); });
+    pad.addEventListener('pointerdown', function (e) { e.preventDefault(); if (!flyMode && window.innerWidth < 700) setFly(true); active = e.pointerId; pad.setPointerCapture(e.pointerId); move(e); stats.interactions++; initAudio(); if (AC && AC.state === 'suspended') AC.resume(); });
     pad.addEventListener('pointermove', function (e) { if (e.pointerId === active) move(e); });
     function end(e) { if (e.pointerId !== active) return; active = null; knob.style.transform = ''; onMove(0, 0); }
     pad.addEventListener('pointerup', end); pad.addEventListener('pointercancel', end);
     return { set: function (x, y) { var r = pad.getBoundingClientRect(), R = r.width / 2 - 20; knob.style.transform = (x || y) ? 'translate(' + x * R + 'px,' + -y * R + 'px)' : ''; } };
   }
+  var flyScreen = document.getElementById('scene').parentElement, savedScroll = 0;
+  function setFly(on) {
+    if (on === flyMode) return;
+    flyMode = on;
+    if (on) { savedScroll = scrollY; document.body.style.top = -savedScroll + 'px'; document.body.classList.add('flying'); flyScreen.classList.add('fly'); track('fly_fullscreen'); }
+    else { flyScreen.classList.remove('fly'); document.body.classList.remove('flying'); document.body.style.top = ''; window.scrollTo(0, savedScroll); toastEl.classList.remove('show'); }
+    lastMsg = ''; resize();
+  }
+  document.getElementById('flyEnter').addEventListener('click', function () { setFly(true); });
+  document.getElementById('flyExit').addEventListener('click', function () { setFly(false); });
+  Array.prototype.slice.call(document.querySelectorAll('.fly-chips button')).forEach(function (b) {
+    b.addEventListener('click', function () { document.getElementById(b.dataset.proxy).click(); });
+  });
+  function syncFlyChips() {
+    Array.prototype.slice.call(document.querySelectorAll('.fly-chips button')).forEach(function (b) {
+      var src = document.getElementById(b.dataset.proxy); b.setAttribute('aria-pressed', src.getAttribute('aria-pressed') || 'false');
+    });
+  }
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', function () { if (flyMode) resize(); });
+  // iOS/in-app browsers can ignore touch-action, so block scrolling on the sticks directly
+  ['padL', 'padR'].forEach(function (id) {
+    var el = document.getElementById(id);
+    ['touchstart', 'touchmove'].forEach(function (ev) { el.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
+  });
+  flyScreen.addEventListener('touchmove', function (e) { if (flyMode) e.preventDefault(); }, { passive: false });
   var padL = setupPad('padL', function (x, y) { input.yaw = Math.abs(x) > 0.12 ? x : 0; input.climb = Math.abs(y) > 0.12 ? y : 0; });
   var padR = setupPad('padR', function (x, y) { input.right = Math.abs(x) > 0.12 ? x : 0; input.fwd = Math.abs(y) > 0.12 ? y : 0; });
   var keys = {};
@@ -1045,7 +1111,7 @@
     labControls.classList.toggle('nudge', !M[0] && lab.u < 0.3);
     sameBtn.classList.toggle('nudge', M[2] && !M[3] && !flags.same);
     flatBtn.classList.toggle('nudge', M[2] && !M[3] && lab.angle !== 0);
-    coach(); stepAudio();
+    coach(); stepAudio(); if (flyMode) syncFlyChips();
     requestAnimationFrame(frame);
   }
   window.addEventListener('resize', resize);
