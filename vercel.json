@@ -14,6 +14,11 @@
       "source": "/solar",
       "destination": "/solar.html?utm_source=instagram&utm_medium=social&utm_content=solar",
       "permanent": false
+    },
+    {
+      "source": "/drone",
+      "destination": "/drone.html?utm_source=instagram&utm_medium=social&utm_content=drone",
+      "permanent": false
     }
   ]
 }

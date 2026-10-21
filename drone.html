@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – How does a drone fly with no wings?</title>
+  <meta name="description" content="Take off, turn round and land a drone, then find out why two of its propellers spin backwards. Playable science for children aged 7–12.">
+  <meta property="og:title" content="How does a drone fly with no wings?">
+  <meta property="og:description" content="Fly it, land it, then make all four propellers spin the same way and see what happens.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+  <style>
+    #scene { cursor: default; touch-action: none; }
+    #topview { display: block; width: 100%; }
+    .sticks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stick-box { background: var(--rig-2); border-radius: 16px; padding: 8px 8px 10px; border: 1px solid rgba(255,255,255,.05); text-align: center; }
+    .stick-box .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .stick-box .hint { font-family: var(--mono); font-size: 9.5px; color: var(--rig-dim); margin-top: 6px; opacity: .8; }
+    .pad { position: relative; width: 132px; height: 132px; margin: 0 auto; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, #2E3454 0 58%, #262B48 59% 100%); border: 2px solid #3B4268; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .pad::before, .pad::after { content: ''; position: absolute; background: rgba(255,255,255,.08); }
+    .pad::before { left: 50%; top: 10px; bottom: 10px; width: 2px; margin-left: -1px; }
+    .pad::after { top: 50%; left: 10px; right: 10px; height: 2px; margin-top: -1px; }
+    .pad .arr { position: absolute; font-family: var(--mono); font-size: 11px; color: var(--rig-dim); pointer-events: none; }
+    .knob { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #F2F4FF, #B8BEDB 60%, #8A90B5); border: 2px solid #0F1222; box-shadow: 0 4px 0 #0F1222; pointer-events: none; z-index: 2; }
+    .pad.nudge { animation: padNudge 1.4s ease-in-out infinite; }
+    @keyframes padNudge { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 0 6px rgba(255,200,69,.35); } }
+    .chip.reset { border-style: solid; border-color: rgba(255,255,255,.25); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="#signup">Get the next one</a>
+    </nav>
+
+    <header class="intro">
+      <div class="eyebrow">Fig. 04 · The drone</div>
+      <h1>How does a drone fly with <em>no wings</em>?</h1>
+      <p class="lede">Four spinning propellers, and that's it. <b>Take off, turn round, land on the pad, then find out why two of the propellers spin backwards.</b></p>
+    </header>
+
+    <section class="rig" aria-label="A playable drone">
+      <div class="screens">
+        <div class="screen">
+          <div class="screen-bar">
+            <div class="screen-tag">Fig. 04 — Quadcopter</div>
+            <div class="screen-tools">
+              <button class="tool" id="slowBtn" aria-pressed="false">Slow-mo</button>
+              <button class="tool" id="soundBtn" aria-pressed="false">Sound off</button>
+            </div>
+          </div>
+          <canvas id="scene" aria-label="A drone hovering over a field, seen from behind"></canvas>
+        </div>
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">Top view: what each motor is doing</div></div>
+          <canvas id="topview" aria-label="The drone seen from above, showing how fast each propeller spins and which way"></canvas>
+        </div>
+      </div>
+
+      <div class="cockpit">
+        <div class="gauges">
+          <div class="gauge" id="gHeight"></div>
+          <div class="gauge" id="gSpeed"></div>
+          <div class="gauge" id="gTwist"></div>
+        </div>
+
+        <div class="sticks">
+          <div class="stick-box">
+            <div class="lbl">UP · DOWN · TURN</div>
+            <div class="pad nudge" id="padL"><div class="knob"></div><span class="arr" style="top:4px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:4px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:6px;top:50%;transform:translateY(-50%)">↺</span><span class="arr" style="right:6px;top:50%;transform:translateY(-50%)">↻</span></div>
+            <div class="hint">keys: W S A D</div>
+          </div>
+          <div class="stick-box">
+            <div class="lbl">FLY</div>
+            <div class="pad" id="padR"><div class="knob"></div><span class="arr" style="top:4px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:4px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:6px;top:50%;transform:translateY(-50%)">◀</span><span class="arr" style="right:6px;top:50%;transform:translateY(-50%)">▶</span></div>
+            <div class="hint">keys: arrows</div>
+          </div>
+        </div>
+
+        <div class="ari" id="ari" aria-live="polite">
+          <div class="owl">🦉</div>
+          <div><p id="ariText"></p></div>
+        </div>
+
+        <div class="missions">
+          <div class="mission now"><i>01</i>Take off</div>
+          <div class="mission"><i>02</i>Turn round</div>
+          <div class="mission"><i>03</i>Land on pad</div>
+          <div class="mission"><i>04</i>Break it</div>
+        </div>
+
+        <div class="experiments">
+          <span>BREAK IT:</span>
+          <button class="chip" id="sameBtn" aria-pressed="false">Spin all props the same way</button>
+          <button class="chip" id="cutBtn" aria-pressed="false">Cut one motor</button>
+          <button class="chip reset" id="resetBtn">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <h2>No wings, no rudder, just four propellers</h2>
+      <p>A drone does everything by changing how fast each propeller spins.</p>
+      <div class="stage-grid">
+        <div class="stage"><div class="k">01 · LIFT</div><h3>Push air down</h3><p>Each propeller throws air downwards. The air pushes back, and the drone goes up. Spin faster and it climbs.</p></div>
+        <div class="stage"><div class="k">02 · TILT</div><h3>Lean to move</h3><p>Speed up the back two propellers and the drone tips forward. Now some of the push points backwards, so it flies forwards.</p></div>
+        <div class="stage"><div class="k">03 · TURN</div><h3>Twist to turn</h3><p>Every spinning propeller twists the drone the opposite way. Two spin clockwise and two anticlockwise, so the twists cancel. Speed up one pair and the drone turns.</p></div>
+        <div class="stage"><div class="k">04 · BALANCE</div><h3>A tiny pilot inside</h3><p>A small computer called a flight controller checks the drone's angle hundreds of times a second and adjusts each motor to keep it level.</p></div>
+      </div>
+      <p class="big-idea"><b>The big idea:</b> pushing air down pushes the drone up. Everything else, from flying forwards to turning round, comes from making some propellers spin a bit faster than the others.</p>
+    </section>
+
+    <section class="signup" id="signup">
+      <div>
+        <h2>Landed it? There's a whole hangar of these.</h2>
+        <p>We make new machines your child can fly, start and break. Jet engines, solar panels, drones, rockets. We'll email you when the next one is ready.</p>
+        <p class="fine">No spam. Unsubscribe in one click.</p>
+      </div>
+      <div class="form-box">
+        <iframe id="tallyForm" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Get the next Ari machine"></iframe>
+      </div>
+    </section>
+
+    <section class="next">
+      <h2>More machines</h2>
+      <p>Each one starts with a question a curious kid would ask.</p>
+      <div class="figs">
+        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
+        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
+        <a class="fig" href="/toilet.html"><span class="tag go">Play</span><div class="no">FIG. 02</div><h3>The toilet</h3><p>Why does it stop filling by itself?</p></a>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+      </div>
+    </section>
+
+    <section class="why">
+      <h2>Why parents like it</h2>
+      <p>Built for children aged roughly 7 to 12.</p>
+      <div class="why-grid">
+        <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
+        <div class="why-item"><h3>They fly it, not watch it</h3><p>Nothing happens unless your child makes it happen: lift, tilt, turn, land, break.</p></div>
+        <div class="why-item"><h3>No ads. No accounts.</h3><p>Children don't sign up for anything. Only you get the email, and only if you ask for it.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari</div>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== Sign-up form =====================
+  var params = new URLSearchParams(location.search);
+  var src = { object: 'drone' };
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ref'].forEach(function (k) { if (params.get(k)) src[k] = params.get(k); });
+  var stats = { interactions: 0 };
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'drone' }); } catch (e) {} }
+  function loadForm() {
+    var q = new URLSearchParams({ alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1' });
+    Object.keys(src).forEach(function (k) { q.set(k, src[k]); });
+    q.set('interactions', String(stats.interactions));
+    q.set('missions', String(M.filter(Boolean).length));
+    var f = document.getElementById('tallyForm');
+    f.setAttribute('data-tally-src', 'https://tally.so/embed/q45EaG?' + q.toString());
+    if (window.Tally) window.Tally.loadEmbeds(); else f.src = f.getAttribute('data-tally-src');
+  }
+  var formLoaded = false;
+  var io = new IntersectionObserver(function (e) { if (!formLoaded && e[0].isIntersecting) { formLoaded = true; loadForm(); io.disconnect(); } }, { rootMargin: '200px' });
+  io.observe(document.getElementById('signup'));
+
+  // ===================== Physics constants =====================
+  var G = 9.81, MASS = 1.2, ARM = 0.35, TMAX = 6.0, KQ = 0.35, IYAW = 0.03, YAW_DAMP = 2.2;
+  var HOVER_U = Math.sqrt(MASS * G / (4 * TMAX));        // ≈ 0.70
+  var PAD = { x: 0, z: 14, r: 1.6 };
+  // Motors: front-left, front-right, back-right, back-left. Body: x right, z forward.
+  // spin: +1 clockwise (seen from above), -1 anticlockwise. Diagonal pairs share a direction.
+  var MOTORS = [
+    { name: 'FL', x: -ARM, z: ARM, spin: 1 },
+    { name: 'FR', x: ARM, z: ARM, spin: -1 },
+    { name: 'BR', x: ARM, z: -ARM, spin: 1 },
+    { name: 'BL', x: -ARM, z: -ARM, spin: -1 }
+  ];
+
+  var D, M = [false, false, false, false], flags = { same: false, cut: false };
+  function resetDrone() {
+    D = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, yaw: 0, yawRate: 0, pitch: 0, roll: 0, pRate: 0, rRate: 0,
+          u: [0, 0, 0, 0], ang: [0, 1, 2, 3], crashed: false, landed: true, turned: 0, maxH: 0, flipping: false, crashT: 0 };
+  }
+  resetDrone();
+  var input = { climb: 0, yaw: 0, fwd: 0, right: 0 };
+
+  function spinOf(i) { return flags.same ? 1 : MOTORS[i].spin; }
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+
+  // ===================== Flight controller + physics =====================
+  var lastDiff = [0, 0, 0, 0];
+  function step(dt) {
+    if (D.crashed) {
+      D.u = D.u.map(function (u) { return u * Math.pow(0.02, dt); });
+      D.vx *= 0.9; D.vz *= 0.9; D.yawRate *= Math.pow(0.1, dt); D.yaw += D.yawRate * dt;
+      return;
+    }
+    var onGround = D.y <= 0.001;
+    // --- collective (altitude-rate hold) ---
+    var targetVy = input.climb * 3.2;
+    if (onGround && input.climb <= 0.05) targetVy = -1;
+    var tiltCos = Math.cos(D.pitch) * Math.cos(D.roll);
+    var coll = HOVER_U / Math.sqrt(Math.max(0.3, tiltCos)) + 0.09 * (targetVy - D.vy);
+    if (onGround && input.climb <= 0.05) coll = Math.min(coll, input.climb > 0 ? coll : 0.18);
+    coll = clamp(coll, 0, 0.98);
+    // --- attitude: target tilt from right stick (flight controller holds the angle) ---
+    var maxTilt = 0.42;
+    var tP = input.fwd * maxTilt, tR = input.right * maxTilt;
+    if (onGround) { tP = 0; tR = 0; }
+    var dP = clamp(0.32 * (tP - D.pitch) - 0.05 * D.pRate, -0.16, 0.16);
+    var dR = clamp(0.32 * (tR - D.roll) - 0.05 * D.rRate, -0.16, 0.16);
+    // --- yaw: controller assumes the normal CW/CCW layout ---
+    var targetYawRate = input.yaw * 2.6;
+    var dY = clamp(0.07 * (targetYawRate - D.yawRate), -0.14, 0.14);
+    var want = [0, 0, 0, 0];
+    for (var i = 0; i < 4; i++) {
+      var m = MOTORS[i];
+      var front = m.z > 0 ? 1 : -1, right = m.x > 0 ? 1 : -1;
+      // nose down (pitch>0) needs back motors faster; roll right needs left motors faster
+      var mix = coll - front * dP - right * dR + (-m.spin) * dY;   // speeding up anticlockwise props turns the body clockwise
+      want[i] = clamp(mix, 0, 1);
+    }
+    if (flags.cut) want[1] = 0;
+    for (i = 0; i < 4; i++) { D.u[i] += (want[i] - D.u[i]) * Math.min(1, dt * 18); lastDiff[i] = want[i] - coll; }
+
+    // --- forces and torques from actual motor speeds ---
+    var T = D.u.map(function (u) { return TMAX * u * u; });
+    var lift = T[0] + T[1] + T[2] + T[3];
+    var yawTorque = 0;
+    for (i = 0; i < 4; i++) yawTorque += -spinOf(i) * KQ * D.u[i] * D.u[i];   // body twists opposite to the propeller
+    D.yawRate += (yawTorque / IYAW - YAW_DAMP * D.yawRate) * dt;
+    if (onGround && lift < MASS * G * 0.95) D.yawRate *= Math.pow(0.001, dt);
+    D.yaw += D.yawRate * dt;
+    D.turned += Math.abs(D.yawRate * dt) * (flags.same ? 0 : 1);
+
+    // pitch/roll: torques from thrust differences; the controller damps them
+    var pTorque = ((T[2] + T[3]) - (T[0] + T[1])) * ARM;   // back stronger -> nose down
+    var rTorque = ((T[0] + T[3]) - (T[1] + T[2])) * ARM;   // left stronger -> roll right
+    D.pRate += (pTorque / 0.025 - 6 * D.pRate) * dt; D.rRate += (rTorque / 0.025 - 6 * D.rRate) * dt;
+    if (onGround && lift < MASS * G) { D.pRate = 0; D.rRate = 0; D.pitch *= 0.8; D.roll *= 0.8; }
+    D.pitch += D.pRate * dt; D.roll += D.rRate * dt;
+    if (Math.abs(D.pitch) > 1.2 || Math.abs(D.roll) > 1.2) D.flipping = true;
+
+    // translation
+    var cp = Math.cos(D.pitch), sp = Math.sin(D.pitch), cr = Math.cos(D.roll), sr = Math.sin(D.roll);
+    var ay = lift * cp * cr / MASS - G - 0.35 * D.vy;
+    var hF = lift * sp / MASS, hR = lift * sr / MASS;              // horizontal push in body frame
+    var fx = Math.sin(D.yaw), fz = Math.cos(D.yaw), rx = Math.cos(D.yaw), rz = -Math.sin(D.yaw);
+    var ax = hF * fx + hR * rx - 0.45 * D.vx, az = hF * fz + hR * rz - 0.45 * D.vz;
+    D.vx += ax * dt; D.vz += az * dt; D.vy += ay * dt;
+    D.x += D.vx * dt; D.z += D.vz * dt; D.y += D.vy * dt;
+    // soft boundary
+    var LIM = 30;
+    if (Math.abs(D.x) > LIM) { D.vx -= Math.sign(D.x) * 4 * dt; }
+    if (D.z > LIM + 14 || D.z < -LIM) { D.vz -= Math.sign(D.z - 7) * 4 * dt; }
+    if (D.y > 28) { D.vy = Math.min(D.vy, 0); D.y = 28; }
+    // ground
+    if (D.y <= 0) {
+      var impact = -D.vy;
+      D.y = 0; D.vy = Math.max(0, D.vy);
+      if (impact > 6 || D.flipping) { D.crashed = true; D.crashT = 0; track('crash'); }
+      D.vx *= Math.pow(0.02, dt); D.vz *= Math.pow(0.02, dt);
+      D.landed = true;
+    } else D.landed = false;
+    D.maxH = Math.max(D.maxH, D.y);
+    for (i = 0; i < 4; i++) D.ang[i] += spinOf(i) * D.u[i] * 60 * dt;
+  }
+
+  // ===================== Canvas setup =====================
+  var cv = document.getElementById('scene'), ctx = cv.getContext('2d');
+  var tv = document.getElementById('topview'), tctx = tv.getContext('2d');
+  var W, H, TW, TH, dpr;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    W = cv.clientWidth; H = Math.max(240, Math.round(W * (W < 600 ? 0.78 : 0.6)));
+    cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    TW = tv.clientWidth; TH = W < 600 ? 190 : 210;
+    tv.style.height = TH + 'px'; tv.width = Math.round(TW * dpr); tv.height = Math.round(TH * dpr); tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  // ===================== 3D projection =====================
+  var cam = { x: 0, y: 2, z: -4.6 }, CAM_PITCH = 0.303, FOCAL, RS = 2.0;
+  var ca = Math.cos(CAM_PITCH), sa = Math.sin(CAM_PITCH);
+  function proj(x, y, z) {
+    var rx = x - cam.x, ry = y - cam.y, rz = z - cam.z;
+    var xc = rx, yc = ry * ca + rz * sa, zc = -ry * sa + rz * ca;
+    if (zc < 0.25) return null;
+    return [W / 2 + FOCAL * xc / zc, H * 0.5 - FOCAL * yc / zc, zc];
+  }
+  function line3(a, b) {   // clip a segment against the near plane, then draw
+    var pa = proj(a[0], a[1], a[2]), pb = proj(b[0], b[1], b[2]);
+    if (!pa && !pb) return;
+    if (!pa || !pb) {
+      var lo = 0, hi = 1, good = pa ? a : b, bad = pa ? b : a;
+      for (var k = 0; k < 18; k++) { var mid = (lo + hi) / 2, p = [good[0] + (bad[0] - good[0]) * mid, good[1] + (bad[1] - good[1]) * mid, good[2] + (bad[2] - good[2]) * mid]; if (proj(p[0], p[1], p[2])) lo = mid; else hi = mid; }
+      var q = [good[0] + (bad[0] - good[0]) * lo, good[1] + (bad[1] - good[1]) * lo, good[2] + (bad[2] - good[2]) * lo];
+      pa = proj(good[0], good[1], good[2]); pb = proj(q[0], q[1], q[2]);
+    }
+    ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke();
+  }
+  // body -> world rotation (roll about z, pitch about x, then yaw about y)
+  function bodyToWorld(px, py, pz) {
+    px *= RS; py *= RS; pz *= RS;
+    // roll right (positive) lowers the right side
+    var cr = Math.cos(-D.roll), sr = Math.sin(-D.roll);
+    var x1 = px * cr - py * sr, y1 = px * sr + py * cr, z1 = pz;
+    // pitch nose down (positive) lowers the front
+    var cp = Math.cos(D.pitch), sp = Math.sin(D.pitch);
+    var y2 = y1 * cp - z1 * sp, z2 = y1 * sp + z1 * cp, x2 = x1;
+    var cy = Math.cos(D.yaw), sy = Math.sin(D.yaw);
+    var x3 = x2 * cy + z2 * sy, z3 = -x2 * sy + z2 * cy;
+    return [D.x + x3, D.y + 0.3 + y2, D.z + z3];
+  }
+
+  // ===================== Scenery =====================
+  var TREES = [[-9, 6], [-12, 18], [10, 9], [13, 22], [-6, 28], [7, 32], [-18, 2], [18, 3], [-3, -8], [16, -6], [-15, 30], [3, 40]];
+  var particles = [], clock = 0, confetti = [];
+
+  function drawScene(dt) {
+    FOCAL = H * 0.8;
+    // chase camera (fixed orientation so turning is visible)
+    var tx = D.x, tz = D.z - 5.2, ty = Math.max(2.2, D.y + 2.3);
+    cam.x += (tx - cam.x) * Math.min(1, dt * 2.2); cam.z += (tz - cam.z) * Math.min(1, dt * 2.2); cam.y += (ty - cam.y) * Math.min(1, dt * 2.2);
+    // sky
+    var horizon = H * 0.5 - FOCAL * (sa / ca);
+    var g = ctx.createLinearGradient(0, 0, 0, Math.max(10, horizon));
+    g.addColorStop(0, '#5FB2E6'); g.addColorStop(1, '#CDEBFA');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // distant hills
+    ctx.fillStyle = '#9CCB8E';
+    ctx.beginPath(); ctx.moveTo(0, horizon);
+    for (var x = 0; x <= W; x += 12) ctx.lineTo(x, horizon - 10 - 9 * Math.sin(x / W * 6 + 0.5) - 6 * Math.sin(x / W * 15));
+    ctx.lineTo(W, horizon); ctx.fill();
+    // clouds
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    for (var c = 0; c < 4; c++) {
+      var cx = ((c * 230 + clock * 6 - cam.x * 3) % (W + 200) + W + 200) % (W + 200) - 100, cyy = horizon * (0.2 + 0.18 * (c % 2));
+      ctx.beginPath(); ctx.ellipse(cx, cyy, 46, 13, 0, 0, 6.3); ctx.ellipse(cx + 22, cyy - 8, 26, 12, 0, 0, 6.3); ctx.fill();
+    }
+    // ground
+    var gg = ctx.createLinearGradient(0, horizon, 0, H);
+    gg.addColorStop(0, '#8FCB7C'); gg.addColorStop(1, '#5FA855');
+    ctx.fillStyle = gg; ctx.fillRect(0, horizon, W, H - horizon);
+    // grid (mown stripes)
+    ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1;
+    var gx0 = Math.round(cam.x / 2) * 2, gz0 = Math.round(cam.z / 2) * 2;
+    for (var gx = gx0 - 40; gx <= gx0 + 40; gx += 2) line3([gx, 0, gz0 - 2], [gx, 0, gz0 + 70]);
+    for (var gz = gz0; gz <= gz0 + 70; gz += 2) line3([gx0 - 40, 0, gz], [gx0 + 40, 0, gz]);
+    // pads
+    drawPad(0, 0, 1.2, '#D7DBE8', '#8A90B5', 'START');
+    drawPad(PAD.x, PAD.z, PAD.r, '#FF8C42', '#B9481C', 'H');
+    // trees behind the drone
+    var front = [];
+    TREES.forEach(function (t) { if (t[1] > D.z) drawTree(t[0], t[1]); else front.push(t); });
+    // shadow
+    var sp = proj(D.x, 0, D.z);
+    if (sp) {
+      var sr = Math.max(4, FOCAL * 0.75 / sp[2]);
+      ctx.fillStyle = 'rgba(30,50,30,' + (0.35 * Math.max(0.15, 1 - D.y / 18)) + ')';
+      ctx.beginPath(); ctx.ellipse(sp[0], sp[1], sr, sr * 0.35, 0, 0, 6.3); ctx.fill();
+    }
+    // downwash particles
+    if (!D.crashed) for (var i = 0; i < 4; i++) {
+      var amt = D.u[i] * D.u[i];
+      if (Math.random() < amt * 2.2) {
+        var m = MOTORS[i], p0 = bodyToWorld(m.x + (Math.random() - 0.5) * 0.2, 0.0, m.z + (Math.random() - 0.5) * 0.2);
+        var dn = bodyToWorld(m.x, -1, m.z), base = bodyToWorld(m.x, 0, m.z);
+        particles.push({ x: p0[0], y: p0[1], z: p0[2], vx: (dn[0] - base[0]) * 5 * amt + D.vx * 0.3, vy: (dn[1] - base[1]) * 5 * amt, vz: (dn[2] - base[2]) * 5 * amt + D.vz * 0.3, life: 0.5 });
+      }
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.6;
+    for (i = particles.length - 1; i >= 0; i--) {
+      var q = particles[i]; q.life -= dt;
+      if (q.life <= 0) { particles.splice(i, 1); continue; }
+      q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt;
+      if (q.y < 0) { q.y = 0; q.vy = 0; q.vx *= 1.5; q.vz *= 1.5; }
+      var a = proj(q.x, q.y, q.z), b = proj(q.x - q.vx * 0.05, q.y - q.vy * 0.05, q.z - q.vz * 0.05);
+      if (a && b) { ctx.globalAlpha = q.life * 1.6; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+    }
+    ctx.globalAlpha = 1;
+    drawDrone();
+    front.forEach(function (t) { drawTree(t[0], t[1]); });
+    // height marker line
+    if (D.y > 0.3 && sp) {
+      var dp = proj(D.x, D.y + 0.2, D.z);
+      if (dp) { ctx.setLineDash([4, 4]); ctx.strokeStyle = 'rgba(20,30,60,.35)'; ctx.beginPath(); ctx.moveTo(sp[0], sp[1]); ctx.lineTo(dp[0], dp[1]); ctx.stroke(); ctx.setLineDash([]); }
+    }
+    // pad arrow hint
+    if (M[0] && M[1] && !M[2]) {
+      var pp = proj(PAD.x, 2.6 + Math.sin(clock * 4) * 0.3, PAD.z);
+      if (pp) { ctx.fillStyle = '#FF8C42'; ctx.beginPath(); ctx.moveTo(pp[0] - 9, pp[1] - 12); ctx.lineTo(pp[0] + 9, pp[1] - 12); ctx.lineTo(pp[0], pp[1]); ctx.closePath(); ctx.fill(); }
+    }
+    // confetti
+    for (i = confetti.length - 1; i >= 0; i--) {
+      var cf = confetti[i]; cf.vy += 260 * dt; cf.x += cf.vx * dt; cf.y += cf.vy * dt; cf.r += cf.vr * dt;
+      if (cf.y > H + 10) { confetti.splice(i, 1); continue; }
+      ctx.save(); ctx.translate(cf.x, cf.y); ctx.rotate(cf.r); ctx.fillStyle = cf.col; ctx.fillRect(-4, -2, 8, 4); ctx.restore();
+    }
+    if (D.crashed) {
+      ctx.font = '700 ' + (W < 560 ? 18 : 24) + 'px Fredoka, sans-serif'; ctx.textAlign = 'center';
+      ctx.fillStyle = 'rgba(25,28,48,.75)'; ctx.fillRect(W / 2 - 110, H * 0.12 - 24, 220, 36);
+      ctx.fillStyle = '#FFB0A0'; ctx.fillText('CRASHED · tap Reset', W / 2, H * 0.12);
+    }
+  }
+
+  function drawPad(x, z, r, fill, edge, label) {
+    var pts = [];
+    for (var k = 0; k < 28; k++) { var a = k / 28 * Math.PI * 2, p = proj(x + Math.cos(a) * r, 0.01, z + Math.sin(a) * r); if (!p) return; pts.push(p); }
+    ctx.fillStyle = fill; ctx.strokeStyle = edge; ctx.lineWidth = 2;
+    ctx.beginPath(); pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.closePath(); ctx.fill(); ctx.stroke();
+    var c = proj(x, 0.01, z); if (!c) return;
+    ctx.fillStyle = label === 'H' ? '#FFFFFF' : '#5D6386';
+    ctx.font = '700 ' + Math.max(8, FOCAL * (label === 'H' ? 0.9 : 0.35) / c[2]) + 'px Fredoka, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.save(); ctx.translate(c[0], c[1]); ctx.scale(1, 0.45); ctx.fillText(label, 0, 0); ctx.restore(); ctx.textBaseline = 'alphabetic';
+  }
+  function drawTree(x, z) {
+    var b = proj(x, 0, z), t = proj(x, 3.4, z); if (!b || !t) return;
+    var w = FOCAL * 1.1 / b[2];
+    ctx.fillStyle = '#7A5638'; ctx.fillRect(b[0] - w * 0.08, b[1] - (b[1] - t[1]) * 0.35, w * 0.16, (b[1] - t[1]) * 0.35);
+    ctx.fillStyle = '#3F8C4A'; ctx.strokeStyle = '#1F3A24'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(t[0], t[1]); ctx.lineTo(b[0] + w * 0.55, b[1] - (b[1] - t[1]) * 0.3); ctx.lineTo(b[0] - w * 0.55, b[1] - (b[1] - t[1]) * 0.3); ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+
+  var PROP_R = 0.2;
+  function drawDrone() {
+    var parts = [];
+    var centre = bodyToWorld(0, 0, 0);
+    // arms
+    MOTORS.forEach(function (m, i) {
+      var a = bodyToWorld(0, 0, 0), b = bodyToWorld(m.x, 0, m.z), pb = proj(b[0], b[1], b[2]);
+      parts.push({ z: pb ? pb[2] : 0, draw: function () {
+        var pa = proj(a[0], a[1], a[2]), pbb = proj(b[0], b[1], b[2]); if (!pa || !pbb) return;
+        ctx.strokeStyle = '#1B1E33'; ctx.lineWidth = Math.max(2, FOCAL * 0.05 / pa[2]); ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pbb[0], pbb[1]); ctx.stroke();
+        var mr = Math.max(2.5, FOCAL * 0.05 / pbb[2]);
+        ctx.fillStyle = m.z > 0 ? '#FF4D3D' : '#E9ECF5'; ctx.beginPath(); ctx.arc(pbb[0], pbb[1], mr, 0, 6.3); ctx.fill();
+        ctx.strokeStyle = '#11132A'; ctx.lineWidth = 1.2; ctx.stroke();
+      } });
+      // propeller disc + blades
+      var hub = bodyToWorld(m.x, 0.06, m.z), ph = proj(hub[0], hub[1], hub[2]);
+      parts.push({ z: ph ? ph[2] - 0.01 : 0, draw: function () { drawProp(i, m); } });
+    });
+    // body
+    var pc = proj(centre[0], centre[1], centre[2]);
+    parts.push({ z: pc ? pc[2] + 0.005 : 0, draw: function () {
+      var corners = [[-0.12, 0.04, 0.17], [0.12, 0.04, 0.17], [0.12, 0.04, -0.17], [-0.12, 0.04, -0.17]].map(function (p) { var w = bodyToWorld(p[0], p[1], p[2]); return proj(w[0], w[1], w[2]); });
+      if (corners.some(function (p) { return !p; })) return;
+      ctx.fillStyle = '#F4F1EC'; ctx.strokeStyle = '#11132A'; ctx.lineWidth = 2;
+      ctx.beginPath(); corners.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.closePath(); ctx.fill(); ctx.stroke();
+      var cam1 = bodyToWorld(0, 0.0, 0.2), pcm = proj(cam1[0], cam1[1], cam1[2]);
+      if (pcm) { ctx.fillStyle = '#2C3157'; ctx.beginPath(); ctx.arc(pcm[0], pcm[1], Math.max(2, FOCAL * 0.035 / pcm[2]), 0, 6.3); ctx.fill(); }
+      var nose = bodyToWorld(0, 0.05, 0.12), pn = proj(nose[0], nose[1], nose[2]);
+      if (pn) { ctx.fillStyle = '#FF8C42'; ctx.beginPath(); ctx.arc(pn[0], pn[1], Math.max(1.5, FOCAL * 0.025 / pn[2]), 0, 6.3); ctx.fill(); }
+    } });
+    parts.sort(function (a, b) { return b.z - a.z; });
+    parts.forEach(function (p) { p.draw(); });
+  }
+  function propColour(i) { return spinOf(i) > 0 ? [255, 140, 66] : [90, 160, 255]; }
+  function drawProp(i, m) {
+    var u = D.u[i], col = propColour(i);
+    var pts = [];
+    for (var k = 0; k < 20; k++) { var a = k / 20 * Math.PI * 2, w = bodyToWorld(m.x + Math.cos(a) * PROP_R, 0.06, m.z + Math.sin(a) * PROP_R), p = proj(w[0], w[1], w[2]); if (!p) return; pts.push(p); }
+    var blur = clamp((u - 0.15) * 1.6, 0, 0.85);
+    ctx.fillStyle = 'rgba(' + col.join(',') + ',' + (0.12 + 0.35 * blur) + ')';
+    ctx.strokeStyle = 'rgba(' + col.join(',') + ',' + (0.5 + 0.4 * blur) + ')'; ctx.lineWidth = 1.4;
+    ctx.beginPath(); pts.forEach(function (p, k) { if (k) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // blades (visual spin capped so they read as spinning, not strobing)
+    var ang = D.ang[i];
+    ctx.strokeStyle = 'rgba(30,34,60,' + (0.9 - 0.6 * blur) + ')'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    for (var bl = 0; bl < 2; bl++) {
+      var a2 = ang + bl * Math.PI;
+      var e1 = bodyToWorld(m.x + Math.cos(a2) * PROP_R * 0.95, 0.065, m.z + Math.sin(a2) * PROP_R * 0.95), e0 = bodyToWorld(m.x, 0.065, m.z);
+      var p1 = proj(e1[0], e1[1], e1[2]), p0 = proj(e0[0], e0[1], e0[2]);
+      if (p1 && p0) { ctx.beginPath(); ctx.moveTo(p0[0], p0[1]); ctx.lineTo(p1[0], p1[1]); ctx.stroke(); }
+    }
+  }
+
+  // ===================== Top view =====================
+  function drawTop(dt) {
+    var c = tctx, w = TW, h = TH;
+    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
+    var cx = Math.min(w * 0.3, 150), cy = h / 2, s = Math.min(h * 0.27, 60);
+    // arms + body
+    c.strokeStyle = '#3B4268'; c.lineWidth = 6; c.lineCap = 'round';
+    MOTORS.forEach(function (m) { c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx + (m.x / ARM) * s, cy - (m.z / ARM) * s); c.stroke(); });
+    c.fillStyle = '#E9ECF5'; c.strokeStyle = '#11132A'; c.lineWidth = 2;
+    c.beginPath(); if (c.roundRect) c.roundRect(cx - 12, cy - 17, 24, 34, 6); else c.rect(cx - 12, cy - 17, 24, 34); c.fill(); c.stroke();
+    c.fillStyle = '#FF8C42'; c.beginPath(); c.moveTo(cx - 6, cy - 10); c.lineTo(cx + 6, cy - 10); c.lineTo(cx, cy - 18); c.closePath(); c.fill();
+    c.font = '600 9px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillStyle = '#9EA3C4';
+    c.fillText('FRONT', cx, cy - s - 18);
+    // motors
+    var twist = 0;
+    MOTORS.forEach(function (m, i) {
+      var mx = cx + (m.x / ARM) * s, my = cy - (m.z / ARM) * s, u = D.u[i], col = propColour(i), sp = spinOf(i);
+      twist += -sp * u * u;
+      var r = s * 0.48;
+      c.fillStyle = 'rgba(' + col.join(',') + ',' + (0.15 + 0.35 * u) + ')'; c.strokeStyle = 'rgba(' + col.join(',') + ',.95)'; c.lineWidth = 2;
+      c.beginPath(); c.arc(mx, my, r, 0, 6.3); c.fill(); c.stroke();
+      // spin arrow
+      var a0 = D.ang[i] * 0.25;
+      c.strokeStyle = 'rgba(' + col.join(',') + ',1)'; c.lineWidth = 2.5;
+      c.beginPath(); c.arc(mx, my, r * 0.68, a0, a0 + 4.2 * 1, sp < 0); c.stroke();
+      var ae = a0 + (sp > 0 ? 4.2 : -4.2), axp = mx + Math.cos(ae) * r * 0.68, ayp = my + Math.sin(ae) * r * 0.68;
+      var tx = -Math.sin(ae) * (sp > 0 ? 1 : -1), ty = Math.cos(ae) * (sp > 0 ? 1 : -1);
+      c.fillStyle = 'rgba(' + col.join(',') + ',1)';
+      c.beginPath(); c.moveTo(axp + tx * 7, ayp + ty * 7); c.lineTo(axp - ty * 5, ayp + tx * 5); c.lineTo(axp + ty * 5, ayp - tx * 5); c.closePath(); c.fill();
+      c.fillStyle = '#FFFFFF'; c.font = '700 11px "IBM Plex Mono", monospace';
+      c.fillText(Math.round(u * 100) + '%', mx, my + 4);
+    });
+    // twist meter
+    var tw = twist * KQ / 0.2;   // normalised
+    var bx = cx + s + s * 0.55 + 18, bw = w - bx - 14;
+    c.textAlign = 'left'; c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4';
+    c.fillText(bw < 200 ? 'TWIST ON THE DRONE' : 'PROPELLER TWIST ON THE DRONE', bx, 26);
+    c.fillStyle = '#2E3454'; c.fillRect(bx, 36, bw, 14);
+    c.fillStyle = '#FFFFFF'; c.fillRect(bx + bw / 2 - 1, 32, 2, 22);
+    var tv2 = clamp(tw, -1, 1);
+    c.fillStyle = flags.same ? '#FF4D3D' : (Math.abs(tw) > 0.08 ? '#FFC845' : '#6FD3A8');
+    if (tv2 > 0) c.fillRect(bx + bw / 2, 38, bw / 2 * tv2, 10); else c.fillRect(bx + bw / 2 + bw / 2 * tv2, 38, -bw / 2 * tv2, 10);
+    c.fillStyle = '#9EA3C4'; c.font = '600 ' + (bw < 200 ? 12 : 10) + 'px "IBM Plex Mono", monospace';
+    c.fillText(bw < 200 ? '↺' : '↺ anticlockwise', bx, 66); c.textAlign = 'right'; c.fillText(bw < 200 ? '↻' : 'clockwise ↻', bx + bw, 66);
+    c.textAlign = 'left'; c.font = '700 ' + (w < 420 ? 11.5 : 13) + 'px Nunito, sans-serif';
+    var msg, col2;
+    if (flags.same && D.u[0] > 0.2) { msg = 'All four twist the same way. Nothing cancels!'; col2 = '#FFB0A0'; }
+    else if (Math.abs(D.yawRate) > 0.3 && !flags.same) { msg = 'One pair is faster, so the drone turns.'; col2 = '#FFE08A'; }
+    else { msg = 'Two spin each way, so the twists cancel.'; col2 = '#7CF0BC'; }
+    wrapText(c, msg, bx, 92, bw, 16, col2);
+    // legend
+    c.font = '600 10px "IBM Plex Mono", monospace';
+    c.fillStyle = 'rgb(255,140,66)'; c.fillText('● clockwise', bx, h - 34);
+    c.fillStyle = 'rgb(90,160,255)'; c.fillText('● anticlockwise', bx, h - 18);
+  }
+  function wrapText(c, text, x, y, maxW, lh, col) {
+    var words = text.split(' '), line = ''; c.fillStyle = col;
+    words.forEach(function (wd) { var t = line ? line + ' ' + wd : wd; if (c.measureText(t).width > maxW && line) { c.fillText(line, x, y); y += lh; line = wd; } else line = t; });
+    if (line) c.fillText(line, x, y);
+  }
+
+  // ===================== Gauges =====================
+  function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
+  function makeGauge(id, label, max, zone, zoneCol, needleCol) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
+    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
+    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+    el.innerHTML = html;
+    return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
+  }
+  var gH = makeGauge('gHeight', 'HEIGHT', 30, null, null, '#6FD3A8');
+  var gS = makeGauge('gSpeed', 'SPEED', 60, null, null, '#FFC845');
+  var gT = makeGauge('gTwist', 'SPIN', 720, [0.5, 1], '#FF4D3D', '#FF8C42');
+  function setGauge(g, v, fmt, dt) {
+    g.shown += (v - g.shown) * Math.min(1, dt * 8);
+    var f = clamp(g.shown / g.max, 0, 1), deg = g.d0 + (g.d1 - g.d0) * f;
+    g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.val.textContent = fmt(g.shown);
+  }
+
+  // ===================== Sound (off by default) =====================
+  var AC = null, snd = { on: false, osc: [] };
+  function initAudio() {
+    if (AC || !snd.on) return;
+    try {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      snd.master = AC.createGain(); snd.master.gain.value = 0.35; snd.master.connect(AC.destination);
+      snd.filter = AC.createBiquadFilter(); snd.filter.type = 'lowpass'; snd.filter.frequency.value = 2600; snd.filter.connect(snd.master);
+      for (var i = 0; i < 4; i++) {
+        var o = AC.createOscillator(); o.type = 'sawtooth'; var g = AC.createGain(); g.gain.value = 0;
+        o.connect(g); g.connect(snd.filter); o.start(); snd.osc.push({ o: o, g: g });
+      }
+    } catch (e) { AC = null; }
+  }
+  function stepAudio() {
+    if (!AC) return; var t = AC.currentTime;
+    for (var i = 0; i < 4; i++) {
+      var u = D.u[i];
+      snd.osc[i].o.frequency.setTargetAtTime(60 + u * 340 + i * 3, t, 0.05);
+      snd.osc[i].g.gain.setTargetAtTime(snd.on ? 0.06 * u : 0, t, 0.05);
+    }
+  }
+
+  // ===================== Ari =====================
+  var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), lastMsg = '';
+  function say(html) { if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop'); }
+  var mEls = Array.prototype.slice.call(document.querySelectorAll('.mission'));
+  function complete(i) {
+    if (M[i]) return; M[i] = true; track('mission_' + (i + 1)); renderMissions();
+    if (i === 2) for (var c = 0; c < 100; c++) confetti.push({ x: W * Math.random(), y: -10 - Math.random() * 80, vx: (Math.random() - 0.5) * 120, vy: Math.random() * 60, r: Math.random() * 6, vr: (Math.random() - 0.5) * 10, col: ['#FF8C42', '#6FD3A8', '#FFC845', '#8FD3F5', '#FF4D3D', '#E9E4F5'][c % 6] });
+  }
+  function renderMissions() { var now = M.indexOf(false); mEls.forEach(function (el, i) { el.classList.toggle('done', M[i]); el.classList.toggle('now', i === now); }); }
+  var msgHold = { text: '', until: 0 };
+  function hold(html, secs) { msgHold = { text: html, until: clock + secs }; }
+  function coach() {
+    if (clock < msgHold.until) return say(msgHold.text);
+    var speed = Math.hypot(D.vx, D.vz);
+    if (D.crashed && flags.cut) return say('One motor stopped and the drone <b>flipped over</b>. With only three propellers, one corner has no push, and the flight controller can\'t balance it. Tap <b>Reset</b>.');
+    if (D.crashed) return say('<b>Crunch!</b> That was a hard landing. Real drones break like that too. Tap <b>Reset</b> and come down gently.');
+    if (flags.same && Math.abs(D.yawRate) > 2) return say('It\'s <b>spinning out of control!</b> Every propeller twists the drone the opposite way to its own spin. Normally two spin each way, so the twists cancel. Now all four twist the same way, and nothing can stop it.');
+    if (flags.same) return say('All four propellers now spin the <b>same way</b>. Guess what happens, then take off and find out.');
+    if (M[2] && !M[3]) return say('<b>Perfect landing!</b> Now be a scientist. Why do two propellers spin backwards? Tap <b>Spin all props the same way</b>, guess what will happen, then take off.');
+    if (D.landed && D.y < 0.01 && !M[0]) {
+      if (input.climb > 0.1) return say('The propellers are speeding up. When they push enough air down, the drone will lift off. <b>Keep pushing up.</b>');
+      return say('This drone has no wings, just four propellers. <b>Push the left stick up</b> to spin them faster.');
+    }
+    if (M[0] && !M[1]) {
+      if (Math.abs(input.yaw) > 0.2) return say('Turning! There\'s no rudder. The drone speeds up the two propellers that spin one way and slows the other two. <b>Watch the top view.</b>');
+      return say('You\'re flying! The propellers push air down, so the air pushes the drone up. Now <b>turn all the way round</b>: left stick, left or right.');
+    }
+    if (M[1] && !M[2]) {
+      if (Math.abs(input.fwd) > 0.2 || Math.abs(input.right) > 0.2) return say('To fly forwards, the back propellers speed up for a moment and <b>tip the drone forwards</b>. Now some of the push points backwards, so it moves. Head for the <b>orange pad</b>.');
+      return say('Full circle! Now fly to the <b>orange pad</b> with the right stick, and come down gently with the left stick.');
+    }
+    if (D.y > 0.5 && speed > 6) return say('Whoosh! Tilting further points more of the push backwards, so you go faster.');
+    return say('Fly anywhere you like. Try <b>Cut one motor</b> while you\'re high up, if you dare.');
+  }
+
+  // ===================== Controls =====================
+  function setupPad(id, onMove) {
+    var pad = document.getElementById(id), knob = pad.querySelector('.knob'), active = null;
+    function move(e) {
+      var r = pad.getBoundingClientRect(), R = r.width / 2 - 20;
+      var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2), d = Math.hypot(dx, dy);
+      if (d > R) { dx *= R / d; dy *= R / d; }
+      knob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      onMove(dx / R, -dy / R);
+    }
+    pad.addEventListener('pointerdown', function (e) { e.preventDefault(); active = e.pointerId; pad.setPointerCapture(e.pointerId); move(e); stats.interactions++; initAudio(); if (AC && AC.state === 'suspended') AC.resume(); });
+    pad.addEventListener('pointermove', function (e) { if (e.pointerId === active) move(e); });
+    function end(e) { if (e.pointerId !== active) return; active = null; knob.style.transform = ''; onMove(0, 0); }
+    pad.addEventListener('pointerup', end); pad.addEventListener('pointercancel', end);
+    return { set: function (x, y) { var r = pad.getBoundingClientRect(), R = r.width / 2 - 20; knob.style.transform = (x || y) ? 'translate(' + x * R + 'px,' + -y * R + 'px)' : ''; } };
+  }
+  var padL = setupPad('padL', function (x, y) { input.yaw = Math.abs(x) > 0.12 ? x : 0; input.climb = Math.abs(y) > 0.12 ? y : 0; });
+  var padR = setupPad('padR', function (x, y) { input.right = Math.abs(x) > 0.12 ? x : 0; input.fwd = Math.abs(y) > 0.12 ? y : 0; });
+  var keys = {};
+  function keyInput() {
+    if (!Object.keys(keys).some(function (k) { return keys[k]; })) return;
+    input.climb = (keys.KeyW ? 1 : 0) - (keys.KeyS ? 1 : 0); input.yaw = (keys.KeyD ? 1 : 0) - (keys.KeyA ? 1 : 0);
+    input.fwd = (keys.ArrowUp ? 1 : 0) - (keys.ArrowDown ? 1 : 0); input.right = (keys.ArrowRight ? 1 : 0) - (keys.ArrowLeft ? 1 : 0);
+    padL.set(input.yaw, input.climb); padR.set(input.right, input.fwd);
+  }
+  window.addEventListener('keydown', function (e) {
+    if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].indexOf(e.code) < 0) return;
+    var r = cv.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) return;
+    e.preventDefault(); keys[e.code] = true; keyInput();
+  });
+  window.addEventListener('keyup', function (e) { if (keys[e.code]) { keys[e.code] = false; keyInput(); if (!Object.keys(keys).some(function (k) { return keys[k]; })) { input.climb = input.yaw = input.fwd = input.right = 0; padL.set(0, 0); padR.set(0, 0); } } });
+
+  var sameBtn = document.getElementById('sameBtn'), cutBtn = document.getElementById('cutBtn'), resetBtn = document.getElementById('resetBtn');
+  var slowBtn = document.getElementById('slowBtn'), soundBtn = document.getElementById('soundBtn');
+  var slow = false;
+  sameBtn.addEventListener('click', function () {
+    flags.same = !flags.same; stats.interactions++;
+    sameBtn.setAttribute('aria-pressed', String(flags.same)); sameBtn.textContent = flags.same ? 'Put the props back' : 'Spin all props the same way';
+    track(flags.same ? 'same_on' : 'same_off');
+  });
+  cutBtn.addEventListener('click', function () {
+    if (D.y < 1) { hold('Fly up high first, then cut a motor. <b>Push the left stick up.</b>', 3); return; }
+    flags.cut = true; stats.interactions++; cutBtn.setAttribute('aria-pressed', 'true'); complete(3); track('cut_motor');
+  });
+  resetBtn.addEventListener('click', function () {
+    resetDrone(); flags.cut = false; cutBtn.setAttribute('aria-pressed', 'false'); particles = []; stats.interactions++;
+  });
+  slowBtn.addEventListener('click', function () { slow = !slow; slowBtn.setAttribute('aria-pressed', String(slow)); });
+  soundBtn.addEventListener('click', function () {
+    snd.on = !snd.on; soundBtn.setAttribute('aria-pressed', String(snd.on)); soundBtn.textContent = snd.on ? 'Sound on' : 'Sound off';
+    if (snd.on) { initAudio(); if (AC && AC.state === 'suspended') AC.resume(); }
+  });
+
+  // ===================== Loop =====================
+  var last = performance.now();
+  function frame(now) {
+    var real = Math.min(0.05, (now - last) / 1000); last = now;
+    var dt = slow ? real * 0.3 : real;
+    clock += dt;
+    var sub = 4; for (var i = 0; i < sub; i++) step(dt / sub);
+    if (D.y > 2) complete(0);
+    if (M[0] && D.turned > Math.PI * 2) complete(1);
+    if (M[0] && D.landed && !D.crashed && Math.hypot(D.x - PAD.x, D.z - PAD.z) < PAD.r && Math.hypot(D.vx, D.vz) < 1.2 && D.maxH > 1) complete(2);
+    if (flags.same && Math.abs(D.yawRate) > 3 && D.y > 0.3) complete(3);
+    drawScene(dt); drawTop(dt);
+    setGauge(gH, D.y, function (v) { return v.toFixed(1) + ' m'; }, real);
+    setGauge(gS, Math.hypot(D.vx, D.vz) * 3.6, function (v) { return Math.round(v) + ' km/h'; }, real);
+    setGauge(gT, Math.abs(D.yawRate) * 180 / Math.PI, function (v) { return Math.round(v) + '°/s'; }, real);
+    document.getElementById('padL').classList.toggle('nudge', !M[0]);
+    document.getElementById('padR').classList.toggle('nudge', M[1] && !M[2]);
+    sameBtn.classList.toggle('nudge', M[2] && !M[3] && !flags.same);
+    coach(); stepAudio();
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', resize);
+  resize(); renderMissions();
+  requestAnimationFrame(frame);
+  window.__ari = { D: function () { return D; }, input: input, flags: flags, M: M, reset: function () { resetBtn.click(); } };
+})();
+</script>
+</body>
+</html>
