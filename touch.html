@@ -372,12 +372,13 @@
   var W, H, CW, CH, dpr, P = {};
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    W = cv.clientWidth; H = Math.round(W < 600 ? Math.min(W * 1.3, 560) : Math.min(W * 0.78, 620));
+    W = Math.max(260, cv.clientWidth); H = Math.round(W < 600 ? Math.min(W * 1.3, 560) : Math.min(W * 0.78, 620));
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     CW = cc2.clientWidth; CH = W < 600 ? 180 : 210;
     cc2.style.height = CH + 'px'; cc2.width = Math.round(CW * dpr); cc2.height = Math.round(CH * dpr); cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     // phone geometry
-    var ph = H - 28, pw = Math.min(ph * 0.5, W - 24);
+    W = Math.max(W, 260);
+    var ph = H - 28, pw = Math.max(120, Math.min(ph * 0.5, W - 24));
     ph = Math.min(ph, pw * 2.0);
     P = { x: (W - pw) / 2, y: (H - ph) / 2, w: pw, h: ph, r: pw * 0.13 };
     var b = pw * 0.045;
@@ -387,7 +388,7 @@
 
   // ===================== Drawing the phone =====================
   var INK = ['#FF8C42', '#3E8EF7', '#2FBF8A', '#E8508A', '#8A5CF6'];
-  function rr(c, x, y, w, h, r) { c.beginPath(); if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
+  function rr(c, x, y, w, h, r) { c.beginPath(); w = Math.max(1, w); h = Math.max(1, h); r = Math.max(0, Math.min(r, w / 2, h / 2)); if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
   function drawPhone(dt) {
     var c = ctx;
     c.clearRect(0, 0, W, H);
