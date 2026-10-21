@@ -163,13 +163,18 @@
     .stick-box { background: var(--rig-2); border-radius: 16px; padding: 8px 8px 10px; border: 1px solid rgba(255,255,255,.05); text-align: center; }
     .stick-box .lbl { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
     .stick-box .hint { font-family: var(--mono); font-size: 9.5px; color: var(--rig-dim); margin-top: 6px; opacity: .8; }
-    .pad { position: relative; width: 132px; height: 132px; margin: 0 auto; border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, #2E3454 0 58%, #262B48 59% 100%); border: 2px solid #3B4268; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .pad { position: relative; width: 116px; height: 116px; margin: 0 auto; border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(25,28,48,.55) 0 58%, rgba(25,28,48,.42) 59% 100%); border: 2px solid rgba(255,255,255,.35); touch-action: none; user-select: none; -webkit-user-select: none; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+    .pad .arr { color: rgba(255,255,255,.75); }
+    .pad-wrap { position: absolute; bottom: 10px; z-index: 3; text-align: center; }
+    .pad-wrap.left { left: 10px; } .pad-wrap.right { right: 10px; }
+    .pad-lbl { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; color: rgba(255,255,255,.85); margin-top: 3px; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+    @media (min-width: 900px) { .pad { width: 132px; height: 132px; } .pad-wrap { bottom: 14px; } .pad-wrap.left { left: 14px; } .pad-wrap.right { right: 14px; } }
     .pad::before, .pad::after { content: ''; position: absolute; background: rgba(255,255,255,.08); }
     .pad::before { left: 50%; top: 10px; bottom: 10px; width: 2px; margin-left: -1px; }
     .pad::after { top: 50%; left: 10px; right: 10px; height: 2px; margin-top: -1px; }
     .pad .arr { position: absolute; font-family: var(--mono); font-size: 11px; color: var(--rig-dim); pointer-events: none; }
-    .knob { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%;
+    .knob { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%;
       background: radial-gradient(circle at 35% 30%, #F2F4FF, #B8BEDB 60%, #8A90B5); border: 2px solid #0F1222; box-shadow: 0 4px 0 #0F1222; pointer-events: none; z-index: 2; }
     .pad.nudge { animation: padNudge 1.4s ease-in-out infinite; }
     @keyframes padNudge { 0%,100% { box-shadow: none; } 50% { box-shadow: 0 0 0 6px rgba(255,200,69,.35); } }
@@ -208,6 +213,8 @@
             </div>
           </div>
           <canvas id="scene" aria-label="A drone hovering over a field, seen from behind"></canvas>
+          <div class="pad-wrap left"><div class="pad nudge" id="padL"><div class="knob"></div><span class="arr" style="top:3px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:3px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:5px;top:50%;transform:translateY(-50%)">↺</span><span class="arr" style="right:5px;top:50%;transform:translateY(-50%)">↻</span></div><div class="pad-lbl">UP · DOWN · TURN</div></div>
+          <div class="pad-wrap right"><div class="pad" id="padR"><div class="knob"></div><span class="arr" style="top:3px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:3px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:5px;top:50%;transform:translateY(-50%)">◀</span><span class="arr" style="right:5px;top:50%;transform:translateY(-50%)">▶</span></div><div class="pad-lbl">FLY</div></div>
         </div>
         <div class="screen">
           <div class="screen-bar">
@@ -230,19 +237,6 @@
           <div class="gauge" id="gHeight"></div>
           <div class="gauge" id="gSpeed"></div>
           <div class="gauge" id="gTwist"></div>
-        </div>
-
-        <div class="sticks">
-          <div class="stick-box">
-            <div class="lbl">UP · DOWN · TURN</div>
-            <div class="pad nudge" id="padL"><div class="knob"></div><span class="arr" style="top:4px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:4px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:6px;top:50%;transform:translateY(-50%)">↺</span><span class="arr" style="right:6px;top:50%;transform:translateY(-50%)">↻</span></div>
-            <div class="hint">keys: W S A D</div>
-          </div>
-          <div class="stick-box">
-            <div class="lbl">FLY</div>
-            <div class="pad" id="padR"><div class="knob"></div><span class="arr" style="top:4px;left:50%;transform:translateX(-50%)">▲</span><span class="arr" style="bottom:4px;left:50%;transform:translateX(-50%)">▼</span><span class="arr" style="left:6px;top:50%;transform:translateY(-50%)">◀</span><span class="arr" style="right:6px;top:50%;transform:translateY(-50%)">▶</span></div>
-            <div class="hint">keys: arrows</div>
-          </div>
         </div>
 
         <div class="ari" id="ari" aria-live="polite">
@@ -456,7 +450,7 @@
   var W, H, TW, TH, LW, LH, dpr;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    W = cv.clientWidth; H = Math.max(240, Math.round(W * (W < 600 ? 0.78 : 0.6)));
+    W = cv.clientWidth; H = Math.max(300, Math.round(W * (W < 600 ? 1.08 : 0.62)));
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     TW = cv.clientWidth; TH = W < 600 ? 190 : 210;
     tv.style.height = TH + 'px'; tv.width = Math.round(TW * dpr); tv.height = Math.round(TH * dpr); tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -471,7 +465,7 @@
     var rx = x - cam.x, ry = y - cam.y, rz = z - cam.z;
     var xc = rx, yc = ry * ca + rz * sa, zc = -ry * sa + rz * ca;
     if (zc < 0.25) return null;
-    return [W / 2 + FOCAL * xc / zc, H * 0.5 - FOCAL * yc / zc, zc];
+    return [W / 2 + FOCAL * xc / zc, H * 0.42 - FOCAL * yc / zc, zc];
   }
   function line3(a, b) {   // clip a segment against the near plane, then draw
     var pa = proj(a[0], a[1], a[2]), pb = proj(b[0], b[1], b[2]);
@@ -503,12 +497,12 @@
   var particles = [], clock = 0, confetti = [];
 
   function drawScene(dt) {
-    FOCAL = H * 0.8;
+    FOCAL = Math.min(H * 0.8, W * 0.95);
     // chase camera (fixed orientation so turning is visible)
     var tx = D.x, tz = D.z - 5.2, ty = Math.max(2.2, D.y + 2.3);
     cam.x += (tx - cam.x) * Math.min(1, dt * 2.2); cam.z += (tz - cam.z) * Math.min(1, dt * 2.2); cam.y += (ty - cam.y) * Math.min(1, dt * 2.2);
     // sky
-    var horizon = H * 0.5 - FOCAL * (sa / ca);
+    var horizon = H * 0.42 - FOCAL * (sa / ca);
     var g = ctx.createLinearGradient(0, 0, 0, Math.max(10, horizon));
     g.addColorStop(0, '#5FB2E6'); g.addColorStop(1, '#CDEBFA');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
@@ -582,13 +576,47 @@
       if (cf.y > H + 10) { confetti.splice(i, 1); continue; }
       ctx.save(); ctx.translate(cf.x, cf.y); ctx.rotate(cf.r); ctx.fillStyle = cf.col; ctx.fillRect(-4, -2, 8, 4); ctx.restore();
     }
+    drawHUD();
     if (D.crashed) {
       ctx.font = '700 ' + (W < 560 ? 18 : 24) + 'px Fredoka, sans-serif'; ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(25,28,48,.75)'; ctx.fillRect(W / 2 - 110, H * 0.12 - 24, 220, 36);
-      ctx.fillStyle = '#FFB0A0'; ctx.fillText('CRASHED · tap Reset', W / 2, H * 0.12);
+      ctx.fillStyle = 'rgba(25,28,48,.75)'; ctx.fillRect(W / 2 - 110, H * 0.22 - 24, 220, 36);
+      ctx.fillStyle = '#FFB0A0'; ctx.fillText('CRASHED · tap to reset', W / 2, H * 0.22);
     }
   }
 
+  function hintText() {
+    if (D.crashed) return '';
+    if (!M[0]) return '① Spin up the propeller test below ↓';
+    if (!M[1]) return '② Push the left stick ▲ to take off';
+    if (!M[2]) return '③ Left stick ◀ ▶ to turn all the way round';
+    if (!M[3]) return '④ Break it: try the buttons below ↓';
+    return bonus.pad ? 'Free flight' : 'Free flight: land on the orange pad';
+  }
+  function drawHUD() {
+    // hint pill (top left)
+    var t = hintText(), fs = W < 420 ? 12 : 14;
+    if (t) {
+      ctx.font = '800 ' + fs + 'px Nunito, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      var tw = ctx.measureText(t).width, px = 10, py = 10, ph = fs + 14;
+      ctx.fillStyle = 'rgba(25,28,48,.78)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(px, py, tw + 20, ph, ph / 2); else ctx.rect(px, py, tw + 20, ph); ctx.fill();
+      ctx.fillStyle = '#FFFFFF'; ctx.fillText(t, px + 10, py + ph / 2 + 1); ctx.textBaseline = 'alphabetic';
+    }
+    // motor inset (top right)
+    var s = W < 420 ? 66 : 84, x0 = W - s - 10, y0 = t ? 10 + fs + 22 : 10;
+    if (W >= 420) y0 = 10;
+    ctx.fillStyle = 'rgba(25,28,48,.78)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x0, y0, s, s + 14, 10); else ctx.rect(x0, y0, s, s + 14); ctx.fill();
+    var cx = x0 + s / 2, cy = y0 + s / 2 + 2, arm = s * 0.27;
+    ctx.strokeStyle = '#5D6386'; ctx.lineWidth = 3;
+    MOTORS.forEach(function (m) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.sign(m.x) * arm, cy - Math.sign(m.z) * arm); ctx.stroke(); });
+    MOTORS.forEach(function (m, i) {
+      var mx = cx + Math.sign(m.x) * arm, my = cy - Math.sign(m.z) * arm, col = propColour(i), u = D.u[i], r = s * 0.17;
+      ctx.fillStyle = 'rgba(' + col.join(',') + ',.2)'; ctx.beginPath(); ctx.arc(mx, my, r, 0, 6.3); ctx.fill();
+      ctx.fillStyle = 'rgba(' + col.join(',') + ',.95)'; ctx.beginPath(); ctx.moveTo(mx, my); ctx.arc(mx, my, r, -Math.PI / 2, -Math.PI / 2 + u * Math.PI * 2); ctx.closePath(); ctx.fill();
+    });
+    ctx.fillStyle = '#FF8C42'; ctx.beginPath(); ctx.moveTo(cx - 4, cy - 2); ctx.lineTo(cx + 4, cy - 2); ctx.lineTo(cx, cy - 9); ctx.closePath(); ctx.fill();
+    ctx.font = '600 8.5px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillStyle = '#C9CDE6';
+    ctx.fillText('MOTOR SPEEDS', cx, y0 + s + 9);
+  }
   function drawPad(x, z, r, fill, edge, label) {
     var pts = [];
     for (var k = 0; k < 28; k++) { var a = k / 28 * Math.PI * 2, p = proj(x + Math.cos(a) * r, 0.01, z + Math.sin(a) * r); if (!p) return; pts.push(p); }
@@ -987,6 +1015,7 @@
   resetBtn.addEventListener('click', function () {
     resetDrone(); flags.cut = false; cutBtn.setAttribute('aria-pressed', 'false'); particles = []; stats.interactions++;
   });
+  cv.addEventListener('pointerdown', function () { if (D.crashed) resetBtn.click(); });
   slowBtn.addEventListener('click', function () { slow = !slow; slowBtn.setAttribute('aria-pressed', String(slow)); });
   soundBtn.addEventListener('click', function () {
     snd.on = !snd.on; soundBtn.setAttribute('aria-pressed', String(snd.on)); soundBtn.textContent = snd.on ? 'Sound on' : 'Sound off';
