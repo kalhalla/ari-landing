@@ -700,7 +700,11 @@
     ghostT += dt;
     if (ghostT > 0.35) {
       ghostT = 0;
-      detected.forEach(function (d) { strokes.push({ col: '#3E8EF7', pts: [[d.x + (Math.random() - 0.5) * 0.03, d.y + (Math.random() - 0.5) * 0.02]] }); });
+      detected.forEach(function (d) {
+        // the phone "sees" a wobbly touch near the drop and scribbles there
+        var gx = d.x + (Math.random() - 0.5) * 0.16, gy = d.y + (Math.random() - 0.5) * 0.09;
+        strokes.push({ col: '#3E8EF7', pts: [[gx, gy], [gx + (Math.random() - 0.5) * 0.06, gy + (Math.random() - 0.5) * 0.03]] });
+      });
     }
   }
 
