@@ -19,6 +19,11 @@
       "source": "/drone",
       "destination": "/drone.html?utm_source=instagram&utm_medium=social&utm_content=drone",
       "permanent": false
+    },
+    {
+      "source": "/touch",
+      "destination": "/touch.html?utm_source=instagram&utm_medium=social&utm_content=touch",
+      "permanent": false
     }
   ]
 }
