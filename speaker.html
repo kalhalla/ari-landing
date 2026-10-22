@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – How does a speaker make sound?</title>
+  <meta name="description" content="Play a speaker cut in half. See electricity wiggle a coil, a magnet push a paper cone, and the air bunch up on its way to your ear. Playable science for children aged 7–12.">
+  <meta property="og:title" content="How does a speaker make sound?">
+  <meta property="og:description" content="A magnet, a coil of wire and a paper cone. Take the magnet out and the sound stops.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+  <style>
+    .rig > *, .screens, .screen { min-width: 0; }
+    #trace { display: block; width: 100%; }
+    .controls { display: grid; gap: 8px; }
+    .play-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .play { flex-direction: row; gap: 10px; min-height: 56px; font-size: 19px; }
+    .play .ic { font-size: 22px; }
+    .play.nudge, .panel-box.nudge, .chip.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    .panel-box.nudge { border-color: var(--sun); }
+    .box-head b.secret { color: var(--sun); }
+    .vol-note { font-size: 12.5px; color: var(--rig-dim); margin-top: 4px; font-weight: 700; }
+    .vol-note b { color: var(--sun); }
+    #volBox input[type=range] { height: 30px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="#signup">Get the next one</a>
+    </nav>
+
+    <header class="intro">
+      <div class="eyebrow">Fig. 08 · The speaker</div>
+      <h1>How does a speaker make <em>sound</em>?</h1>
+      <p class="lede">Inside every speaker is a magnet, a coil of wire and a paper cone. <b>Play this one, watch the air bunch up on its way to your ear, then find out what happens without the magnet.</b></p>
+    </header>
+
+    <section class="rig" aria-label="A playable speaker, cut in half">
+      <div class="screens">
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">Cut-away: a speaker sliced in half</div><div class="clock" id="slowTag">SLOW-MO</div></div>
+          <canvas id="scene" aria-label="A speaker cut in half. Electricity flows in a coil, a magnet pushes it, the cone moves and squashes the air on its way to an ear. Tap or push the cone."></canvas>
+        </div>
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">The electric signal going into the coil</div></div>
+          <canvas id="trace" aria-label="A graph of the electric signal flowing into the coil"></canvas>
+        </div>
+      </div>
+
+      <div class="cockpit">
+        <div class="controls">
+          <button class="app play" id="playBtn" aria-pressed="false"><span class="ic">▶</span><span id="playTxt">Play</span></button>
+          <div class="panel-box" id="pitchBox">
+            <div class="box-head"><span>PITCH</span><b id="pitchVal">200 Hz</b></div>
+            <input type="range" id="pitch" min="0" max="1000" value="333" aria-label="Pitch: how many times a second the cone wiggles">
+            <div class="box-foot"><span>low rumble</span><span id="pitchWord">low hum</span><span>high squeak</span></div>
+          </div>
+          <div class="panel-box" id="volBox">
+            <div class="box-head"><span>VOLUME</span><b id="volVal">50%</b></div>
+            <input type="range" id="vol" min="0" max="100" value="50" aria-label="Volume: how big the wiggles are">
+            <div class="vol-note" id="volNote">Sound is off. The picture shows everything.</div>
+          </div>
+        </div>
+
+        <div class="gauges">
+          <div class="gauge" id="gPitch"></div>
+          <div class="gauge" id="gTravel"></div>
+          <div class="gauge" id="gLoud"></div>
+        </div>
+
+        <div class="ari" id="ari" aria-live="polite">
+          <div class="owl">🦉</div>
+          <div><p id="ariText"></p></div>
+        </div>
+
+        <div class="missions">
+          <div class="mission now"><i>01</i>Make a sound</div>
+          <div class="mission"><i>02</i>High and low</div>
+          <div class="mission"><i>03</i>Break it</div>
+          <div class="mission"><i>04</i>Secret sound</div>
+        </div>
+
+        <div class="experiments">
+          <button class="chip" id="magnetBtn" aria-pressed="false">Remove the magnet</button>
+          <button class="chip fix" id="flipBtn" aria-pressed="false">Flip the wires</button>
+          <button class="tool" id="soundBtn" aria-pressed="false" style="margin-left:auto">Sound off</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <h2>Wiggly electricity, a magnet, and a shove</h2>
+      <p>What happens inside a speaker, hundreds of times every second.</p>
+      <div class="stage-grid">
+        <div class="stage"><div class="k">01 · SIGNAL</div><h3>Wiggly electricity</h3><p>Your phone sends electricity down the wire that flows one way, then the other, then back again. The faster it flips, the higher the sound.</p></div>
+        <div class="stage"><div class="k">02 · COIL</div><h3>The coil becomes a magnet</h3><p>Electricity flowing round a coil of wire turns it into a magnet. Every time the electricity flips, the coil's north and south swap over.</p></div>
+        <div class="stage"><div class="k">03 · PUSH</div><h3>Push, pull, push</h3><p>The coil sits right next to a big, strong magnet, which pushes it, then pulls it. The coil is glued to the paper cone, so the cone moves in and out too.</p></div>
+        <div class="stage"><div class="k">04 · AIR</div><h3>The cone shoves the air</h3><p>Each push squashes the air into a bunch, and each pull spreads it out. The bunches race to your ear at about 343 metres a second and wiggle your eardrum the same way.</p></div>
+      </div>
+      <p class="big-idea"><b>The big idea:</b> a speaker turns wiggles of electricity into wiggles of air. A microphone is the same machine backwards: sound wiggles a coil next to a magnet, and that makes wiggles of electricity.</p>
+    </section>
+
+    <section class="signup" id="signup">
+      <div>
+        <h2>Worked it out? There's a whole workshop of these.</h2>
+        <p>We make machines your child can poke, fly and break. Jet engines, drones, touchscreens, speakers. We'll email you when the next one is ready.</p>
+        <p class="fine">No spam. Unsubscribe in one click.</p>
+      </div>
+      <div class="form-box">
+        <iframe id="tallyForm" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Get the next Ari machine"></iframe>
+      </div>
+    </section>
+
+    <!-- MACHINES -->
+    <section class="next">
+      <h2>More machines</h2>
+      <p>Each one starts with a question a curious kid would ask.</p>
+      <div class="figs">
+        <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
+        <a class="fig" href="/drone.html"><span class="tag go">Play</span><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></a>
+        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
+        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+      </div>
+    </section>
+    <!-- /MACHINES -->
+
+    <section class="why">
+      <h2>Why parents like it</h2>
+      <p>Built for children aged roughly 7 to 12.</p>
+      <div class="why-grid">
+        <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
+        <div class="why-item"><h3>Works with the sound off</h3><p>Everything is shown in the picture, so it's fine on a quiet train or in a classroom. Sound is off until they turn it on.</p></div>
+        <div class="why-item"><h3>No ads. No accounts.</h3><p>Children don't sign up for anything. Only you get the email, and only if you ask for it.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari</div>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== Sign-up form =====================
+  var params = new URLSearchParams(location.search);
+  var src = { object: 'speaker' };
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ref'].forEach(function (k) { if (params.get(k)) src[k] = params.get(k); });
+  var stats = { interactions: 0 };
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'speaker' }); } catch (e) {} }
+  function loadForm() {
+    var q = new URLSearchParams({ alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1' });
+    Object.keys(src).forEach(function (k) { q.set(k, src[k]); });
+    q.set('interactions', String(stats.interactions)); q.set('missions', String(M.filter(Boolean).length));
+    var f = document.getElementById('tallyForm');
+    f.setAttribute('data-tally-src', 'https://tally.so/embed/q45EaG?' + q.toString());
+    if (window.Tally) window.Tally.loadEmbeds(); else f.src = f.getAttribute('data-tally-src');
+  }
+  var formLoaded = false;
+  var io = new IntersectionObserver(function (e) { if (!formLoaded && e[0].isIntersecting) { formLoaded = true; loadForm(); io.disconnect(); } }, { rootMargin: '200px' });
+  io.observe(document.getElementById('signup'));
+
+  // ===================== Model =====================
+  // Real pitch (Hz) is shown slowed right down: the picture wiggles 0.5–4.5 times a second.
+  var freq = 200, vol = 0.5, playing = false, magnet = true, flipped = false, soundOn = false;
+  var M = [false, false, false, false], seenLow = false, seenHigh = false;
+  var env = 0, phase = 0, clock = 0, lastEvent = { kind: '', t: -10 };
+  var I = 0, Iind = 0, drive = 0, coneD = 0;      // current (signal units), cone displacement (in R units)
+  var user = 0, userV = 0, dragging = false, pushedOnce = false;
+  function u01() { return Math.log10(freq / 20) / 3; }          // 0 at 20 Hz, 1 at 20,000 Hz
+  function visHz() { return 0.5 + 4.0 * u01(); }
+  function coneAmp() { return 0.13 * (1 - 0.35 * u01()); }      // drawn bigger than real so you can see it
+  // Real cone travel for a small speaker: roughly 1/f² above its lowest notes.
+  function realTravelMm() {
+    var t = (playing && magnet) ? vol * env * 3 * Math.min(1, Math.pow(45 / freq, 2)) : 0;
+    return Math.max(t, Math.abs(user) * 14);
+  }
+
+  // history of the cone position (for the air) and of the current (for the trace)
+  var HR = 240, HN = 4096, hist = new Float32Array(HN), curH = new Float32Array(HN), hHead = 0, hAcc = 0;
+  function pushHist(d, i, dt) { hAcc += dt * HR; while (hAcc >= 1) { hAcc -= 1; hHead = (hHead + 1) % HN; hist[hHead] = d; curH[hHead] = i; } }
+  function histAt(buf, delay) {
+    var k = Math.max(0, Math.min(HN - 2, delay * HR)), i = Math.floor(k), fr = k - i;
+    var a = buf[(hHead - i + HN) % HN], b = buf[(hHead - i - 1 + HN) % HN]; return a + (b - a) * fr;
+  }
+
+  // ===================== Canvas setup =====================
+  var cv = document.getElementById('scene'), ctx = cv.getContext('2d');
+  var tc = document.getElementById('trace'), tctx = tc.getContext('2d');
+  var W, H, TW, TH, dpr, G = {};
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    W = Math.max(260, cv.clientWidth); H = Math.round(W < 600 ? Math.min(W * 0.9, 420) : Math.min(W * 0.58, 460));
+    cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    TW = Math.max(260, tc.clientWidth); TH = W < 600 ? 74 : 90;
+    tc.style.height = TH + 'px'; tc.width = Math.round(TW * dpr); tc.height = Math.round(TH * dpr); tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var R = H * (W < 600 ? 0.34 : 0.36);
+    var xL = W * 0.035, xR = W * (W < 600 ? 0.43 : 0.37), sp = xR - xL;
+    G = { R: R, xL: xL, xR: xR, sp: sp, ay: H * 0.5, earX: W - Math.max(30, W * 0.065), small: W < 600 };
+    G.airL = xR + 10; G.airR = G.earX - 14;
+    G.c = Math.max(90, W * 0.2);          // how fast the bunches travel across the picture (px per second, slowed)
+  }
+
+  function rr(c, x, y, w, h, r) { c.beginPath(); w = Math.max(1, w); h = Math.max(1, h); r = Math.max(0, Math.min(r, w / 2, h / 2)); if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
+  function arrow(c, x0, y0, x1, y1, col, wdt) {
+    var a = Math.atan2(y1 - y0, x1 - x0), hl = Math.max(6, wdt * 3);
+    c.strokeStyle = col; c.fillStyle = col; c.lineWidth = wdt; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1 - Math.cos(a) * hl * 0.6, y1 - Math.sin(a) * hl * 0.6); c.stroke();
+    c.beginPath(); c.moveTo(x1, y1); c.lineTo(x1 - Math.cos(a - 0.5) * hl, y1 - Math.sin(a - 0.5) * hl); c.lineTo(x1 - Math.cos(a + 0.5) * hl, y1 - Math.sin(a + 0.5) * hl); c.closePath(); c.fill();
+  }
+  function mono(px) { return '600 ' + px + 'px "IBM Plex Mono", monospace'; }
+
+  // ===================== Drawing the speaker =====================
+  var dotT = 0;
+  function drawScene(dt) {
+    var c = ctx, R = G.R, xL = G.xL, xR = G.xR, sp = G.sp, ay = G.ay, small = G.small;
+    var d = coneD * R;                                   // cone displacement in px (+ = out towards the ear)
+    c.clearRect(0, 0, W, H);
+    var bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1C2038'); bg.addColorStop(1, '#14172A');
+    c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    var fs = small ? 9 : 10.5;
+
+    // ----- air in front of the cone -----
+    var gap = Math.max(7, Math.min(11, W / 70)), rows = Math.max(7, Math.round(R * 1.7 / gap));
+    var ampAir = R * 0.75, cols = [];
+    for (var x0 = G.airL; x0 <= G.airR; x0 += gap) cols.push(x0);
+    var disp = cols.map(function (x) { var dist = x - xR; return histAt(hist, dist / G.c) * ampAir * (1 - 0.35 * dist / (G.airR - xR)); });
+    for (var k = 0; k < cols.length; k++) {
+      var nx = k < cols.length - 1 ? disp[k + 1] : disp[k], comp = -(nx - disp[k]) / gap;   // + = squashed together
+      var t = Math.max(-1, Math.min(1, comp * 1.6));
+      var col = t > 0 ? 'rgba(255,' + Math.round(200 - 80 * t) + ',' + Math.round(140 - 90 * t) + ',' + (0.55 + 0.45 * t) + ')' : 'rgba(190,200,235,' + (0.55 + 0.35 * t) + ')';
+      c.fillStyle = col;
+      var r0 = small ? 1.7 : 2.1;
+      for (var j = 0; j < rows; j++) {
+        var yy = ay - R * 0.85 + (j + 0.5) * (R * 1.7 / rows) + ((k % 2) ? gap * 0.25 : -gap * 0.25);
+        var xx = cols[k] + disp[k];
+        if (xx < xR + 2 + Math.max(0, d)) continue;
+        c.beginPath(); c.arc(xx, yy, r0 * (1 + Math.max(0, t) * 0.4), 0, 6.3); c.fill();
+      }
+    }
+
+    // ----- the ear -----
+    var ex = G.earX, eDisp = histAt(hist, (ex - xR) / G.c) * ampAir * 0.6;
+    c.fillStyle = '#F2C3A0'; c.strokeStyle = '#A8705A'; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(ex + 6, ay - R * 0.7); c.bezierCurveTo(ex - R * 0.32, ay - R * 0.78, ex - R * 0.22, ay - R * 0.05, ex - 2, ay - R * 0.12);
+    c.lineTo(ex - 2, ay + R * 0.12); c.bezierCurveTo(ex - R * 0.14, ay + R * 0.3, ex - R * 0.12, ay + R * 0.6, ex + 6, ay + R * 0.66); c.lineTo(W + 4, ay + R * 0.66); c.lineTo(W + 4, ay - R * 0.7); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#5E3A2E'; rr(c, ex - 2, ay - R * 0.12, W - ex + 6, R * 0.24, 4); c.fill();      // ear canal
+    c.strokeStyle = '#FFD678'; c.lineWidth = 3;                                                        // eardrum
+    var edx = ex + Math.min(16, (W - ex) * 0.45);
+    c.beginPath(); c.moveTo(edx, ay - R * 0.11); c.quadraticCurveTo(edx + eDisp * 1.2, ay, edx, ay + R * 0.11); c.stroke();
+    c.font = mono(fs); c.fillStyle = '#E9E4F5'; c.textAlign = 'right'; c.fillText('YOUR EAR', W - 6, ay - R * 0.76);
+
+    // ----- frame (basket) -----
+    var plateX0 = xL + 0.30 * sp, plateX1 = xL + 0.38 * sp;
+    c.strokeStyle = '#59607F'; c.lineWidth = 2.5;
+    [-1, 1].forEach(function (s) {
+      c.beginPath(); c.moveTo(plateX1, ay + s * 0.5 * R); c.lineTo(xR - 0.02 * sp, ay + s * 1.0 * R); c.stroke();
+      c.fillStyle = '#59607F'; rr(c, xR - 0.03 * sp, ay + (s > 0 ? R * 0.96 : -R * 1.06), 0.06 * sp + 4, R * 0.1, 2); c.fill();
+    });
+
+    // ----- magnet: steel plates + ring magnet -----
+    c.fillStyle = '#7E869F';
+    rr(c, xL, ay - 0.5 * R, 0.08 * sp, R, 3); c.fill();                       // back plate
+    rr(c, xL, ay - 0.12 * R, 0.42 * sp, 0.24 * R, 3); c.fill();               // pole piece (centre)
+    [-1, 1].forEach(function (s) { rr(c, plateX0, ay + (s > 0 ? 0.175 * R : -0.5 * R), 0.08 * sp, 0.325 * R, 3); c.fill(); }); // front plate
+    var mx0 = xL + 0.08 * sp, mx1 = plateX0;
+    if (magnet) {
+      [-1, 1].forEach(function (s) {
+        var y0 = ay + (s > 0 ? 0.2 * R : -0.48 * R), hh = 0.28 * R;
+        c.fillStyle = '#3E6FD6'; c.fillRect(mx0, y0, (mx1 - mx0) / 2, hh);
+        c.fillStyle = '#E2493B'; c.fillRect((mx0 + mx1) / 2, y0, (mx1 - mx0) / 2, hh);
+        c.fillStyle = 'white'; c.font = '800 ' + Math.max(10, Math.round(R * 0.13)) + 'px Nunito, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillText('S', mx0 + (mx1 - mx0) * 0.25, y0 + hh / 2); c.fillText('N', mx0 + (mx1 - mx0) * 0.75, y0 + hh / 2); c.textBaseline = 'alphabetic';
+      });
+    } else {
+      c.setLineDash([4, 4]); c.strokeStyle = 'rgba(233,228,245,.45)'; c.lineWidth = 1.5;
+      [-1, 1].forEach(function (s) { c.strokeRect(mx0, ay + (s > 0 ? 0.2 * R : -0.48 * R), mx1 - mx0, 0.28 * R); });
+      c.setLineDash([]);
+    }
+
+    // ----- coil former, coil, cone, surround, dust cap (all move together by d) -----
+    var cy0 = 0.145 * R, coilX0 = xL + 0.30 * sp + d, coilX1 = xL + 0.39 * sp + d, neck = xL + 0.45 * sp + d;
+    var rimIn = xR - 0.05 * sp + d * 0.95;
+    // cone (paper)
+    c.fillStyle = '#E9D2B0'; c.strokeStyle = '#8D6E63'; c.lineWidth = 2;
+    [-1, 1].forEach(function (s) {
+      c.beginPath(); c.moveTo(neck, ay + s * cy0); c.lineTo(rimIn, ay + s * 0.9 * R); c.lineTo(rimIn + 0.035 * sp, ay + s * 0.9 * R); c.lineTo(neck + 0.04 * sp, ay + s * cy0 * 0.9); c.closePath(); c.fill(); c.stroke();
+      // surround: soft rubber joining the moving cone to the fixed frame
+      c.strokeStyle = '#3A3F5C'; c.lineWidth = 4;
+      c.beginPath(); c.moveTo(rimIn + 0.02 * sp, ay + s * 0.92 * R); c.quadraticCurveTo((rimIn + xR) / 2 + 0.03 * sp, ay + s * 1.02 * R, xR, ay + s * 1.0 * R); c.stroke();
+      c.strokeStyle = '#8D6E63'; c.lineWidth = 2;
+    });
+    // former tube
+    c.strokeStyle = '#C9B48E'; c.lineWidth = 2;
+    [-1, 1].forEach(function (s) { c.beginPath(); c.moveTo(coilX0 - 0.02 * sp, ay + s * cy0); c.lineTo(neck + 0.01 * sp, ay + s * cy0); c.stroke(); });
+    // dust cap
+    c.fillStyle = '#D9BE97'; c.beginPath(); c.ellipse(neck + 0.02 * sp, ay, 0.07 * sp + 3, cy0 * 1.15, 0, -Math.PI / 2, Math.PI / 2); c.closePath(); c.fill(); c.stroke();
+    // coil turns (wire seen end-on), glowing with the current
+    var Itot = I + Iind, mag = Math.min(1, Math.abs(Itot));
+    var turns = 4, tw = (coilX1 - coilX0) / turns, tr = Math.max(2.2, Math.min(tw * 0.42, cy0 * 0.22));
+    [-1, 1].forEach(function (s) {
+      for (var i = 0; i < turns; i++) {
+        var tx = coilX0 + tw * (i + 0.5), ty = ay + s * cy0;
+        c.fillStyle = mag > 0.05 ? (Itot * s > 0 ? 'rgba(255,140,66,' + (0.5 + 0.5 * mag) + ')' : 'rgba(90,160,255,' + (0.5 + 0.5 * mag) + ')') : '#B87333';
+        c.beginPath(); c.arc(tx, ty, tr, 0, 6.3); c.fill();
+        c.strokeStyle = '#2A1A10'; c.lineWidth = 1; c.stroke();
+      }
+    });
+    // the coil's own north and south (they swap when the current flips)
+    if (mag > 0.12) {
+      var big = Itot > 0;
+      c.font = '800 ' + Math.max(10, Math.round(R * 0.11)) + 'px Nunito, sans-serif'; c.textAlign = 'center';
+      c.globalAlpha = Math.min(1, mag * 1.4);
+      c.fillStyle = big ? '#FF8F7A' : '#8FB5FF'; c.fillText(big ? 'N' : 'S', coilX0 - tw * 0.2, ay - cy0 - tr - 6);
+      c.fillStyle = big ? '#8FB5FF' : '#FF8F7A'; c.fillText(big ? 'S' : 'N', coilX1 + tw * 0.2, ay - cy0 - tr - 6);
+      c.globalAlpha = 1;
+    }
+    // push / pull arrow on the cone (only when there's a magnet to push against)
+    if (magnet && Math.abs(I) > 0.08) {
+      var al = R * 0.32 * Math.min(1, Math.abs(I)), sx = (coilX0 + coilX1) / 2, sgn = I > 0 ? 1 : -1;
+      arrow(c, sx, ay, sx + sgn * al, ay, '#FFC845', Math.max(2.5, R * 0.025));
+    }
+
+    // ----- the wires and the electricity in them -----
+    var wy = R * 0.66, wx = (coilX0 + coilX1) / 2;
+    c.strokeStyle = '#B87333'; c.lineWidth = 2;
+    [-1, 1].forEach(function (s) {
+      c.beginPath(); c.moveTo(0, ay + s * wy); c.lineTo(wx, ay + s * wy); c.lineTo(wx, ay + s * (cy0 + tr)); c.stroke();
+    });
+    // dots slosh back and forth with the current
+    dotT += Itot * dt * 1.8;
+    var pathLen = wx + (wy - cy0), spacing = 16;
+    for (var q = 0; q < pathLen / spacing + 1; q++) {
+      [-1, 1].forEach(function (s) {
+        var p = ((q * spacing + s * dotT * 60) % pathLen + pathLen) % pathLen, px, py;
+        if (p < wx) { px = p; py = ay + s * wy; } else { px = wx; py = ay + s * (wy - (p - wx)); }
+        c.fillStyle = mag > 0.05 ? '#FFE08A' : 'rgba(255,224,138,.35)'; c.beginPath(); c.arc(px, py, 2.4, 0, 6.3); c.fill();
+      });
+    }
+
+    // ----- labels -----
+    c.font = mono(fs); c.textAlign = 'left'; c.fillStyle = '#9EA3C4';
+    c.fillText('ELECTRICITY IN', 6, ay - wy - 6);
+    c.fillStyle = magnet ? '#E9E4F5' : '#9EA3C4';
+    c.fillText(magnet ? 'BIG MAGNET' : 'NO MAGNET!', xL, ay + 0.5 * R + fs + 6);
+    // COIL label sits just right of the coil, clear of the magnet, on a dark pill so it stays readable
+    var clx = coilX1 + 6, cly = ay + cy0 + tr + fs + 4, clw = c.measureText('COIL').width;
+    c.fillStyle = 'rgba(20,23,42,.85)'; rr(c, clx - 3, cly - fs, clw + 6, fs + 5, 3); c.fill();
+    c.fillStyle = '#E9E4F5'; c.fillText('COIL', clx, cly);
+    c.textAlign = 'center'; c.fillText('CONE', (neck + rimIn) / 2 + 6, ay - 0.62 * R);
+    c.textAlign = 'left'; c.fillStyle = '#9EA3C4'; c.fillText('AIR', G.airL + 4, ay - R * 0.9 - 4);
+    // legend for the air
+    if (!small) {
+      c.fillStyle = 'rgba(255,140,70,1)'; c.beginPath(); c.arc(G.airL + 8, H - 14, 3.2, 0, 6.3); c.fill();
+      c.fillStyle = '#E9E4F5'; c.fillText('squashed air', G.airL + 16, H - 10);
+      c.fillStyle = 'rgba(190,200,235,.6)'; c.beginPath(); c.arc(G.airL + 128, H - 14, 3.2, 0, 6.3); c.fill();
+      c.fillStyle = '#E9E4F5'; c.fillText('spread-out air', G.airL + 136, H - 10);
+    }
+    c.font = '700 ' + (small ? 11.5 : 13) + 'px Nunito, sans-serif'; c.textAlign = 'left';
+    if (!pushedOnce) { c.fillStyle = '#FFD678'; c.fillText('👆 Tap or push the cone', xL, H - 8); }
+    else if (!magnet && playing) { c.fillStyle = '#FF8F7A'; c.fillText('Current flows, but the cone stays still.', xL, H - 8); }
+    c.textAlign = 'right'; c.font = mono(fs); c.fillStyle = '#9EA3C4';
+    c.fillText('movement drawn bigger', W - 6, 14);
+  }
+
+  // ===================== The signal trace =====================
+  function drawTrace() {
+    var c = tctx, w = TW, h = TH, mid = h * 0.55;
+    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = 'rgba(158,163,196,.25)'; c.lineWidth = 1; c.beginPath(); c.moveTo(0, mid); c.lineTo(w, mid); c.stroke();
+    c.font = mono(9.5); c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
+    c.fillText('one way ↑', 6, 12); c.fillText('other way ↓', 6, h - 5);
+    var span = 3.2, amp = h * 0.36;
+    c.lineWidth = 2.5; c.strokeStyle = '#FF8C42'; c.beginPath();
+    for (var x = 0; x <= w; x += 2) {
+      var v = histAt(curH, (1 - x / w) * span);
+      var y = mid - Math.max(-1.2, Math.min(1.2, v)) * amp;
+      if (x === 0) c.moveTo(x, y); else c.lineTo(x, y);
+    }
+    c.stroke();
+    c.textAlign = 'right'; c.fillStyle = '#E9E4F5'; c.font = '700 12px Nunito, sans-serif';
+    var msg = Math.abs(Iind) > 0.05 && magnet ? 'You made electricity by moving the coil!' : (playing ? (flipped ? 'Wires flipped: upside-down wiggle' : 'Electricity flips back and forth') : 'No signal');
+    c.fillText(msg, w - 8, 14);
+  }
+
+  // ===================== Gauges =====================
+  function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
+  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
+    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
+    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="#6FD3A8" stroke-width="2.5" stroke-linecap="round"/>'; }
+    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+    el.innerHTML = html;
+    return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
+  }
+  // pitch gauge runs on a log scale, so 20 Hz → 20,000 Hz fits; the green mark is 17,000 Hz
+  var gPitch = makeGauge('gPitch', 'PITCH · HZ', 1, [Math.log10(17000 / 20) / 3, 1], 'rgba(255,200,69,.55)', '#FF8C42');
+  var gTravel = makeGauge('gTravel', 'CONE TRAVEL', 3, null, null, '#6FD3A8');
+  var gLoud = makeGauge('gLoud', 'LOUDNESS', 100, null, null, '#FFC845');
+  function setGauge(g, v, text, dt) {
+    g.shown += (v - g.shown) * Math.min(1, dt * 10);
+    var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
+    g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.val.textContent = text;
+  }
+  function fmtHz(f) { var p = Math.pow(10, Math.max(0, Math.floor(Math.log10(f)) - 1)); return (Math.round(f / p) * p).toLocaleString('en-GB'); }
+  function fmtMm(v) { return v >= 1 ? v.toFixed(1) + ' mm' : v >= 0.01 ? v.toFixed(2) + ' mm' : (v > 0.00001 ? '<0.01 mm' : '0 mm'); }
+  function pitchWord(f) { return f < 60 ? 'deep rumble' : f < 250 ? 'low hum' : f < 1000 ? 'singing voice' : f < 4000 ? 'whistle' : f < 12000 ? 'high squeak' : f < 17000 ? 'very high' : 'secret zone'; }
+
+  // ===================== Sound (off by default) =====================
+  var AC = null, osc = null, og = null;
+  function ensureAudio() {
+    if (AC) return;
+    try {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      osc = AC.createOscillator(); og = AC.createGain(); osc.type = 'sine'; osc.frequency.value = freq; og.gain.value = 0;
+      osc.connect(og); og.connect(AC.destination); osc.start();
+    } catch (e) { AC = null; }
+  }
+  function updateAudio() {
+    if (!AC) return;
+    var t = AC.currentTime, target = (soundOn && playing && magnet) ? 0.12 * vol * vol * (freq > 8000 ? 0.6 : 1) : 0;
+    og.gain.setTargetAtTime(Math.min(0.15, target), t, 0.04);
+    osc.frequency.setTargetAtTime(freq, t, 0.02);
+  }
+  function thump(strength) {
+    if (!soundOn || !AC) return;
+    try {
+      var o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(110, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.18);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(Math.min(0.15, 0.05 + strength * 0.1), t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
+      o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + 0.3);
+    } catch (e) {}
+  }
+
+  // ===================== Ari =====================
+  var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), lastMsg = '';
+  function say(html) { if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop'); }
+  var mEls = Array.prototype.slice.call(document.querySelectorAll('.mission'));
+  function complete(i) { if (M[i]) return; M[i] = true; track('mission_' + (i + 1)); mEls.forEach(function (el, k) { el.classList.toggle('done', M[k]); el.classList.toggle('now', k === M.indexOf(false)); }); }
+  function coach() {
+    var k = lastEvent.kind, recent = clock - lastEvent.t < 6;
+    if (recent && k === 'push') return say(magnet
+      ? '<b>Thump!</b> You pushed the cone and squashed the air yourself. Now look at the wire: moving the coil past the magnet <b>made a little electricity</b>. That\'s exactly how a microphone works!'
+      : '<b>Thump!</b> You squashed the air yourself. But with no magnet, moving the coil makes <b>no electricity</b> at all.');
+    if (recent && k === 'flip') return say(flipped
+      ? 'Wires swapped! Now the cone moves <b>out</b> when it used to move <b>in</b>. It sounds exactly the same, because your ear notices how <b>fast</b> the wiggles are and how <b>big</b> they are, not which way they start.'
+      : 'Wires back the normal way. Same speed, same size of wiggle, same sound.');
+    if (recent && k === 'magnetBack') return say('Magnet back in. The coil has something to push against again, so the cone moves and <b>the sound comes back</b>.');
+    if (!magnet) return say(playing
+      ? '<b>Silence!</b> Electricity still flows through the coil. See the dots moving? But without the big magnet, the coil has <b>nothing to push against</b>, so the cone stays still and the air doesn\'t move. Tap <b>Put the magnet back</b>.'
+      : 'The magnet is out. Tap <b>Play</b> and see if the cone can move without it.');
+    if (!M[0]) return say('This is a speaker, cut in half. Tap <b>Play</b> to send a wiggly electric signal into the coil.');
+    if (!playing) return say('Tap <b>Play</b> to start the signal again.');
+    if (!M[1]) {
+      if (seenLow) return say('Low and slow! Now slide <b>Pitch</b> right up high. Watch the wiggles get faster and the bunches of air get closer together.');
+      if (seenHigh) return say('High and fast! Now slide <b>Pitch</b> right down low. Watch the wiggles slow down and the bunches of air spread apart.');
+      return say('Electricity flows one way, then the other. Each flip makes the coil a magnet that\'s <b>pushed</b>, then <b>pulled</b>, by the big magnet, and the cone shoves the air. Slide <b>Pitch</b> right down low, then right up high.');
+    }
+    if (!M[2]) return say('Faster wiggles make a <b>higher</b> sound. Slower wiggles make a <b>lower</b> one. Now, what is the big magnet for? Tap <b>Remove the magnet</b> and find out.');
+    if (!M[3]) {
+      if (freq >= 17000) return say('You\'re in the secret zone!');
+      return say('Here\'s a secret. Slide <b>Pitch</b> above <b>17,000 Hz</b>. Many grown-ups can\'t hear it, but lots of children can.' + (soundOn ? ' Keep the volume low!' : ' Turn the sound on to listen, and keep the volume low.'));
+    }
+    if (freq >= 17000) return say('Can you hear it? Ears slowly lose the highest sounds as people get older, so a grown-up next to you might hear <b>nothing</b>. If you can\'t hear it either, your speaker might not be able to play it.' + (soundOn ? '' : ' (Sound is off at the moment.)'));
+    return say('You\'ve cracked it! Try <b>pushing the cone</b> with your finger, or tap <b>Flip the wires</b>.');
+  }
+
+  // ===================== Input: poke and push the cone =====================
+  var dragStartX = 0, dragStartU = 0, dragMax = 0, lastU = 0;
+  function local(e) { var r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  function onCone(p) { return p[0] > G.xL + 0.25 * G.sp && p[0] < G.xR + Math.max(36, (G.airR - G.xR) * 0.3) && Math.abs(p[1] - G.ay) < G.R * 1.05; }
+  cv.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    var p = local(e); if (!onCone(p)) return;
+    try { cv.setPointerCapture(e.pointerId); } catch (er) {}
+    dragging = true; dragStartX = p[0]; dragStartU = user; dragMax = 0; stats.interactions++;
+  });
+  cv.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var p = local(e), nu = Math.max(-0.24, Math.min(0.24, dragStartU + (p[0] - dragStartX) / G.R * 0.6));
+    dragMax = Math.max(dragMax, Math.abs(nu - dragStartU)); user = nu;
+  });
+  function release() {
+    if (!dragging) return; dragging = false;
+    if (dragMax < 0.02) userV = -2.2;          // a tap: a quick poke inwards
+    pushedOnce = true; lastEvent = { kind: 'push', t: clock }; thump(Math.min(1, Math.max(dragMax * 4, 0.6))); track('push');
+  }
+  cv.addEventListener('pointerup', release); cv.addEventListener('pointercancel', release);
+  ['touchstart', 'touchmove'].forEach(function (ev) { cv.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
+
+  // ===================== Controls =====================
+  var playBtn = document.getElementById('playBtn'), playTxt = document.getElementById('playTxt');
+  var pitchEl = document.getElementById('pitch'), pitchVal = document.getElementById('pitchVal'), pitchWordEl = document.getElementById('pitchWord'), pitchBox = document.getElementById('pitchBox');
+  var volEl = document.getElementById('vol'), volVal = document.getElementById('volVal'), volNote = document.getElementById('volNote');
+  var magnetBtn = document.getElementById('magnetBtn'), flipBtn = document.getElementById('flipBtn'), soundBtn = document.getElementById('soundBtn');
+  function setPlaying(on) {
+    playing = on; playBtn.setAttribute('aria-pressed', String(on)); playBtn.classList.toggle('on', on);
+    playBtn.querySelector('.ic').textContent = on ? '⏸' : '▶'; playTxt.textContent = on ? 'Stop' : 'Play';
+    if (on) track('play');
+    updateAudio();
+  }
+  function setPitch(v) { pitchEl.value = v; freq = 20 * Math.pow(1000, v / 1000); refreshPitch(); }
+  function refreshPitch() {
+    pitchVal.textContent = fmtHz(freq) + ' Hz'; pitchVal.classList.toggle('secret', freq >= 17000); pitchWordEl.textContent = pitchWord(freq);
+    updateAudio(); refreshNote();
+  }
+  function setVol(v) { volEl.value = v; vol = v / 100; volVal.textContent = Math.round(v) + '%'; updateAudio(); }
+  function refreshNote() {
+    volNote.innerHTML = !soundOn ? 'Sound is off. The picture shows everything.' : (freq >= 8000 ? '<b>Keep it low.</b> Very high sounds can be uncomfortable.' : 'Sound is on. Keep the volume comfortable.');
+  }
+  function setMagnet(on) {
+    var was = magnet; magnet = on;
+    magnetBtn.setAttribute('aria-pressed', String(!on)); magnetBtn.textContent = on ? 'Remove the magnet' : 'Put the magnet back';
+    magnetBtn.classList.toggle('fix', !on);
+    if (was && !on) track('remove_magnet');
+    if (!was && on) lastEvent = { kind: 'magnetBack', t: clock };
+    updateAudio();
+  }
+  function setFlip(on) { flipped = on; flipBtn.setAttribute('aria-pressed', String(on)); lastEvent = { kind: 'flip', t: clock }; track('flip'); }
+  function setSound(on) {
+    soundOn = on; if (on) ensureAudio(); if (AC && AC.state === 'suspended') AC.resume();
+    soundBtn.setAttribute('aria-pressed', String(on)); soundBtn.textContent = on ? 'Sound on' : 'Sound off'; refreshNote(); updateAudio();
+  }
+  playBtn.addEventListener('click', function () { stats.interactions++; setPlaying(!playing); });
+  pitchEl.addEventListener('input', function () { setPitch(+pitchEl.value); });
+  pitchEl.addEventListener('change', function () { stats.interactions++; track('pitch'); });
+  volEl.addEventListener('input', function () { setVol(+volEl.value); });
+  volEl.addEventListener('change', function () { stats.interactions++; });
+  magnetBtn.addEventListener('click', function () { stats.interactions++; setMagnet(!magnet); });
+  flipBtn.addEventListener('click', function () { stats.interactions++; setFlip(!flipped); });
+  soundBtn.addEventListener('click', function () { stats.interactions++; setSound(!soundOn); });
+
+  // ===================== Loop =====================
+  var last = performance.now();
+  function frame(now) {
+    var dt = Math.min(0.05, Math.max(0, (now - last) / 1000)); last = now; clock += dt;
+    env += ((playing ? 1 : 0) - env) * Math.min(1, dt * 6);
+    phase += 2 * Math.PI * visHz() * dt;
+    I = vol * env * Math.sin(phase) * (flipped ? -1 : 1);
+    drive = magnet ? I * coneAmp() : 0;
+    // your finger on the cone: held where you put it, then it springs back
+    if (!dragging) { userV += (-260 * user - 9 * userV) * dt; user += userV * dt; if (Math.abs(user) < 1e-4 && Math.abs(userV) < 1e-3) { user = 0; userV = 0; } }
+    var uSpeed = (user - lastU) / Math.max(dt, 1e-3); lastU = user;
+    Iind = magnet ? Math.max(-1, Math.min(1, -uSpeed * 0.25)) : 0;      // moving a coil next to a magnet makes electricity
+    coneD = drive + user;
+    pushHist(coneD, I + Iind, dt);
+    // missions
+    if (playing && magnet) {
+      complete(0);
+      if (freq < 150) seenLow = true;
+      if (freq > 3000) seenHigh = true;
+      if (seenLow && seenHigh) complete(1);
+      if (freq >= 17000 && M[0]) { complete(3); }
+    }
+    if (playing && !magnet) complete(2);
+    drawScene(dt); drawTrace();
+    var slowF = freq / visHz(), p10 = Math.pow(10, Math.max(0, Math.floor(Math.log10(slowF)) - 1));
+    slowTag.innerHTML = 'SLOW-MO <small>×' + (Math.round(slowF / p10) * p10).toLocaleString('en-GB') + '</small>';
+    setGauge(gPitch, u01(), fmtHz(freq), dt);
+    var tr = realTravelMm(); setGauge(gTravel, tr, fmtMm(tr), dt);
+    var loud = (playing && magnet ? vol * env * 100 : 0) + Math.min(60, Math.abs(user) * 300);
+    setGauge(gLoud, loud, Math.round(Math.min(100, loud)) + '%', dt);
+    // nudges
+    playBtn.classList.toggle('nudge', !playing && (!M[0] || !magnet || !M[3]));
+    pitchBox.classList.toggle('nudge', playing && magnet && M[0] && (!M[1] || (M[2] && !M[3])));
+    magnetBtn.classList.toggle('nudge', (M[1] && !M[2] && magnet) || !magnet);
+    coach();
+    requestAnimationFrame(frame);
+  }
+  var slowTag = document.getElementById('slowTag');
+  window.addEventListener('resize', resize);
+  resize(); setPitch(+pitchEl.value); setVol(+volEl.value);
+  requestAnimationFrame(frame);
+  window.__ari = {
+    M: M, state: function () { return { freq: freq, vol: vol, playing: playing, magnet: magnet, flipped: flipped, soundOn: soundOn, cone: coneD, I: I, Iind: Iind }; },
+    play: setPlaying, pitch: setPitch, hz: function (f) { setPitch(Math.round(1000 * Math.log10(f / 20) / 3)); }, volume: setVol,
+    magnet: setMagnet, flip: setFlip, sound: setSound, G: function () { return G; }
+  };
+})();
+</script>
+</body>
+</html>
