@@ -454,7 +454,7 @@
     var w = L * 0.36;
     c.fillStyle = '#111';
     [[-0.32, -0.5], [-0.32, 0.5], [0.3, -0.5], [0.3, 0.5]].forEach(function (q) { rr(c, q[0] * L - L * 0.09, q[1] * w - w * 0.17, L * 0.18, w * 0.34, 2); c.fill(); });
-    c.fillStyle = '#FF8C42'; c.strokeStyle = '#7A3510'; c.lineWidth = 1.2;
+    c.fillStyle = '#E5231B'; c.strokeStyle = '#5E0E0A'; c.lineWidth = 1.2;
     c.beginPath(); c.moveTo(L * 0.5, 0); c.lineTo(L * 0.1, -w * 0.16); c.lineTo(-L * 0.15, -w * 0.3); c.lineTo(-L * 0.42, -w * 0.22); c.lineTo(-L * 0.42, w * 0.22); c.lineTo(-L * 0.15, w * 0.3); c.lineTo(L * 0.1, w * 0.16); c.closePath(); c.fill(); c.stroke();
     c.fillStyle = '#FFC845'; c.beginPath(); c.arc(-L * 0.05, 0, w * 0.11, 0, 6.3); c.fill();
     if (wing > 0.01) {
@@ -615,7 +615,18 @@
     c.restore();
   }
   // side-on F1 car. Nose points right; y is the road; hb is a height unit (car is about 2 hb tall to the airbox)
+  // the car artwork (side-on, nose to the right); a vector drawing is the fallback until it loads
+  var CAR = { full: new Image(), bare: new Image(), n: 0, ok: false, ar: 900 / 202 };
+  [CAR.full, CAR.bare].forEach(function (im) { im.onload = function () { if (++CAR.n === 2) CAR.ok = true; }; });
+  CAR.full.src = '/f1-car.png'; CAR.bare.src = '/f1-car-nowings.png';
+  if (location.protocol === 'file:') { CAR.full.src = 'f1-car.png'; CAR.bare.src = 'f1-car-nowings.png'; }
   function drawProfile(c, x, y, L, hb) {
+    if (CAR.ok) {
+      var ch = L / CAR.ar;
+      if (wing > 0.01) c.drawImage(CAR.full, x - L / 2, y - ch, L, ch);
+      else { c.globalAlpha = 0.18; c.drawImage(CAR.full, x - L / 2, y - ch, L, ch); c.globalAlpha = 1; c.drawImage(CAR.bare, x - L / 2, y - ch, L, ch); }
+      return;
+    }
     var nose = x + L / 2, tail = x - L / 2, wr = Math.min(hb * 0.46, L * 0.075);
     var ang = 0.06 + wing * 0.26, on = wing > 0.01;
     // rear wing endplate (behind everything)
@@ -687,13 +698,13 @@
 
     // ===== 1. the whole car (small) =====
     var stripH = phone ? 200 : 220;
-    var L = Math.min(w * 0.66, 360), hb = L * 0.16, cx = w * 0.4, gy = stripH - 16;
+    var L = Math.min(w * 0.88, 470), hb = L * 0.16, cx = w * 0.47, gy = stripH - 16, Hc = L / CAR.ar;
     c.save();
     if (onCeil) { c.translate(0, stripH); c.scale(1, -1); }
     c.fillStyle = '#2B2F45'; c.fillRect(0, gy, w, stripH - gy);
     c.fillStyle = 'rgba(255,255,255,.35)'; var off = (clock * v * 4) % 40; for (var x = -off; x < w; x += 40) c.fillRect(x, gy + 6, 20, 2);
     drawProfile(c, cx, gy, L, hb);
-    var fwX = cx + L / 2 - L * 0.05, fwY = gy - hb * 0.3;
+    var fwX = CAR.ok ? cx - L / 2 + L * 0.925 : cx + L / 2 - L * 0.05, fwY = CAR.ok ? gy - Hc * 0.22 : gy - hb * 0.3;
     c.restore();
     function sy(y) { return onCeil ? stripH - y : y; }
     // magnifier ring on the front wing
@@ -701,15 +712,16 @@
     c.strokeStyle = '#FFC845'; c.lineWidth = 2; c.setLineDash([4, 3]);
     c.beginPath(); c.arc(fwX, sy(fwY), ringR, 0, 6.3); c.stroke(); c.setLineDash([]);
     // weight vs downforce, drawn above the nose (weight always pulls down the screen; downforce pushes into the road)
-    var base = 20, dfX = cx + L * 0.22, wtX = cx + L * 0.36;
+    var base = 20, dfX = cx + L * 0.12, wtX = cx + L * 0.3;
     c.save();
-    var dl = base * Math.min(dw, 3), dfEnd = gy - hb * 0.85 - 4, dfStart = dfEnd - dl, dfCol = onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8';
+    var dl = base * Math.min(dw, 3), dfEnd = CAR.ok ? gy - Hc * 0.82 - 4 : gy - hb * 0.85 - 4, dfStart = dfEnd - dl, dfCol = onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8';
     if (dl > 3) {
       arrowS(c, dfX, sy(dfStart), sy(dfEnd) - sy(dfStart), dfCol, '', 'right');
       c.font = '700 12px Nunito, sans-serif'; pill(c, 'downforce ' + dw.toFixed(1) + '×', dfX - 10, sy(dfStart) + (onCeil ? 18 : -8), dfCol, 'center');
     }
-    if (onCeil) arrowS(c, wtX, sy(gy - hb * 0.75), base, '#C9CEE8', 'weight', 'left');
-    else arrowS(c, wtX, gy - hb * 0.75 - 4 - base, base, '#C9CEE8', 'weight', 'left');
+    var wtTop = CAR.ok ? gy - Hc * 0.62 : gy - hb * 0.75;
+    if (onCeil) arrowS(c, wtX, sy(wtTop), base, '#C9CEE8', 'weight', 'left');
+    else arrowS(c, wtX, wtTop - 4 - base, base, '#C9CEE8', 'weight', 'left');
     c.restore();
     c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
     c.fillText(onCeil ? 'UPSIDE DOWN ON THE CEILING' : 'THE WHOLE CAR', 10, onCeil ? stripH - 8 : 14);
@@ -725,7 +737,7 @@
       }
       var mx = 34, my = 40;
       var sc = mini(mx, my, -1, '#7E869F'); arrowS(c, mx + sc / 2 + 10, my + 8, -18, '#9EA3C4', '', 'left');
-      mini(mx + (phone ? 72 : 86), my, 1, '#FF8C42'); arrowS(c, mx + (phone ? 72 : 86) + sc / 2 + 10, my - 10, 18, '#6FD3A8', '', 'left');
+      mini(mx + (phone ? 72 : 86), my, 1, '#E5231B'); arrowS(c, mx + (phone ? 72 : 86) + sc / 2 + 10, my - 10, 18, '#6FD3A8', '', 'left');
       c.font = '600 9.5px "IBM Plex Mono", monospace'; c.textAlign = 'center';
       c.fillStyle = '#9EA3C4'; c.fillText('plane wing', mx + 4, my + 24); c.fillText('lifts up', mx + 4, my + 35);
       c.fillStyle = '#FFB27A'; c.fillText('F1 wing', mx + (phone ? 76 : 90), my + 24); c.fillText('flipped!', mx + (phone ? 76 : 90), my + 35);
