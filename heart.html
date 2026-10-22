@@ -186,7 +186,7 @@
     <section class="rig" aria-label="A playable heart">
       <div class="screens">
         <div class="screen">
-          <div class="screen-bar"><div class="screen-tag">Facing you · their right is on your left</div><div class="phase" id="phase">RESTING</div></div>
+          <div class="screen-bar"><div class="screen-tag">Drawn facing you</div><div class="phase" id="phase">RESTING</div></div>
           <canvas id="heart" aria-label="A heart with four chambers and four one-way valves. Tap it to make it beat."></canvas>
           <div class="ctl" id="ctl">
             <div class="rate-row">
@@ -201,7 +201,7 @@
           </div>
         </div>
         <div class="screen">
-          <div class="screen-bar"><div class="screen-tag">The loop round your body · sped up</div><div class="screen-tag">dark = low on oxygen</div></div>
+          <div class="screen-bar"><div class="screen-tag">Round the body · sped up</div><div class="screen-tag">dark = low oxygen</div></div>
           <canvas id="loop" aria-label="The loop blood takes: heart, lungs, heart, body, and back"></canvas>
         </div>
       </div>
@@ -363,10 +363,10 @@
   function mk(side, zone, u, v) { var p = { side: side, zone: zone, u: u, v: v, vu: 0, vv: 0, back: 0 }; home(p); return p; }
   for (var s0 = 0; s0 < 2; s0++) {
     var i0;
-    for (i0 = 0; i0 < 4; i0++) parts.push(mk(s0, 'vein', i0 / 4, 0));
-    for (i0 = 0; i0 < 16; i0++) parts.push(mk(s0, 'atr', Math.random(), Math.random()));
-    for (i0 = 0; i0 < 30; i0++) parts.push(mk(s0, 'ven', .1 + Math.random() * .8, .1 + Math.random() * .8));
-    for (i0 = 0; i0 < 10; i0++) parts.push(mk(s0, 'art', i0 / 10, 0));
+    for (i0 = 0; i0 < 5; i0++) parts.push(mk(s0, 'vein', i0 / 5, 0));
+    for (i0 = 0; i0 < 22; i0++) parts.push(mk(s0, 'atr', Math.random(), Math.random()));
+    for (i0 = 0; i0 < 44; i0++) parts.push(mk(s0, 'ven', .1 + Math.random() * .8, .1 + Math.random() * .8));
+    for (i0 = 0; i0 < 12; i0++) parts.push(mk(s0, 'art', i0 / 12, 0));
   }
   function steer(p, tu, tv, spd, dt) {
     var du = tu - p.u, dv = tv - p.v, d = Math.hypot(du, dv) || 1, a = Math.min(1, dt * 6);
@@ -376,8 +376,12 @@
     p.u = clamp(p.u + p.vu * dt, .02, .98); p.v = clamp(p.v + p.vv * dt, 0, 1);
   }
   var backCount = 0;
+  var wasEx = false;
   function stepCells(dt) {
     var br = (auto ? bpm : 80) / 60, av = avOpen(), ex = exOpen(), as = atrSq(), vs = ventSq();
+    // each squeeze pushes out roughly 60% of the blood in a ventricle, not all of it
+    if (ex && !wasEx) parts.forEach(function (p) { p.go = p.zone === 'ven' && Math.random() < .6; });
+    wasEx = ex;
     parts.forEach(function (p) {
       var x;
       if (p.zone === 'vein') {
@@ -389,7 +393,7 @@
         else steer(p, p.hu, p.hv * .8, .3 * br, dt);
         if (av && p.v > .95 && p.u > .12 && p.u < .88) {
           x = ATR[p.side].x + p.u * ATR[p.side].w;
-          p.zone = 'ven'; p.u = clamp((x - VEN[p.side].x) / VEN[p.side].w, .05, .95); p.v = .03; p.vv = .6 * br; home(p);
+          p.zone = 'ven'; p.u = clamp((x - VEN[p.side].x) / VEN[p.side].w, .05, .95); p.v = .03; p.vv = .6 * br; p.go = false; home(p);
         }
       } else if (p.zone === 'ven') {
         if (leak && p.side === 1 && !av && vs > .05 && p.v < .42 && p.u > .36 && p.u < .92 && Math.random() < dt * 5) {
@@ -397,7 +401,7 @@
           p.zone = 'atr'; p.u = clamp((x - ATR[1].x) / ATR[1].w, .1, .9); p.v = .97; p.vv = -1.8 * br; p.vu = 0; p.back = .45; home(p); backCount++;
           return;
         }
-        if (ex) {
+        if (ex && p.go) {
           steer(p, EXIT_U[p.side], -.1, 4 * br * (.4 + vs), dt);
           if (p.v < .05 && exitOk(p.side, p.u)) { p.zone = 'art'; p.u = 0; }
         } else steer(p, p.hu, p.hv, .5 * br, dt);
@@ -419,7 +423,7 @@
     H = Math.round(bh + 44);
     bx = W < 600 ? (W - bw) / 2 : Math.max(10, (W - bw) / 2 - (W >= 700 ? 80 : 0)); by = 16;
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    LW = Math.max(260, lc.clientWidth); LH = LW < 600 ? 250 : 270;
+    LW = Math.max(260, lc.clientWidth); LH = LW < 600 ? 290 : 290;
     lc.style.height = LH + 'px'; lc.width = Math.round(LW * dpr); lc.height = Math.round(LH * dpr); lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     buildLoop();
   }
@@ -541,8 +545,8 @@
     // labels
     var fs = Math.max(8.5, Math.round(bw * .026));
     c.font = '600 ' + fs + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillStyle = 'rgba(255,240,235,.75)';
-    var lab = function (r, t) { var q = rectPx(r); c.fillText(t, q.x + q.w / 2, q.y + fs + 3); };
-    lab(cavA[0], 'R. ATRIUM'); lab(cavA[1], 'L. ATRIUM'); lab(cavV[0], 'R. VENTRICLE'); lab(cavV[1], 'L. VENTRICLE');
+    var lab = function (r, t, bot) { var q = rectPx(r); c.fillText(t, q.x + q.w / 2, bot ? q.y + q.h - 5 : q.y + fs + 3); };
+    lab(cavA[0], 'R. ATRIUM', true); lab(cavA[1], 'L. ATRIUM', true); lab(cavV[0], 'R. VENTRICLE'); lab(cavV[1], 'L. VENTRICLE');
     var pf = Math.max(9, Math.round(bw * .027));
     pill(c, '← to lungs', bx + .01 * bw, by + .065 * bh, 'left', '#E9E4F5', 'rgba(74,28,61,.92)', pf);
     pill(c, 'to body →', bx + .99 * bw, by + .02 * bh, 'right', '#FFE1DC', 'rgba(122,22,34,.92)', pf);
@@ -574,7 +578,7 @@
   var loopPts = [], sL = [0, 0], sB = [0, 0], flowOff = 0;
   var gold = { on: false, s: 0, lungs: false, body: false };
   function buildLoop() {
-    var hx = LW / 2, hy = LH * .5, half = Math.min(LW - 40, 440) / 2, Ty = 52, By = LH - 62;
+    var hx = LW / 2, hy = LH * .47, half = Math.min(LW - 40, 440) / 2, Ty = 58, By = LH - 66;
     var C = [
       [hx - 16, hy], [hx - .72 * half, hy - .4 * (hy - Ty)], [hx - .52 * half, Ty], [hx - .16 * half, Ty - 4],
       [hx + .16 * half, Ty - 4], [hx + .52 * half, Ty], [hx + .72 * half, hy - .4 * (hy - Ty)], [hx + 16, hy],
@@ -607,6 +611,7 @@
     if (s < sL[0]) return 0; if (s < sL[1]) return (s - sL[0]) / (sL[1] - sL[0]);
     if (s < sB[0]) return 1; if (s < sB[1]) return 1 - (s - sB[0]) / (sB[1] - sB[0]); return 0;
   }
+  function dimCol(o) { return 'rgb(' + Math.round(70 + 40 * o) + ',' + Math.round(40 - 6 * o) + ',' + Math.round(72 - 30 * o) + ')'; }
   function mixCol(o, a) { var r = Math.round(162 + (255 - 162) * o), g = Math.round(84 + (91 - 84) * o), b = Math.round(142 + (79 - 142) * o); return 'rgba(' + r + ',' + g + ',' + b + ',' + (a == null ? 1 : a) + ')'; }
   function drawLoop(dt) {
     var c = lctx, G = buildLoop.geo; if (!G) return;
@@ -624,10 +629,10 @@
     c.moveTo(fx + (run ? 3 : 0), fy + 2); c.lineTo(fx - 10 * Math.sin(bt) - (run ? 0 : 5), fy + 22);
     c.moveTo(fx + (run ? 3 : 0), fy + 2); c.lineTo(fx + 10 * Math.sin(bt) + (run ? 0 : 5), fy + 22); c.stroke();
     // the path, coloured by oxygen
-    c.lineWidth = 12; c.lineCap = 'butt';
+    c.lineWidth = 12; c.lineCap = 'round';
     for (var i = 0; i < loopPts.length; i++) {
       var a = loopPts[i], b = loopPts[(i + 1) % loopPts.length];
-      c.strokeStyle = mixCol(oxyAt(a.s), .35); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+      c.strokeStyle = dimCol(oxyAt(a.s)); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
     }
     // flow: dots pushed along in pulses
     var out = output(), tS = slow ? .3 : 1;
@@ -668,14 +673,13 @@
     }
     // labels
     c.textAlign = 'center'; c.font = '700 11px "IBM Plex Mono", monospace';
-    c.fillStyle = '#F2B8C6'; c.fillText('LUNGS', G.hx, G.Ty - 30);
-    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('pick up oxygen', G.hx, G.Ty + 6);
+    c.fillStyle = '#F2B8C6'; c.fillText('LUNGS', G.hx, 16);
+    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('blood picks up oxygen', G.hx, 31);
     c.font = '700 11px "IBM Plex Mono", monospace'; c.fillStyle = '#C9C4E0';
     c.fillText(exercise ? 'BODY · RUNNING' : 'BODY', G.hx, LH - 22);
-    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('drop off oxygen', G.hx, LH - 7);
+    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('muscles take the oxygen', G.hx, LH - 7);
     c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
     c.fillText('RIGHT', 8, G.hy + 4); c.textAlign = 'right'; c.fillText('LEFT', LW - 8, G.hy + 4);
-    c.textAlign = 'center'; c.fillStyle = '#FFDADF'; c.font = '700 10px "IBM Plex Mono", monospace'; c.fillText('HEART', G.hx, G.hy + 40);
   }
 
   // ===================== Gauges =====================
