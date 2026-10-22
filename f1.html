@@ -212,7 +212,7 @@
         </div>
         <div class="screen">
           <div class="screen-bar"><div class="screen-tag">Side view: the air over the wings</div></div>
-          <canvas id="side" aria-label="A side view of the car. Air hits the wings and is thrown upwards, which pushes the car down."></canvas>
+          <canvas id="side" aria-label="The whole car from the side, then a close-up slice through the front wing: an aeroplane wing turned upside down. Air is thrown upwards off it, which pushes the car down."></canvas>
         </div>
       </div>
 
@@ -441,7 +441,7 @@
     W = Math.max(260, cv.clientWidth); phone = W < 600;
     H = Math.round(phone ? Math.min(W * 0.86, 380) : Math.min(W * 0.6, 470));
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    SW = Math.max(260, sv.clientWidth); SH = phone ? 190 : 220;
+    SW = Math.max(260, sv.clientWidth); SH = phone ? 380 : 396;
     sv.style.height = SH + 'px'; sv.width = Math.round(SW * dpr); sv.height = Math.round(SH * dpr); sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     initAir();
   }
@@ -623,9 +623,9 @@
     var ang = (0.12 + wing * 0.38);
     if (wing > 0.01) {
       c.fillStyle = '#2B2F45'; c.strokeStyle = '#E9E4F5'; c.lineWidth = 1;
-      c.save(); c.translate(nose - L * 0.06, y - hb * 0.14); c.rotate(-ang * 0.6); rr(c, -L * 0.06, -hb * 0.07, L * 0.12, hb * 0.14, 2); c.fill(); c.stroke(); c.restore();
+      c.save(); c.translate(nose - L * 0.06, y - hb * 0.14); c.rotate(ang * 0.6); rr(c, -L * 0.06, -hb * 0.07, L * 0.12, hb * 0.14, 2); c.fill(); c.stroke(); c.restore();
       c.fillStyle = '#3B4057'; c.fillRect(tail + L * 0.06, y - hb * 1.8, 3, hb * 1.0);
-      c.fillStyle = '#2B2F45'; c.save(); c.translate(tail + L * 0.06, y - hb * 1.85); c.rotate(-ang); rr(c, -L * 0.065, -hb * 0.09, L * 0.13, hb * 0.18, 2); c.fill(); c.stroke(); c.restore();
+      c.fillStyle = '#2B2F45'; c.save(); c.translate(tail + L * 0.06, y - hb * 1.85); c.rotate(ang); rr(c, -L * 0.065, -hb * 0.09, L * 0.13, hb * 0.18, 2); c.fill(); c.stroke(); c.restore();
     } else {
       c.strokeStyle = 'rgba(233,228,245,.45)'; c.setLineDash([3, 3]); c.lineWidth = 1.2;
       rr(c, nose - L * 0.12, y - hb * 0.2, L * 0.12, hb * 0.14, 2); c.stroke();
@@ -638,68 +638,162 @@
     });
   }
 
-  // ----- side view: air over the wings -----
+  // ----- side view: the whole car up top, then a close-up slice through the front wing -----
   var air = [];
-  function initAir() { air = []; for (var i = 0; i < 46; i++) air.push({ x: Math.random() * SW, lane: Math.random(), up: 0 }); }
+  var LANES = 11;
+  function initAir() {
+    air = [];
+    for (var i = 0; i < 70; i++) air.push({ x: Math.random() * (SW + 60), lane: i % LANES, j: Math.random() });
+  }
+  // NACA-style thickness; u = 0 at the leading edge, 1 at the trailing edge
+  function thick(u) { u = Math.max(0, Math.min(1, u)); return 5 * 0.17 * (0.2969 * Math.sqrt(u) - 0.126 * u - 0.3516 * u * u + 0.2843 * u * u * u - 0.1015 * u * u * u * u); }
+  function camber(u) { return 0.07 * 4 * u * (1 - u); }   // bulges DOWN: a plane wing turned upside down
   function drawSide(dt) {
     var c = sctx, w = SW, h = SH;
     var onCeil = mode === 'tunnel' && (tun.phase === 'ceiling' || (tun.phase === 'roll' && (tun.x - TUN.climb) / (TUN.ceil - TUN.climb) > 0.5));
     c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
-    var L = Math.min(w * 0.6, 430), hb = L * 0.09, cx = w * 0.5, gy = h * 0.8;
-    var nose = cx + L / 2, tail = cx - L / 2, rwX = tail + L * 0.06, rwY = gy - hb * 1.85, fwX = nose - L * 0.06, fwY = gy - hb * 0.14;
+    var D = downforce(v), dw = D / WEIGHT, e = eff(wing), on = wing > 0.01;
+    var flow = Math.min(1, v / 85);                       // how hard the air is rushing past
+
+    // ===== 1. the whole car (small) =====
+    var stripH = phone ? 150 : 156;
+    var L = Math.min(w * 0.5, 300), hb = L * 0.09, cx = w * 0.42, gy = stripH - 18;
     c.save();
-    if (onCeil) { c.translate(0, h); c.scale(1, -1); }
-    // road / ceiling surface
-    c.fillStyle = '#2B2F45'; c.fillRect(0, gy, w, h - gy);
+    if (onCeil) { c.translate(0, stripH); c.scale(1, -1); }
+    c.fillStyle = '#2B2F45'; c.fillRect(0, gy, w, stripH - gy);
     c.fillStyle = 'rgba(255,255,255,.35)'; var off = (clock * v * 4) % 40; for (var x = -off; x < w; x += 40) c.fillRect(x, gy + 6, 20, 2);
-    // air streams (air moves right-to-left past the car)
-    var e = eff(wing), speedPx = 30 + v * 3.2, lift = e * Math.min(1, v / 55);
-    air.forEach(function (a) {
-      a.x -= speedPx * dt;
-      if (a.x < -20) { a.x = w + Math.random() * 40; a.lane = Math.random(); a.up = 0; }
-      var y0 = gy - 12 - a.lane * (gy - 22);
-      // bend over the body
-      var over = Math.exp(-Math.pow((a.x - cx) / (L * 0.38), 2)) * Math.max(0, 1 - Math.abs(y0 - (gy - hb)) / (hb * 3.5)) * hb * 0.9;
-      // wings throw the air upwards behind them
-      var nearR = Math.max(0, 1 - Math.abs(y0 - rwY) / (hb * 1.6)), nearF = Math.max(0, 1 - Math.abs(y0 - fwY) / (hb * 1.2));
-      var behindR = Math.max(0, rwX - a.x), behindF = Math.max(0, fwX - a.x);
-      var deflect = wing > 0.01 ? (nearR * Math.min(behindR, L * 0.4) * 0.55 + nearF * Math.min(behindF, L * 0.25) * 0.35) * lift : 0;
-      var y = y0 - over - deflect;
-      var dy = deflect > 0.5 ? -0.5 * lift : 0;
-      c.strokeStyle = deflect > 2 ? 'rgba(111,211,168,.75)' : 'rgba(158,163,196,.45)'; c.lineWidth = 1.6;
-      c.beginPath(); c.moveTo(a.x, y); c.lineTo(a.x + 14, y - dy * 14); c.stroke();
-    });
     drawProfile(c, cx, gy, L, hb);
+    var fwX = cx + L / 2 - L * 0.06, fwY = gy - hb * 0.14;
     c.restore();
-    // arrows (drawn upright so the labels read correctly)
-    function fy(y) { return onCeil ? h - y : y; }
-    var D = downforce(v), base = Math.max(22, h * 0.16), dw = D / WEIGHT;
-    var carMid = fy(gy - hb * 0.7);
-    c.save(); c.font = '700 12px Nunito, sans-serif';
-    // weight always points to the ground (down the screen)
-    arrowS(c, cx + L * 0.14, carMid, base, '#C9CEE8', 'weight 1×', 'left');
-    // downforce points into the road: down on the road, up when on the ceiling
-    var dl = base * Math.min(dw, 3.2), topY = gy - hb * 1.45;
-    if (dl > 3) arrowS(c, cx - L * 0.14, fy(topY - dl), (onCeil ? -1 : 1) * dl, onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8', 'downforce ' + dw.toFixed(1) + '×', 'right');
-    if (wing > 0.01 && v > 8 && !onCeil) {
-      var ax = rwX, ay = fy(rwY) + (onCeil ? hb * 0.8 : -hb * 0.8);
-      c.fillStyle = '#6FD3A8'; c.font = '600 10px "IBM Plex Mono", monospace'; c.textAlign = 'center';
-      var airY = onCeil ? Math.min(h - 6, ay + 14) : Math.max(12, ay - 6);
-      // keep clear of the downforce label, which sits by the top of its arrow
-      if (!onCeil) airY = Math.min(airY, 46);
-      c.fillText(onCeil ? 'air thrown ↓' : 'air thrown ↑', Math.max(40, ax), airY);
-    }
+    function sy(y) { return onCeil ? stripH - y : y; }
+    // magnifier ring on the front wing
+    var ringR = Math.max(16, L * 0.1);
+    c.strokeStyle = '#FFC845'; c.lineWidth = 2; c.setLineDash([4, 3]);
+    c.beginPath(); c.arc(fwX, sy(fwY), ringR, 0, 6.3); c.stroke(); c.setLineDash([]);
+    // weight vs downforce, beside the car
+    var base = 18, ax = Math.min(w - 70, cx + L / 2 + 34);
+    c.save();
+    arrowS(c, ax + 26, onCeil ? sy(gy - hb * 0.6) : sy(gy - hb * 2.4), base, '#C9CEE8', 'weight', 'left');   // gravity always pulls down the screen
+    var dl = base * Math.min(dw, 3);
+    if (dl > 3) arrowS(c, ax, sy(gy - hb * 0.4) - (onCeil ? -dl : dl), (onCeil ? -1 : 1) * dl, onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8', dw.toFixed(1) + '×', 'right');
+    c.restore();
     c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
-    c.fillText(onCeil ? 'UPSIDE DOWN' : wing < 0.01 ? 'WINGS OFF' : 'WINGS ' + Math.round(wing * 100) + '%', 10, onCeil ? h - 8 : 16);
-    if (onCeil) { c.textAlign = 'right'; c.fillStyle = dw >= 1 ? '#6FD3A8' : '#FF6B5E'; c.font = '700 13px Nunito, sans-serif'; c.fillText(dw >= 1 ? 'Downforce beats weight: it sticks!' : 'Weight wins: it falls!', w - 10, h - 8); }
+    c.fillText(onCeil ? 'UPSIDE DOWN ON THE CEILING' : 'THE WHOLE CAR', 10, onCeil ? stripH - 8 : 14);
+    if (!onCeil) {
+      // a plane wing lifts; an F1 wing is the same shape turned upside down
+      function mini(x0, y0, flip, col) {
+        var sc = phone ? 34 : 42;
+        c.beginPath();
+        for (var i = 0; i <= 20; i++) { var u = i / 20, ly = (camber(u) * flip - thick(u)) * sc; if (i) c.lineTo(x0 + sc / 2 - u * sc, y0 + ly); else c.moveTo(x0 + sc / 2 - u * sc, y0 + ly); }
+        for (i = 20; i >= 0; i--) { u = i / 20; ly = (camber(u) * flip + thick(u)) * sc; c.lineTo(x0 + sc / 2 - u * sc, y0 + ly); }
+        c.closePath(); c.fillStyle = col; c.fill();
+        return sc;
+      }
+      var mx = 34, my = 40;
+      var sc = mini(mx, my, -1, '#7E869F'); arrowS(c, mx + sc / 2 + 10, my + 8, -18, '#9EA3C4', '', 'left');
+      mini(mx + (phone ? 72 : 86), my, 1, '#FF8C42'); arrowS(c, mx + (phone ? 72 : 86) + sc / 2 + 10, my - 10, 18, '#6FD3A8', '', 'left');
+      c.font = '600 9.5px "IBM Plex Mono", monospace'; c.textAlign = 'center';
+      c.fillStyle = '#9EA3C4'; c.fillText('plane wing', mx + 4, my + 24); c.fillText('lifts up', mx + 4, my + 35);
+      c.fillStyle = '#FFB27A'; c.fillText('F1 wing', mx + (phone ? 76 : 90), my + 24); c.fillText('flipped!', mx + (phone ? 76 : 90), my + 35);
+    }
+
+    // ===== 2. close-up: a slice through the front wing =====
+    var top = stripH + 8, bot = h - 8, zh = bot - top;
+    c.fillStyle = '#10132A'; rr(c, 6, top, w - 12, zh, 14); c.fill();
+    c.strokeStyle = 'rgba(255,200,69,.45)'; c.lineWidth = 1.5; rr(c, 6, top, w - 12, zh, 14); c.stroke();
+    // lines from the ring to the close-up
+    c.strokeStyle = 'rgba(255,200,69,.35)'; c.setLineDash([3, 4]); c.lineWidth = 1;
+    c.beginPath(); c.moveTo(fwX - ringR, sy(fwY)); c.lineTo(w * 0.22, top); c.moveTo(fwX + ringR, sy(fwY)); c.lineTo(w * 0.86, top); c.stroke(); c.setLineDash([]);
+    c.save(); rr(c, 6, top, w - 12, zh, 14); c.clip();
+    var chord = Math.min(w * 0.56, 290), wx = w * 0.54, wy = top + zh * 0.5;
+    var ang = on ? (0.06 + wing * 0.22) : 0;              // leading edge (right) dips: air is turned UP
+    var A = on ? e * flow : 0;
+    // pressure: squeezed, slower air above pushes down; fast air underneath pulls down
+    if (A > 0.03) {
+      var gA = c.createRadialGradient(wx, wy - chord * 0.12, 4, wx, wy - chord * 0.12, chord * 0.62);
+      gA.addColorStop(0, 'rgba(255,140,66,' + 0.42 * A + ')'); gA.addColorStop(1, 'rgba(255,140,66,0)');
+      c.fillStyle = gA; c.fillRect(6, top, w - 12, zh / 2 + 4);
+      var gB = c.createRadialGradient(wx, wy + chord * 0.14, 4, wx, wy + chord * 0.14, chord * 0.62);
+      gB.addColorStop(0, 'rgba(90,160,255,' + 0.45 * A + ')'); gB.addColorStop(1, 'rgba(90,160,255,0)');
+      c.fillStyle = gB; c.fillRect(6, wy, w - 12, zh / 2);
+    }
+    // wing outline points (world coords)
+    function wpt(u, side) { // side -1 = top surface, +1 = bottom
+      var lx = chord / 2 - u * chord, ly = (camber(u) + side * thick(u)) * chord;
+      var ca = Math.cos(ang), sa = Math.sin(ang);
+      return [wx + lx * ca - ly * sa, wy + lx * sa + ly * ca];
+    }
+    // streamlines: air rushes right-to-left past the wing
+    var speedPx = 40 + v * 2.6;
+    var span = zh - 24, lane0 = top + 12;
+    function flowY(y0, x) {
+      var rel = (y0 - wy) / (chord * 0.55), near = Math.exp(-rel * rel);
+      var s = (wx + chord / 2 - x) / chord;              // 0 at leading edge, 1 at trailing edge
+      var hug = Math.exp(-Math.pow((s - 0.4) / 0.5, 2));
+      var bump = on ? hug * chord * 0.2 * near * (rel < 0 ? -1 : 1) : 0;
+      var turn = -A * chord * 0.45 * near * smooth(-0.1, 1.5, s) - A * chord * 0.12 * near * Math.max(0, s - 1.2);
+      return y0 + bump + turn;
+    }
+    for (var ln = 0; ln < LANES; ln++) {
+      var yl = lane0 + (ln + 0.5) / LANES * span;
+      c.strokeStyle = 'rgba(190,195,225,.16)'; c.lineWidth = 1.2; c.beginPath();
+      for (var xx = 6; xx <= w - 6; xx += 6) { var yy = flowY(yl, xx); if (xx === 6) c.moveTo(xx, yy); else c.lineTo(xx, yy); }
+      c.stroke();
+    }
+    air.forEach(function (a) {
+      var y0 = lane0 + (a.lane + 0.5) / LANES * span;
+      var rel = (y0 - wy) / (chord * 0.55), near = Math.exp(-rel * rel);
+      var s = (wx + chord / 2 - a.x) / chord;
+      var under = rel > 0 && s > -0.1 && s < 1.1 ? 1 : 0;
+      a.x -= speedPx * (1 + 0.7 * A * under * near) * dt;
+      if (a.x < -30) { a.x = w + 20 + Math.random() * 30; }
+      var len = 12 + 12 * flow * (1 + 0.7 * A * under * near);
+      var hot = near > 0.3 && s > 0.7 && A > 0.05;
+      c.strokeStyle = hot ? 'rgba(111,211,168,.95)' : under && near > 0.3 && A > 0.05 ? 'rgba(140,190,255,.95)' : 'rgba(200,205,235,.6)';
+      c.lineWidth = 2.2; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(a.x, flowY(y0, a.x)); c.lineTo(a.x + len, flowY(y0, a.x + len)); c.stroke();
+    });
+    // the wing itself
+    if (on) {
+      c.beginPath();
+      for (var i = 0; i <= 30; i++) { var p = wpt(i / 30, -1); if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }
+      for (i = 30; i >= 0; i--) { p = wpt(i / 30, 1); c.lineTo(p[0], p[1]); }
+      c.closePath(); c.fillStyle = '#6A7396'; c.fill(); c.strokeStyle = '#F4F1FA'; c.lineWidth = 2.5; c.stroke();
+      // the push on the wing: down
+      var fl = Math.min(zh * 0.36, 10 + 120 * A * A);
+      if (A > 0.05) arrowS(c, wx, wy + chord * 0.05, fl, '#6FD3A8', onCeil ? 'into the ceiling' : 'pushes the car down', 'left');
+      c.font = '700 ' + (phone ? 11.5 : 12.5) + 'px Nunito, sans-serif'; c.textAlign = 'center';
+      if (A > 0.05) {
+        pill(c, 'air piles up on top', wx + chord * 0.12, wy - chord * 0.3, '#FFB27A', 'center');
+        pill(c, 'fast air underneath', wx - 12, wy + chord * 0.3, '#9CC5FF', 'right');
+        pill(c, 'air thrown up ↗', 16, top + 40, '#6FD3A8', 'left');
+      } else {
+        pill(c, 'Drive faster to see the air push', wx, wy + chord * 0.42, '#C9CEE8', 'center');
+      }
+    } else {
+      c.font = '700 13px Nunito, sans-serif';
+      pill(c, 'No wing: the air just slides past.', w / 2, wy - 6, '#FF8F7A', 'center');
+      pill(c, 'Nothing turns it, so nothing pushes down.', w / 2, wy + 16, '#C9CEE8', 'center');
+    }
     c.restore();
+    c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#FFC845'; c.textAlign = 'left';
+    c.fillText('CLOSE-UP: FRONT WING, SLICED', 16, top + 16);
+    c.fillStyle = '#9EA3C4'; c.textAlign = 'right'; if (!onCeil) c.fillText('← air rushing past', w - 16, bot - 8);
+    if (onCeil) { c.textAlign = 'left'; c.fillStyle = dw >= 1 ? '#6FD3A8' : '#FF6B5E'; c.font = '700 13px Nunito, sans-serif'; c.fillText(dw >= 1 ? 'Downforce beats weight: it sticks!' : 'Weight wins: it falls!', 16, bot - 8); }
   }
+  function pill(c, t, x, y, col, al) {
+    c.textAlign = al; var tw = c.measureText(t).width, x0 = al === 'center' ? x - tw / 2 : al === 'right' ? x - tw : x;
+    c.fillStyle = 'rgba(16,19,42,.82)'; rr(c, x0 - 5, y - 13, tw + 10, 18, 7); c.fill();
+    c.fillStyle = col; c.fillText(t, x, y);
+  }
+  function smooth(a, b, x) { var t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); }
   function arrowS(c, x, y, dy, col, label, side) {
     if (Math.abs(dy) < 3) return;
     var u = dy > 0 ? 1 : -1, hs = Math.min(9, Math.abs(dy) * 0.5);
     c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 4; c.lineCap = 'round';
     c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + dy - u * hs); c.stroke();
     c.beginPath(); c.moveTo(x, y + dy); c.lineTo(x - hs * 0.8, y + dy - u * hs); c.lineTo(x + hs * 0.8, y + dy - u * hs); c.closePath(); c.fill();
+    if (!label) return;
     c.font = '700 12px Nunito, sans-serif'; c.textAlign = side === 'left' ? 'left' : 'right';
     var tx = x + (side === 'left' ? 8 : -8), ty = y + Math.max(-60, Math.min(60, dy * 0.5)) + 4, tw = c.measureText(label).width;
     c.fillStyle = 'rgba(20,23,42,.85)'; rr(c, side === 'left' ? tx - 4 : tx - tw - 4, ty - 12, tw + 8, 17, 6); c.fill();
