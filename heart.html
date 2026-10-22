@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – How does your heart pump blood?</title>
+  <meta name="description" content="Tap a heart to make it beat, follow a blood cell to your lungs and round your body, then break a valve. Playable science for children aged 7–12.">
+  <meta property="og:title" content="How does your heart pump blood?">
+  <meta property="og:description" content="Two pumps side by side, and doors that only open one way. Make it beat, then break a valve.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+  <style>
+    #heart { display: block; width: 100%; touch-action: none; cursor: pointer; -webkit-user-select: none; user-select: none; }
+    #loop { display: block; width: 100%; touch-action: none; cursor: pointer; }
+    .rig > *, .screens, .screen { min-width: 0; }
+    .phase { font-family: var(--mono); font-weight: 600; font-size: 11px; letter-spacing: .06em; color: var(--sun); background: rgba(255,200,69,.12); border-radius: 999px; padding: 4px 9px; white-space: nowrap; }
+    .ctl { background: #171A2E; border-top: 1px solid rgba(255,255,255,.05); padding: 8px 12px 10px; display: grid; gap: 8px; }
+    .ctl .box-head { margin-bottom: 0; }
+    .ctl input[type=range] { height: 30px; }
+    .ctl-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ctl.nudge-rate .rate-row { animation: nudge 1.4s ease-in-out infinite; border-radius: 12px; }
+    .chip.fix.on { background: var(--mint); border-style: solid; border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="#signup">Get the next one</a>
+    </nav>
+
+    <header class="intro">
+      <div class="eyebrow">Fig. 09 · The heart</div>
+      <h1>How does your <em>heart</em> pump blood?</h1>
+      <p class="lede">It's two pumps side by side, with doors that only open one way. <b>Tap the heart to make it beat, follow a blood cell all the way round, then break a valve.</b></p>
+    </header>
+
+    <section class="rig" aria-label="A playable heart">
+      <div class="screens">
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">Facing you · their right is on your left</div><div class="phase" id="phase">RESTING</div></div>
+          <canvas id="heart" aria-label="A heart with four chambers and four one-way valves. Tap it to make it beat."></canvas>
+          <div class="ctl" id="ctl">
+            <div class="rate-row">
+              <div class="box-head"><span>HEART RATE</span><b id="rateVal">80 a minute</b></div>
+              <input type="range" id="rate" min="40" max="180" value="80" aria-label="Heart rate in beats per minute">
+            </div>
+            <div class="ctl-chips">
+              <button class="chip fix" id="exBtn" aria-pressed="false">🏃 Exercise</button>
+              <button class="chip" id="leakBtn" aria-pressed="false">Leaky valve</button>
+              <button class="chip fix" id="followBtn" aria-pressed="false">Follow a blood cell</button>
+            </div>
+          </div>
+        </div>
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">The loop round your body · sped up</div><div class="screen-tag">dark = low on oxygen</div></div>
+          <canvas id="loop" aria-label="The loop blood takes: heart, lungs, heart, body, and back"></canvas>
+        </div>
+      </div>
+
+      <div class="cockpit">
+        <div class="gauges">
+          <div class="gauge" id="gRate"></div>
+          <div class="gauge" id="gPump"></div>
+          <div class="gauge" id="gOx"></div>
+        </div>
+
+        <div class="ari" id="ari" aria-live="polite">
+          <div class="owl">🦉</div>
+          <div><p id="ariText"></p></div>
+        </div>
+
+        <div class="missions">
+          <div class="mission now"><i>01</i>Make it beat</div>
+          <div class="mission"><i>02</i>Follow a cell</div>
+          <div class="mission"><i>03</i>Break it</div>
+          <div class="mission"><i>04</i>Keep up with a run</div>
+        </div>
+
+        <div class="experiments">
+          <button class="chip" id="startBtn">Start it beating</button>
+          <button class="tool" id="slowBtn" aria-pressed="false" style="margin-left:auto">Slow motion</button>
+          <button class="tool" id="soundBtn" aria-pressed="false">Sound off</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <h2>Fill, squeeze, snap, repeat</h2>
+      <p>What your heart does, roughly once every second, your whole life.</p>
+      <div class="stage-grid">
+        <div class="stage"><div class="k">01 · FILL</div><h3>The top rooms fill</h3><p>Blood coming back from your body and your lungs pours into the two top rooms, called the atria.</p></div>
+        <div class="stage"><div class="k">02 · SQUEEZE</div><h3>The pumps squeeze</h3><p>The bottom rooms, the ventricles, have thick walls of muscle. They squeeze hard and push the blood out.</p></div>
+        <div class="stage"><div class="k">03 · SNAP</div><h3>Valves snap shut</h3><p>One-way valves slam shut so blood can't go backwards. Lub is the first pair closing, dub is the second. That's the sound a doctor hears.</p></div>
+        <div class="stage"><div class="k">04 · TWO LOOPS</div><h3>Lungs, then body</h3><p>The right side sends blood to your lungs to pick up oxygen. The left side sends it all round your body.</p></div>
+      </div>
+      <p class="big-idea"><b>The big idea:</b> your heart is two pumps side by side, and the valves make sure blood only ever goes one way. It's about the size of your fist, and it beats about 100,000 times a day.</p>
+    </section>
+
+    <section class="signup" id="signup">
+      <div>
+        <h2>Felt your pulse? There's a whole workshop of these.</h2>
+        <p>We make machines your child can poke, fly and break. Jet engines, drones, touchscreens, hearts. We'll email you when the next one is ready.</p>
+        <p class="fine">No spam. Unsubscribe in one click.</p>
+      </div>
+      <div class="form-box">
+        <iframe id="tallyForm" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Get the next Ari machine"></iframe>
+      </div>
+    </section>
+
+    <!-- MACHINES -->
+    <section class="next">
+      <h2>More machines</h2>
+      <p>Each one starts with a question a curious kid would ask.</p>
+      <div class="figs">
+        <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
+        <a class="fig" href="/drone.html"><span class="tag go">Play</span><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></a>
+        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
+        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+      </div>
+    </section>
+    <!-- /MACHINES -->
+
+    <section class="why">
+      <h2>Why parents like it</h2>
+      <p>Built for children aged roughly 7 to 12.</p>
+      <div class="why-grid">
+        <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
+        <div class="why-item"><h3>The pump in their chest</h3><p>They can feel their own pulse. Now they know what's making it, and why it speeds up when they run.</p></div>
+        <div class="why-item"><h3>No ads. No accounts.</h3><p>Children don't sign up for anything. Only you get the email, and only if you ask for it.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari</div>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== Sign-up form =====================
+  var params = new URLSearchParams(location.search);
+  var src = { object: 'heart' };
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ref'].forEach(function (k) { if (params.get(k)) src[k] = params.get(k); });
+  var stats = { interactions: 0 };
+  var M = [false, false, false, false];
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'heart' }); } catch (e) {} }
+  function loadForm() {
+    var q = new URLSearchParams({ alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1' });
+    Object.keys(src).forEach(function (k) { q.set(k, src[k]); });
+    q.set('interactions', String(stats.interactions)); q.set('missions', String(M.filter(Boolean).length));
+    var f = document.getElementById('tallyForm');
+    f.setAttribute('data-tally-src', 'https://tally.so/embed/q45EaG?' + q.toString());
+    if (window.Tally) window.Tally.loadEmbeds(); else f.src = f.getAttribute('data-tally-src');
+  }
+  var formLoaded = false;
+  var io = new IntersectionObserver(function (e) { if (!formLoaded && e[0].isIntersecting) { formLoaded = true; loadForm(); io.disconnect(); } }, { rootMargin: '200px' });
+  io.observe(document.getElementById('signup'));
+
+  // ===================== Model =====================
+  // A child's heart pushes out roughly 50 ml per beat at rest, a bit more when exercising.
+  var bpm = 80, auto = false, beating = false, phase = 0.999, slow = false;
+  var exercise = false, leak = false, leakBeats = 0;
+  var taps = [], tapCount = 0, clock = 0, runOk = 0;
+  var lastEvent = { kind: '', t: -10 };
+  function ev(k) { lastEvent = { kind: k, t: clock }; }
+  function strokeMl() { return exercise ? 60 : 50; }
+  function forwardFrac() { return leak ? 0.65 : 1; }
+  function tapRate() {
+    var n = taps.length;
+    if (n < 2 || clock - taps[n - 1] > 2.5) return 0;
+    return Math.max(0, Math.min(200, 60 / Math.max(0.3, taps[n - 1] - taps[n - 2])));
+  }
+  function rateNow() { return auto ? bpm : tapRate(); }
+  function output() { return rateNow() * strokeMl() * forwardFrac() / 1000; }   // litres a minute
+  function need() { return exercise ? 9 : 3.5; }
+  function oxygen() { return output() / need() * 100; }                        // % of what the body needs
+
+  // phase of one beat: 0–0.15 top rooms squeeze, 0.15–0.5 bottom rooms squeeze, then fill
+  function atrSq() { return phase < 0.15 ? Math.sin(Math.PI * phase / 0.15) : 0; }
+  function ventSq() { return phase >= 0.15 && phase < 0.5 ? Math.sin(Math.PI * (phase - 0.15) / 0.35) : 0; }
+  function avOpen() { return !(phase >= 0.15 && phase < 0.5); }
+  function exOpen() { return phase >= 0.2 && phase < 0.45; }
+
+  // ===================== Geometry (unit box, viewer's left = heart's right) =====================
+  var ATR = [{ x: .10, y: .22, w: .26, h: .24 }, { x: .64, y: .22, w: .26, h: .24 }];
+  var VEN = [{ x: .08, y: .50, w: .40, h: .36 }, { x: .54, y: .52, w: .36, h: .38 }];
+  var AVX = [[.13, .33], [.67, .87]], AVY = [.48, .49];
+  var EXX = [[.4025, .4775], [.5225, .5975]], EXY = [.47, .50];
+  var ART = [[[.44, .50], [.44, .15], [.02, .15]], [[.56, .52], [.56, .10], [.98, .10]]];
+  var VEIN = [[[0, .34], [.115, .34]], [[1, .34], [.885, .34]]];
+  var EXIT_U = [.9, .06];
+  function exitOk(side, u) { return side ? u < .2 : u > .78; }
+  var PW = .075;
+  var CAV = ['#3A1530', '#64121D'], CELL = ['#A2548E', '#FF5B4F'], PIPE_IN = ['#4A1C3D', '#7A1622'];
+
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function scaleRect(r, s, ay) { var cx = r.x + r.w / 2, cy = r.y + r.h * ay; return { x: cx - r.w * s / 2, y: cy - r.h * ay * s, w: r.w * s, h: r.h * s }; }
+  function along(poly, t) {
+    var L = [], tot = 0, i;
+    for (i = 1; i < poly.length; i++) { var d = Math.hypot((poly[i][0] - poly[i - 1][0]) * bw, (poly[i][1] - poly[i - 1][1]) * bh); L.push(d); tot += d; }
+    var s = clamp(t, 0, 1) * tot;
+    for (i = 0; i < L.length; i++) { if (s <= L[i] || i === L.length - 1) { var f = L[i] ? s / L[i] : 0; f = clamp(f, 0, 1); return [poly[i][0] + (poly[i + 1][0] - poly[i][0]) * f, poly[i][1] + (poly[i + 1][1] - poly[i][1]) * f]; } s -= L[i]; }
+    return poly[poly.length - 1];
+  }
+
+  // ===================== Blood cells =====================
+  var parts = [];
+  function home(p) { p.hu = .15 + Math.random() * .7; p.hv = .15 + Math.random() * .7; }
+  function mk(side, zone, u, v) { var p = { side: side, zone: zone, u: u, v: v, vu: 0, vv: 0, back: 0 }; home(p); return p; }
+  for (var s0 = 0; s0 < 2; s0++) {
+    var i0;
+    for (i0 = 0; i0 < 4; i0++) parts.push(mk(s0, 'vein', i0 / 4, 0));
+    for (i0 = 0; i0 < 16; i0++) parts.push(mk(s0, 'atr', Math.random(), Math.random()));
+    for (i0 = 0; i0 < 30; i0++) parts.push(mk(s0, 'ven', .1 + Math.random() * .8, .1 + Math.random() * .8));
+    for (i0 = 0; i0 < 10; i0++) parts.push(mk(s0, 'art', i0 / 10, 0));
+  }
+  function steer(p, tu, tv, spd, dt) {
+    var du = tu - p.u, dv = tv - p.v, d = Math.hypot(du, dv) || 1, a = Math.min(1, dt * 6);
+    p.vu += (du / d * spd - p.vu) * a + (Math.random() - .5) * dt * 1.2;
+    p.vv += (dv / d * spd - p.vv) * a + (Math.random() - .5) * dt * 1.2;
+    if (d < .03 && spd < 1) { p.vu *= .6; p.vv *= .6; }
+    p.u = clamp(p.u + p.vu * dt, .02, .98); p.v = clamp(p.v + p.vv * dt, 0, 1);
+  }
+  var backCount = 0;
+  function stepCells(dt) {
+    var br = (auto ? bpm : 80) / 60, av = avOpen(), ex = exOpen(), as = atrSq(), vs = ventSq();
+    parts.forEach(function (p) {
+      var x;
+      if (p.zone === 'vein') {
+        p.u += br * dt * 2.2;
+        if (p.u >= 1) { p.zone = 'atr'; p.u = p.side ? .92 : .08; p.v = .35 + Math.random() * .3; p.vu = p.side ? -.6 : .6; p.vv = 0; home(p); }
+      } else if (p.zone === 'atr') {
+        if (p.back > 0) { p.back -= dt; p.v = clamp(p.v + p.vv * dt, .05, 1); p.vv *= Math.pow(.2, dt); return; }
+        if (av) steer(p, .5, 1.05, (as > 0 ? 3.2 : 0.9) * br, dt);
+        else steer(p, p.hu, p.hv * .8, .3 * br, dt);
+        if (av && p.v > .95 && p.u > .12 && p.u < .88) {
+          x = ATR[p.side].x + p.u * ATR[p.side].w;
+          p.zone = 'ven'; p.u = clamp((x - VEN[p.side].x) / VEN[p.side].w, .05, .95); p.v = .03; p.vv = .6 * br; home(p);
+        }
+      } else if (p.zone === 'ven') {
+        if (leak && p.side === 1 && !av && vs > .05 && p.v < .42 && p.u > .36 && p.u < .92 && Math.random() < dt * 5) {
+          x = VEN[1].x + p.u * VEN[1].w;
+          p.zone = 'atr'; p.u = clamp((x - ATR[1].x) / ATR[1].w, .1, .9); p.v = .97; p.vv = -1.8 * br; p.vu = 0; p.back = .45; home(p); backCount++;
+          return;
+        }
+        if (ex) {
+          steer(p, EXIT_U[p.side], -.1, 4 * br * (.4 + vs), dt);
+          if (p.v < .05 && exitOk(p.side, p.u)) { p.zone = 'art'; p.u = 0; }
+        } else steer(p, p.hu, p.hv, .5 * br, dt);
+      } else if (p.zone === 'art') {
+        p.u += br * dt * (ex ? 2.6 : 1.4);
+        if (p.u >= 1) { p.side = 1 - p.side; p.zone = 'vein'; p.u = 0; }   // lungs → left side, body → right side
+      }
+    });
+  }
+
+  // ===================== Canvas setup =====================
+  var cv = document.getElementById('heart'), ctx = cv.getContext('2d');
+  var lc = document.getElementById('loop'), lctx = lc.getContext('2d');
+  var W, H, LW, LH, dpr, bw, bh, bx, by;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    W = Math.max(260, cv.clientWidth);
+    bw = W < 600 ? W - 16 : Math.min(W * 0.62, 470); bh = bw * 0.95;
+    H = Math.round(bh + 44);
+    bx = W < 600 ? (W - bw) / 2 : Math.max(10, (W - bw) / 2 - (W >= 700 ? 80 : 0)); by = 16;
+    cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    LW = Math.max(260, lc.clientWidth); LH = LW < 600 ? 250 : 270;
+    lc.style.height = LH + 'px'; lc.width = Math.round(LW * dpr); lc.height = Math.round(LH * dpr); lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildLoop();
+  }
+  function U(p) { return [bx + p[0] * bw, by + p[1] * bh]; }
+  function rr(c, x, y, w, h, r) { c.beginPath(); w = Math.max(1, w); h = Math.max(1, h); r = Math.max(0, Math.min(r, w / 2, h / 2)); if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
+  function rr4(c, x, y, w, h, rad) {
+    w = Math.max(1, w); h = Math.max(1, h);
+    var r = rad.map(function (v) { return Math.max(0, Math.min(v, w / 2, h / 2)); });
+    c.beginPath(); c.moveTo(x + r[0], y); c.lineTo(x + w - r[1], y); c.arcTo(x + w, y, x + w, y + r[1], r[1]);
+    c.lineTo(x + w, y + h - r[2]); c.arcTo(x + w, y + h, x + w - r[2], y + h, r[2]);
+    c.lineTo(x + r[3], y + h); c.arcTo(x, y + h, x, y + h - r[3], r[3]);
+    c.lineTo(x, y + r[0]); c.arcTo(x, y, x + r[0], y, r[0]); c.closePath();
+  }
+  function rectPx(r) { return { x: bx + r.x * bw, y: by + r.y * bh, w: r.w * bw, h: r.h * bh }; }
+  function pill(c, text, x, y, align, fg, bg, fs) {
+    c.font = '600 ' + fs + 'px "IBM Plex Mono", monospace'; var tw = c.measureText(text).width, ph = fs + 8, pw = tw + 12;
+    var x0 = align === 'right' ? x - pw : align === 'center' ? x - pw / 2 : x;
+    x0 = clamp(x0, 2, W - pw - 2);
+    c.fillStyle = bg; rr(c, x0, y - ph / 2, pw, ph, ph / 2); c.fill();
+    c.fillStyle = fg; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText(text, x0 + 6, y + .5); c.textBaseline = 'alphabetic';
+  }
+
+  // ===================== Drawing the heart =====================
+  var vo = { av: [1, 1], ex: [0, 0] }, cavA = [ATR[0], ATR[1]], cavV = [VEN[0], VEN[1]], tapGlow = 0;
+  function drawPipe(c, poly, side, w) {
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    c.beginPath(); poly.forEach(function (p, i) { var q = U(p); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); });
+    c.strokeStyle = '#B9505F'; c.lineWidth = w + 7; c.stroke();
+    c.strokeStyle = PIPE_IN[side]; c.lineWidth = w; c.stroke();
+  }
+  function flap(c, hx, hy, dirx, len, ang, up) {
+    var ex = hx + dirx * len * Math.cos(ang), ey = hy + (up ? -1 : 1) * len * Math.sin(ang);
+    c.beginPath(); c.moveTo(hx, hy); c.lineTo(ex, ey); c.stroke();
+  }
+  function drawHeart(dt) {
+    var c = ctx;
+    c.clearRect(0, 0, W, H);
+    var bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1C2038'); bg.addColorStop(1, '#14172A');
+    c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    var as = atrSq(), vs = ventSq(), breathe = auto ? 0 : Math.sin(clock * 2.2) * 0.006;
+    var pw = PW * bw;
+    // blood vessels (behind the muscle)
+    drawPipe(c, ART[0], 0, pw); drawPipe(c, ART[1], 1, pw);
+    drawPipe(c, VEIN[0], 0, pw); drawPipe(c, VEIN[1], 1, pw);
+    // muscle: the two pumps share one thick wall
+    var mg = c.createLinearGradient(0, by + bh * .45, 0, by + bh);
+    mg.addColorStop(0, '#F09AA0'); mg.addColorStop(1, '#D9606C');
+    c.save();
+    var sv = 1 - 0.05 * vs + breathe, cx0 = bx + .5 * bw, cy0 = by + .55 * bh;
+    c.translate(cx0, cy0); c.scale(sv, sv); c.translate(-cx0, -cy0);
+    var P = function (x, y) { return [bx + x * bw, by + y * bh]; };
+    c.beginPath();
+    var a = P(.03, .49), b = P(.97, .49); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]);
+    var c1 = P(.99, .80), c2 = P(.80, .96), ap = P(.60, .995); c.bezierCurveTo(c1[0], c1[1], c2[0], c2[1], ap[0], ap[1]);
+    var c3 = P(.38, .975), c4 = P(.02, .84); c.bezierCurveTo(c3[0], c3[1], c4[0], c4[1], a[0], a[1]); c.closePath();
+    c.fillStyle = mg; c.fill(); c.strokeStyle = '#7E2534'; c.lineWidth = 2.5; c.stroke();
+    c.restore();
+    // atria muscle
+    for (var s = 0; s < 2; s++) {
+      var sh = rectPx(scaleRect(ATR[s], 1 - 0.09 * as + breathe, .85));
+      c.fillStyle = '#F2A3A8'; rr(c, sh.x - .03 * bw, sh.y - .03 * bh, sh.w + .06 * bw, sh.h + .05 * bh, .07 * bw); c.fill();
+      c.strokeStyle = '#7E2534'; c.lineWidth = 2.5; c.stroke();
+    }
+    // cavities squeeze smaller than the muscle around them
+    cavA = [scaleRect(ATR[0], 1 - 0.22 * as + breathe, .85), scaleRect(ATR[1], 1 - 0.22 * as + breathe, .85)];
+    cavV = [scaleRect(VEN[0], 1 - 0.30 * vs + breathe, .12), scaleRect(VEN[1], 1 - 0.30 * vs + breathe, .12)];
+    for (s = 0; s < 2; s++) {
+      c.fillStyle = CAV[s];
+      // necks: openings between rooms and into the pipes
+      var n1 = U([AVX[s][0], cavA[s].y + cavA[s].h - .01]), n2 = U([AVX[s][1], cavV[s].y + .01]);
+      c.fillRect(n1[0], n1[1], n2[0] - n1[0], n2[1] - n1[1]);
+      var e1 = U([EXX[s][0], EXY[s] - .03]), e2 = U([EXX[s][1], cavV[s].y + .015]);
+      c.fillStyle = PIPE_IN[s]; c.fillRect(e1[0], e1[1], e2[0] - e1[0], e2[1] - e1[1]);
+      var vx0 = s ? cavA[s].x + cavA[s].w - .01 : .07, vx1 = s ? .93 : cavA[s].x + .01;
+      var v1 = U([vx0, .34 - PW / 2]), v2 = U([vx1, .34 + PW / 2]);
+      c.fillRect(Math.min(v1[0], v2[0]), v1[1], Math.abs(v2[0] - v1[0]), v2[1] - v1[1]);
+      c.fillStyle = CAV[s];
+      var ra = rectPx(cavA[s]); rr(c, ra.x, ra.y, ra.w, ra.h, Math.min(ra.w, ra.h) * .35); c.fill();
+      var rv = rectPx(cavV[s]);
+      rr4(c, rv.x, rv.y, rv.w, rv.h, s ? [rv.w * .12, rv.w * .2, rv.w * .45, rv.w * .7] : [rv.w * .12, rv.w * .12, rv.w * .7, rv.w * .4]); c.fill();
+    }
+    // blood cells
+    var pr = Math.max(2.4, bw * 0.0125);
+    parts.forEach(function (p) {
+      var q;
+      if (p.zone === 'vein') q = U(along(VEIN[p.side], p.u));
+      else if (p.zone === 'art') q = U(along(ART[p.side], p.u));
+      else {
+        var r = p.zone === 'atr' ? cavA[p.side] : cavV[p.side], pad = .12;
+        q = U([r.x + r.w * (pad + (1 - 2 * pad) * p.u), r.y + r.h * (pad + (1 - 2 * pad) * p.v)]);
+      }
+      if (p.back > 0) {
+        c.strokeStyle = 'rgba(255,200,69,' + Math.min(1, p.back * 3) + ')'; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(q[0], q[1]); c.lineTo(q[0], q[1] + bh * .05); c.stroke();
+      }
+      c.fillStyle = CELL[p.side]; c.beginPath(); c.arc(q[0], q[1], pr, 0, 6.3); c.fill();
+      c.strokeStyle = p.back > 0 ? '#FFC845' : 'rgba(255,255,255,.25)'; c.lineWidth = p.back > 0 ? 1.6 : 1; c.stroke();
+    });
+    // valves: one-way flaps
+    var k = Math.min(1, dt * 30), avT = avOpen() ? 1 : 0, exT = exOpen() ? 1 : 0;
+    c.lineCap = 'round'; c.strokeStyle = '#FFF4EA'; c.lineWidth = Math.max(3, bw * .012);
+    for (s = 0; s < 2; s++) {
+      vo.av[s] += (avT - vo.av[s]) * (avT > vo.av[s] ? k * .45 : k);
+      vo.ex[s] += (exT - vo.ex[s]) * (exT > vo.ex[s] ? k * .6 : k);
+      var leaky = leak && s === 1;
+      var h0 = U([AVX[s][0], AVY[s]]), h1 = U([AVX[s][1], AVY[s]]), L = (h1[0] - h0[0]) / 2 * (leaky ? .72 : .98);
+      var closedA = leaky ? .35 : 0, aA = closedA + vo.av[s] * (1.25 - closedA);
+      c.strokeStyle = leaky ? '#FFC845' : '#FFF4EA';
+      flap(c, h0[0], h0[1], 1, L, aA, false); flap(c, h1[0], h1[1], -1, L, aA, false);
+      c.strokeStyle = '#FFF4EA';
+      var e0 = U([EXX[s][0], EXY[s]]), e1b = U([EXX[s][1], EXY[s]]), Le = (e1b[0] - e0[0]) / 2 * .98, aE = vo.ex[s] * 1.25;
+      flap(c, e0[0], e0[1], 1, Le, aE, true); flap(c, e1b[0], e1b[1], -1, Le, aE, true);
+    }
+    // backwards jet through the leaky valve
+    if (leak && vs > .1) {
+      var j = U([(AVX[1][0] + AVX[1][1]) / 2, AVY[1]]);
+      pill(c, '↑ backwards!', j[0], j[1] - bh * .14, 'center', '#3A2A06', '#FFC845', Math.max(9, Math.round(bw * .028)));
+    }
+    // labels
+    var fs = Math.max(8.5, Math.round(bw * .026));
+    c.font = '600 ' + fs + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillStyle = 'rgba(255,240,235,.75)';
+    var lab = function (r, t) { var q = rectPx(r); c.fillText(t, q.x + q.w / 2, q.y + fs + 3); };
+    lab(cavA[0], 'R. ATRIUM'); lab(cavA[1], 'L. ATRIUM'); lab(cavV[0], 'R. VENTRICLE'); lab(cavV[1], 'L. VENTRICLE');
+    var pf = Math.max(9, Math.round(bw * .027));
+    pill(c, '← to lungs', bx + .01 * bw, by + .065 * bh, 'left', '#E9E4F5', 'rgba(74,28,61,.92)', pf);
+    pill(c, 'to body →', bx + .99 * bw, by + .02 * bh, 'right', '#FFE1DC', 'rgba(122,22,34,.92)', pf);
+    pill(c, 'from body →', bx + .0 * bw, by + .265 * bh, 'left', '#E9E4F5', 'rgba(74,28,61,.92)', pf);
+    pill(c, '← from lungs', bx + 1 * bw, by + .265 * bh, 'right', '#FFE1DC', 'rgba(122,22,34,.92)', pf);
+    c.font = '700 ' + Math.max(10, Math.round(bw * .03)) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center';
+    c.fillStyle = '#C9A2D6'; c.fillText('RIGHT SIDE', bx + .26 * bw, H - 10);
+    c.fillStyle = '#FF8F84'; c.fillText('LEFT SIDE', bx + .74 * bw, H - 10);
+    // tap hint
+    if (!M[0]) {
+      tapGlow += dt;
+      var tp = U([.5, .72]), pulse = 1 + Math.sin(tapGlow * 4) * .06;
+      c.save(); c.translate(tp[0], tp[1]); c.scale(pulse, pulse);
+      pill(c, tapCount ? 'Tap again! ' + tapCount + ' / 5' : '👆 Tap the heart', 0, 0, 'center', '#3A2A06', '#FFC845', Math.max(12, Math.round(bw * .04)));
+      c.restore();
+    }
+    // side notes on wide screens
+    if (W >= 700) {
+      var lx = bx + bw + 30; c.textAlign = 'left';
+      c.font = '600 11px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.fillText('ONE BEAT', lx, by + 24);
+      var steps = [['1  Top rooms squeeze', as > 0], ['2  Bottom rooms squeeze', vs > 0], ['   lub: doors to the top shut', vs > 0 && phase < .3], ['   dub: doors to the pipes shut', phase >= .45 && phase < .6], ['3  Everything fills up', !as && !vs]];
+      steps.forEach(function (st, i) { c.font = (st[1] ? '800 ' : '700 ') + '14px Nunito, sans-serif'; c.fillStyle = st[1] ? '#FFC845' : '#E9E4F5'; c.fillText(st[0], lx, by + 52 + i * 22); });
+      c.font = '700 13px Nunito, sans-serif'; c.fillStyle = '#9EA3C4';
+      ['The valves are the white flaps.', 'They only open one way.'].forEach(function (l, i) { c.fillText(l, lx, by + 52 + 5 * 22 + 14 + i * 19); });
+    }
+  }
+
+  // ===================== The loop =====================
+  var loopPts = [], sL = [0, 0], sB = [0, 0], flowOff = 0;
+  var gold = { on: false, s: 0, lungs: false, body: false };
+  function buildLoop() {
+    var hx = LW / 2, hy = LH * .5, half = Math.min(LW - 40, 440) / 2, Ty = 52, By = LH - 62;
+    var C = [
+      [hx - 16, hy], [hx - .72 * half, hy - .4 * (hy - Ty)], [hx - .52 * half, Ty], [hx - .16 * half, Ty - 4],
+      [hx + .16 * half, Ty - 4], [hx + .52 * half, Ty], [hx + .72 * half, hy - .4 * (hy - Ty)], [hx + 16, hy],
+      [hx + .72 * half, hy + .4 * (By - hy)], [hx + .52 * half, By], [hx + .16 * half, By + 4],
+      [hx - .16 * half, By + 4], [hx - .52 * half, By], [hx - .72 * half, hy + .4 * (By - hy)]
+    ];
+    var n = C.length, pts = [], idx = {};
+    for (var i = 0; i < n; i++) {
+      var p0 = C[(i - 1 + n) % n], p1 = C[i], p2 = C[(i + 1) % n], p3 = C[(i + 2) % n];
+      idx[i] = pts.length;
+      for (var t = 0; t < 1; t += 1 / 30) {
+        var t2 = t * t, t3 = t2 * t;
+        pts.push([.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+                  .5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)]);
+      }
+    }
+    var cum = [0]; for (i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    var tot = cum[cum.length - 1] + Math.hypot(pts[0][0] - pts[pts.length - 1][0], pts[0][1] - pts[pts.length - 1][1]);
+    loopPts = pts.map(function (p, i) { return { x: p[0], y: p[1], s: cum[i] / tot }; });
+    sL = [loopPts[idx[3]].s, loopPts[idx[4]].s]; sB = [loopPts[idx[10]].s, loopPts[idx[11]].s];
+    buildLoop.geo = { hx: hx, hy: hy, half: half, Ty: Ty, By: By };
+  }
+  function atS(s) {
+    s = ((s % 1) + 1) % 1; var lo = 0, hi = loopPts.length - 1;
+    while (lo < hi) { var mid = (lo + hi + 1) >> 1; if (loopPts[mid].s <= s) lo = mid; else hi = mid - 1; }
+    var a = loopPts[lo], b = loopPts[(lo + 1) % loopPts.length], sb = b.s > a.s ? b.s : 1, f = (s - a.s) / Math.max(1e-6, sb - a.s);
+    return [a.x + (b.x - a.x) * f, a.y + (b.y - a.y) * f];
+  }
+  function oxyAt(s) {   // 0 = low on oxygen, 1 = full
+    if (s < sL[0]) return 0; if (s < sL[1]) return (s - sL[0]) / (sL[1] - sL[0]);
+    if (s < sB[0]) return 1; if (s < sB[1]) return 1 - (s - sB[0]) / (sB[1] - sB[0]); return 0;
+  }
+  function mixCol(o, a) { var r = Math.round(162 + (255 - 162) * o), g = Math.round(84 + (91 - 84) * o), b = Math.round(142 + (79 - 142) * o); return 'rgba(' + r + ',' + g + ',' + b + ',' + (a == null ? 1 : a) + ')'; }
+  function drawLoop(dt) {
+    var c = lctx, G = buildLoop.geo; if (!G) return;
+    c.clearRect(0, 0, LW, LH); c.fillStyle = '#14172A'; c.fillRect(0, 0, LW, LH);
+    // lungs
+    c.fillStyle = 'rgba(240,150,170,.22)'; c.strokeStyle = 'rgba(240,150,170,.55)'; c.lineWidth = 1.5;
+    [-1, 1].forEach(function (sd) { c.beginPath(); c.ellipse(G.hx + sd * G.half * .3, G.Ty + 2, G.half * .26, 22, 0, 0, 6.3); c.fill(); c.stroke(); });
+    // body
+    var run = exercise, bt = clock * (run ? 9 : 0), fx = G.hx, fy = G.By - 6;
+    c.strokeStyle = 'rgba(233,228,245,.35)'; c.lineWidth = 5; c.lineCap = 'round';
+    c.beginPath(); c.arc(fx, fy - 34, 8, 0, 6.3); c.stroke();
+    c.beginPath(); c.moveTo(fx, fy - 25); c.lineTo(fx + (run ? 3 : 0), fy + 2);
+    c.moveTo(fx, fy - 18); c.lineTo(fx - 12 * Math.cos(bt), fy - 6 + (run ? 4 * Math.sin(bt) : 6));
+    c.moveTo(fx, fy - 18); c.lineTo(fx + 12 * Math.cos(bt), fy - 6 - (run ? 4 * Math.sin(bt) : -6));
+    c.moveTo(fx + (run ? 3 : 0), fy + 2); c.lineTo(fx - 10 * Math.sin(bt) - (run ? 0 : 5), fy + 22);
+    c.moveTo(fx + (run ? 3 : 0), fy + 2); c.lineTo(fx + 10 * Math.sin(bt) + (run ? 0 : 5), fy + 22); c.stroke();
+    // the path, coloured by oxygen
+    c.lineWidth = 12; c.lineCap = 'butt';
+    for (var i = 0; i < loopPts.length; i++) {
+      var a = loopPts[i], b = loopPts[(i + 1) % loopPts.length];
+      c.strokeStyle = mixCol(oxyAt(a.s), .35); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+    }
+    // flow: dots pushed along in pulses
+    var out = output(), tS = slow ? .3 : 1;
+    flowOff += dt * tS * (out / 4) * .11 * (.35 + 1.8 * ventSq());
+    var N = 34;
+    for (i = 0; i < N; i++) {
+      var s = ((i / N + flowOff) % 1 + 1) % 1, q = atS(s);
+      c.fillStyle = mixCol(oxyAt(s)); c.beginPath(); c.arc(q[0], q[1], 4, 0, 6.3); c.fill();
+    }
+    // arrows
+    c.fillStyle = 'rgba(233,228,245,.7)';
+    [.08, .4, .58, .9].forEach(function (s) {
+      var p = atS(s), p2 = atS(s + .01), ang = Math.atan2(p2[1] - p[1], p2[0] - p[0]);
+      c.save(); c.translate(p[0], p[1]); c.rotate(ang); c.beginPath(); c.moveTo(7, 0); c.lineTo(-4, -6); c.lineTo(-4, 6); c.closePath(); c.fill(); c.restore();
+    });
+    // the heart in the middle: two pumps
+    var hs = 1 + .08 * ventSq();
+    c.save(); c.translate(G.hx, G.hy); c.scale(hs, hs);
+    c.fillStyle = '#7A3A6A'; c.beginPath(); c.moveTo(0, -12); c.bezierCurveTo(-10, -26, -34, -16, -26, 2); c.lineTo(0, 24); c.closePath(); c.fill();
+    c.fillStyle = '#E2453D'; c.beginPath(); c.moveTo(0, -12); c.bezierCurveTo(10, -26, 34, -16, 26, 2); c.lineTo(0, 24); c.closePath(); c.fill();
+    c.restore();
+    // gold cell
+    if (gold.on) {
+      var before = gold.s;
+      gold.s += dt * tS * (out / 4) * .11 * (.35 + 1.8 * ventSq());
+      var mL = (sL[0] + sL[1]) / 2, mB = (sB[0] + sB[1]) / 2;
+      if (!gold.lungs && before < mL && gold.s >= mL) { gold.lungs = true; ev('lungs'); }
+      if (!gold.body && before < mB && gold.s >= mB) { gold.body = true; ev('body'); }
+      if (gold.s >= 1) {
+        gold.s -= 1;
+        if (gold.lungs && gold.body) { complete(1); ev('loop'); track('follow_done'); followBtn.textContent = 'Follow another'; followBtn.setAttribute('aria-pressed', 'false'); gold.on = false; }
+      }
+      if (gold.on) {
+        var g = atS(gold.s);
+        c.fillStyle = mixCol(oxyAt(gold.s)); c.beginPath(); c.arc(g[0], g[1], 7, 0, 6.3); c.fill();
+        c.strokeStyle = '#FFC845'; c.lineWidth = 3; c.beginPath(); c.arc(g[0], g[1], 10 + Math.sin(clock * 6) * 1.5, 0, 6.3); c.stroke();
+      }
+    }
+    // labels
+    c.textAlign = 'center'; c.font = '700 11px "IBM Plex Mono", monospace';
+    c.fillStyle = '#F2B8C6'; c.fillText('LUNGS', G.hx, G.Ty - 30);
+    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('pick up oxygen', G.hx, G.Ty + 6);
+    c.font = '700 11px "IBM Plex Mono", monospace'; c.fillStyle = '#C9C4E0';
+    c.fillText(exercise ? 'BODY · RUNNING' : 'BODY', G.hx, LH - 22);
+    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('drop off oxygen', G.hx, LH - 7);
+    c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
+    c.fillText('RIGHT', 8, G.hy + 4); c.textAlign = 'right'; c.fillText('LEFT', LW - 8, G.hy + 4);
+    c.textAlign = 'center'; c.fillStyle = '#FFDADF'; c.font = '700 10px "IBM Plex Mono", monospace'; c.fillText('HEART', G.hx, G.hy + 40);
+  }
+
+  // ===================== Gauges =====================
+  function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
+  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
+    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
+    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="#6FD3A8" stroke-width="2.5" stroke-linecap="round"/>'; }
+    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+    el.innerHTML = html;
+    return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
+  }
+  var gRate = makeGauge('gRate', 'BEATS/MIN', 180, [70 / 180, 110 / 180], 'rgba(111,211,168,.35)', '#FF4D3D');
+  var gPump = makeGauge('gPump', 'LITRES/MIN', 12, null, null, '#FF8C42');
+  var gOx = makeGauge('gOx', 'OXYGEN', 150, null, null, '#FFC845', 100 / 150);
+  function setGauge(g, v, fmt, dt) {
+    g.shown += (v - g.shown) * Math.min(1, dt * 8);
+    var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
+    g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.val.textContent = fmt(g.shown);
+  }
+
+  // ===================== Sound (off by default) =====================
+  var AC = null, soundOn = false;
+  function thump(f0, f1, len, vol) {
+    if (!soundOn) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      var o = AC.createOscillator(), g = AC.createGain(), t = AC.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + len);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + len + 0.05);
+    } catch (e) {}
+  }
+  function whoosh(len) {
+    if (!soundOn) return;
+    try {
+      if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+      var n = Math.floor(AC.sampleRate * len), buf = AC.createBuffer(1, n, AC.sampleRate), d = buf.getChannelData(0);
+      for (var i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * i / n);
+      var srcN = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+      srcN.buffer = buf; f.type = 'bandpass'; f.frequency.value = 500; f.Q.value = .8; g.gain.value = 0.08;
+      srcN.connect(f); f.connect(g); g.connect(AC.destination); srcN.start();
+    } catch (e) {}
+  }
+  function lub() { thump(70, 40, 0.16, 0.5); if (leak) whoosh(0.3 * 60 / Math.max(60, rateNow() || 80)); }
+  function dub() { thump(95, 55, 0.11, 0.38); }
+
+  // ===================== Ari =====================
+  var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), lastMsg = '';
+  function say(html) { if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop'); }
+  var mEls = Array.prototype.slice.call(document.querySelectorAll('.mission'));
+  function complete(i) { if (M[i]) return; M[i] = true; track('mission_' + (i + 1)); mEls.forEach(function (el, k) { el.classList.toggle('done', M[k]); el.classList.toggle('now', k === M.indexOf(false)); }); }
+  function coach() {
+    var k = lastEvent.kind, recent = clock - lastEvent.t < 7, ox = oxygen();
+    if (!M[0]) return say(tapCount ? 'Squeeze! The top rooms push blood down, then the big bottom rooms push it out. <b>Tap again</b> (' + tapCount + ' of 5).' : 'This is a heart, like the one in your chest. It\'s a pump made of muscle. <b>Tap it</b> to make it squeeze.');
+    if (recent && k === 'started') return say('Now it beats by itself, just like yours. The white flaps are <b>valves</b>: doors that only open one way. Watch them snap shut on every beat. That snap is the <b>lub-dub</b> you can hear.');
+    if (recent && k === 'lungs') return say('In the <b>lungs</b> the blood picks up oxygen from the air you breathe in, and turns <b>bright red</b>.');
+    if (recent && k === 'body') return say('Your body takes the oxygen, so the blood turns a <b>darker red</b>. We colour it purple so you can see it. Real blood is always red, never blue.');
+    if (recent && k === 'loop') return say('All the way round! It went through the heart <b>twice</b>: once to the lungs, once to the body. That\'s why your heart is two pumps side by side.');
+    if (recent && k === 'fixed') return say('Valve fixed. Every drop goes the right way again, and the body gets enough oxygen.');
+    if (gold.on) return say('Follow the cell with the <b>gold ring</b>. Where does it go after the right side of the heart?');
+    if (!M[1]) return say('Blood goes round and round your body. Tap <b>Follow a blood cell</b> and watch where the gold one goes.');
+    if (leak) return say(M[3] || !exercise ? 'See the blood <b>sloshing backwards</b>? One valve can\'t shut properly, so every squeeze some blood goes the wrong way. Less reaches the body, so the heart has to beat faster to keep up. Doctors can repair or replace a leaky valve.' : 'With a leaky valve the heart can\'t keep up with a run, even flat out. That\'s why doctors fix them. Tap <b>Leaky valve</b> again to fix it.');
+    if (!M[2]) return say('Now be a scientist. Tap <b>Leaky valve</b>. What do you think will happen?');
+    if (!M[3] && !exercise) return say('Let\'s go for a run! Tap <b>Exercise</b>, then speed the heart up until the body gets enough oxygen.');
+    if (!M[3] && exercise && ox < 100) return say('Running muscles need lots more oxygen. Slide the <b>heart rate</b> up until the oxygen needle passes the green line.');
+    if (exercise && ox >= 100) return say('<b>Keeping up!</b> When you run, your heart beats faster <b>and</b> pushes out a bit more each beat. Feel your pulse on your wrist, do 20 star jumps, then feel it again.');
+    if (auto && bpm < 60 && ox < 100) return say('That\'s slow. A resting heart for someone your age beats roughly <b>70 to 110</b> times a minute.');
+    return say('You\'ve cracked it! Try <b>Slow motion</b> and watch the valves: the top doors shut first (lub), then the doors to the pipes (dub).');
+  }
+
+  // ===================== Input =====================
+  var rateEl = document.getElementById('rate'), rateVal = document.getElementById('rateVal');
+  var exBtn = document.getElementById('exBtn'), leakBtn = document.getElementById('leakBtn'), followBtn = document.getElementById('followBtn');
+  var startBtn = document.getElementById('startBtn'), slowBtn = document.getElementById('slowBtn'), soundBtn = document.getElementById('soundBtn');
+  var ctlEl = document.getElementById('ctl'), phaseEl = document.getElementById('phase');
+  function startAuto() { if (auto) return; auto = true; complete(0); ev('started'); track('started'); startBtn.classList.add('hidden'); }
+  function tapHeart() {
+    stats.interactions++;
+    if (auto) return;
+    taps.push(clock); if (taps.length > 6) taps.shift();
+    tapCount++; phase = 0; beating = true;
+    if (tapCount >= 5) startAuto();
+  }
+  cv.addEventListener('pointerdown', function (e) { e.preventDefault(); tapHeart(); });
+  ['touchstart', 'touchmove'].forEach(function (evn) { cv.addEventListener(evn, function (e) { e.preventDefault(); }, { passive: false }); });
+  ['touchstart', 'touchmove'].forEach(function (evn) { lc.addEventListener(evn, function (e) { e.preventDefault(); }, { passive: false }); });
+  lc.addEventListener('pointerdown', function (e) { e.preventDefault(); follow(); });
+  function setRate(v) { bpm = clamp(Math.round(v), 40, 180); rateEl.value = bpm; rateVal.textContent = bpm + ' a minute'; }
+  rateEl.addEventListener('input', function () { setRate(+rateEl.value); });
+  rateEl.addEventListener('change', function () { stats.interactions++; track('rate'); });
+  function setExercise(on) { exercise = on; exBtn.setAttribute('aria-pressed', String(on)); exBtn.classList.toggle('on', on); exBtn.textContent = on ? '🏃 Running' : '🏃 Exercise'; if (on) { ev('exercise'); track('exercise'); } runOk = 0; }
+  function setLeak(on) { if (on === leak) return; leak = on; leakBeats = 0; leakBtn.setAttribute('aria-pressed', String(on)); leakBtn.textContent = on ? 'Fix the valve' : 'Leaky valve'; ev(on ? 'leak' : 'fixed'); if (on) track('leak'); }
+  function follow() { if (!M[0]) startAuto(); gold = { on: true, s: 0, lungs: false, body: false }; followBtn.setAttribute('aria-pressed', 'true'); followBtn.textContent = 'Following…'; ev('follow'); track('follow'); stats.interactions++; }
+  exBtn.addEventListener('click', function () { if (!auto) startAuto(); setExercise(!exercise); stats.interactions++; });
+  leakBtn.addEventListener('click', function () { if (!auto) startAuto(); setLeak(!leak); stats.interactions++; });
+  followBtn.addEventListener('click', follow);
+  startBtn.addEventListener('click', function () { startAuto(); stats.interactions++; });
+  slowBtn.addEventListener('click', function () { slow = !slow; slowBtn.setAttribute('aria-pressed', String(slow)); stats.interactions++; });
+  soundBtn.addEventListener('click', function () {
+    soundOn = !soundOn; soundBtn.setAttribute('aria-pressed', String(soundOn)); soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off';
+    if (soundOn) { try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume(); } catch (e) {} }
+  });
+
+  // ===================== Loop =====================
+  var last = performance.now();
+  function frame(now) {
+    var rdt = Math.min(0.05, (now - last) / 1000); last = now; clock += rdt;
+    var dt = rdt * (slow ? 0.3 : 1);
+    var prev = phase;
+    if (auto) {
+      phase += dt * bpm / 60;
+      if (phase >= 1) { phase -= 1; if (leak) { leakBeats++; if (leakBeats >= 2) complete(2); } }
+    } else if (beating) {
+      phase += dt * 80 / 60;
+      if (phase >= 1) { phase = 0.999; beating = false; }
+    }
+    if (prev < 0.15 && phase >= 0.15) lub();
+    if (prev < 0.45 && phase >= 0.45) dub();
+    stepCells(dt);
+    drawHeart(dt); drawLoop(dt);
+    var ox = oxygen();
+    setGauge(gRate, rateNow(), function (v) { return String(Math.round(v)); }, rdt);
+    setGauge(gPump, output(), function (v) { return v.toFixed(1); }, rdt);
+    setGauge(gOx, ox, function (v) { return Math.round(v) + '%'; }, rdt);
+    if (exercise && ox >= 100 && auto) { runOk += rdt; if (runOk > 2) { if (!M[3]) { complete(3); ev('run'); } } } else runOk = 0;
+    phaseEl.textContent = !auto && !beating ? 'RESTING · TAP IT' : atrSq() > 0 ? 'TOP ROOMS SQUEEZE' : ventSq() > 0 ? 'BOTTOM ROOMS SQUEEZE' : 'FILLING UP';
+    startBtn.classList.toggle('nudge', !M[0] && tapCount >= 2);
+    followBtn.classList.toggle('nudge', M[0] && !M[1] && !gold.on);
+    leakBtn.classList.toggle('nudge', (M[1] && !M[2] && !leak) || (leak && exercise && !M[3]));
+    exBtn.classList.toggle('nudge', M[2] && !M[3] && !leak && !exercise);
+    ctlEl.classList.toggle('nudge-rate', exercise && !leak && ox < 100);
+    coach();
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', resize);
+  resize(); setRate(80);
+  requestAnimationFrame(frame);
+  window.__ari = {
+    M: M, tap: tapHeart, start: startAuto, setRate: setRate, setExercise: setExercise, setLeak: setLeak, follow: follow,
+    setSlow: function (v) { if (slow !== !!v) slowBtn.click(); },
+    state: function () { return { bpm: bpm, auto: auto, phase: phase, exercise: exercise, leak: leak, output: output(), oxygen: oxygen(), gold: gold, backCount: backCount, cells: parts.length }; }
+  };
+})();
+</script>
+</body>
+</html>

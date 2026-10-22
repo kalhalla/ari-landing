@@ -438,7 +438,7 @@
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     W = Math.max(260, cv.clientWidth); phone = W < 600;
-    H = Math.round(phone ? Math.min(W * 1.02, 440) : Math.min(W * 0.6, 470));
+    H = Math.round(phone ? Math.min(W * 0.86, 380) : Math.min(W * 0.6, 470));
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     SW = Math.max(260, sv.clientWidth); SH = phone ? 190 : 220;
     sv.style.height = SH + 'px'; sv.width = Math.round(SW * dpr); sv.height = Math.round(SH * dpr); sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -467,7 +467,7 @@
   // ----- track view -----
   function drawTrack() {
     var c = ctx;
-    var top = 8, bot = phone ? H - 100 : H - 12, th = bot - top;
+    var top = phone ? 62 : 56, bot = phone ? H - 96 : H - 12, th = bot - top;
     var sc = Math.min((W - 30) / (LS + 2 * R + 70), (th - 20) / (2 * R + 70));
     var cx = W / 2, cy = top + th / 2;
     function X(x) { return cx + x * sc; } function Y(y) { return cy + y * sc; }
@@ -492,7 +492,7 @@
     for (var k = 0; k < 6; k++) { c.fillStyle = k % 2 ? '#111' : '#fff'; c.fillRect(X(0) - 3, Y(R) - tw / 2 + k * tw / 6, 6, tw / 6 + 0.5); }
     // corner speed sign (inside the right-hand corner)
     var lim = cornerLimit(), lk = isFinite(lim) && lim < 120 ? Math.floor(kmh(lim) / 5) * 5 : null;
-    var sx = X(LS / 2 + R * 0.05), sy = Y(0), sr = Math.max(17, Math.min(26, R * sc * 0.36));
+    var sr = Math.max(16, Math.min(26, R * sc * 0.3)), sx = X(LS / 2 - R * 0.15), sy = Y(0) - 6;
     c.fillStyle = 'white'; c.beginPath(); c.arc(sx, sy, sr, 0, 6.3); c.fill();
     c.strokeStyle = '#E83A2C'; c.lineWidth = sr * 0.22; c.beginPath(); c.arc(sx, sy, sr * 0.86, 0, 6.3); c.stroke();
     c.fillStyle = '#222'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '700 ' + Math.round(sr * (lk ? 0.62 : 0.5)) + 'px Fredoka, sans-serif';
@@ -502,6 +502,7 @@
     // trail + car
     var p, L = Math.max(30, Math.min(46, W * 0.075));
     if (spin) p = { x: spin.x, y: spin.y, hd: spin.hd }; else p = pos(s);
+    var lt = trail[trail.length - 1]; if (lt && Math.hypot(lt[0] - X(p.x), lt[1] - Y(p.y)) > 40) trail = [];
     trail.push([X(p.x), Y(p.y), gripUse]); if (trail.length > 26) trail.shift();
     for (i = 1; i < trail.length; i++) {
       var g = trail[i][2]; c.strokeStyle = g > 1 ? 'rgba(255,77,61,.6)' : g > 0.85 ? 'rgba(255,200,69,.45)' : 'rgba(111,211,168,.3)';
@@ -537,7 +538,7 @@
   // ----- tunnel view (side-on) -----
   function drawTunnel() {
     var c = ctx;
-    var floorY = phone ? H - 104 : H - 70, ceilY = phone ? 64 : 70, ppm = (floorY - ceilY) / 8;
+    var floorY = phone ? H - 100 : H - 70, ceilY = phone ? 90 : 84, ppm = (floorY - ceilY) / 8;
     var camX = tun.x, carSX = W * 0.46;
     function SX(m) { return carSX + (m - camX) * ppm; }
     c.fillStyle = '#10121F'; c.fillRect(0, 0, W, H);
@@ -582,18 +583,12 @@
     c.scale(1, Math.cos(flip * Math.PI) || 0.05);
     drawProfile(c, 0, 0, L, hgt);
     c.restore();
-    // force arrows when on (or near) the ceiling
-    if (tun.phase === 'ceiling' || tun.phase === 'roll') {
-      var Dw = downforce(v) / WEIGHT, base = Math.max(26, ppm * 1.4);
-      arrow(c, carSX + L * 0.12, cy + (flip > 0.5 ? hgt * 1.4 : -hgt * 1.4), 0, (flip > 0.5 ? 1 : -1) * base, '#C9CEE8', 'weight');
-      arrow(c, carSX - L * 0.12, cy + (flip > 0.5 ? hgt * 1.4 : -hgt * 1.4), 0, (flip > 0.5 ? -1 : 1) * base * Math.min(Dw, 3), Dw >= 1 ? '#6FD3A8' : '#FF4D3D', 'downforce');
-    }
     hud(c, false);
     if (tun.phase === 'ceiling' || tun.phase === 'rolldown') {
-      c.textAlign = 'right'; c.fillStyle = '#6FD3A8'; c.font = '700 20px Fredoka, sans-serif';
-      c.fillText(Math.round(Math.min(800, tun.x - TUN.ceil)) + ' m upside down', W - 12, 30);
+      c.textAlign = 'center'; c.fillStyle = '#6FD3A8'; c.font = '700 ' + (phone ? 20 : 26) + 'px Fredoka, sans-serif';
+      c.fillText(Math.round(Math.min(800, tun.x - TUN.ceil)) + ' m upside down', W / 2, (floorY + ceilY) / 2 + 30);
     } else if (tun.best > 0) {
-      c.textAlign = 'right'; c.fillStyle = '#9EA3C4'; c.font = '600 11px "IBM Plex Mono", monospace'; c.fillText('BEST ' + Math.round(Math.min(800, tun.best)) + ' M', W - 12, 28);
+      c.textAlign = 'right'; c.fillStyle = '#9EA3C4'; c.font = '600 11px "IBM Plex Mono", monospace'; c.fillText('BEST ' + Math.round(Math.min(800, tun.best)) + ' M', W - 12, 22);
     }
     if (tun.phase === 'fall') banner(c, lastEvent.kind === 'nostick' ? 'Not enough downforce!' : 'It dropped off!', '#FF6B5E');
     if (tun.phase === 'done') banner(c, 'You drove on the ceiling!', '#6FD3A8');
@@ -719,7 +714,7 @@
     return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
   }
   var gSpeed = makeGauge('gSpeed', 'KM/H', 350, [200 / 350, 1], 'rgba(255,140,66,.35)', '#FF8C42');
-  var gDown = makeGauge('gDown', 'DOWNFORCE ×WT', 3, null, null, '#6FD3A8', 1 / 3);
+  var gDown = makeGauge('gDown', 'DOWNFORCE', 3, null, null, '#6FD3A8', 1 / 3);
   var gGrip = makeGauge('gGrip', 'GRIP USED', 150, [100 / 150, 1], 'rgba(255,77,61,.45)', '#FFC845', 100 / 150);
   function setGauge(g, val, fmt, dt) {
     g.shown += (val - g.shown) * Math.min(1, dt * 10);
