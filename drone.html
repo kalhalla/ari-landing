@@ -316,12 +316,12 @@
       <h2>More machines</h2>
       <p>Each one starts with a question a curious kid would ask.</p>
       <div class="figs">
+        <a class="fig" href="/heart.html"><span class="tag go">Play</span><div class="no">FIG. 09</div><h3>The heart</h3><p>How does your heart pump blood?</p></a>
+        <a class="fig" href="/speaker.html"><span class="tag go">Play</span><div class="no">FIG. 08</div><h3>Speaker</h3><p>How does a speaker make sound?</p></a>
+        <a class="fig" href="/orbit.html"><span class="tag go">Play</span><div class="no">FIG. 07</div><h3>Satellite</h3><p>Why doesn&#x27;t a satellite fall down?</p></a>
+        <a class="fig" href="/f1.html"><span class="tag go">Play</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></a>
         <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
-        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
-        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
-        <a class="fig" href="/toilet.html"><span class="tag go">Play</span><div class="no">FIG. 02</div><h3>The toilet</h3><p>Why does it stop filling by itself?</p></a>
-        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div>
-        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+        <a class="fig" href="/machines.html"><span class="tag go">All</span><div class="no">THE WORKSHOP</div><h3>See every machine →</h3><p>9 machines to play, and more on the way.</p></a>
       </div>
     </section>
 
@@ -1120,5 +1120,6 @@
   window.__ari = { D: function () { return D; }, input: input, flags: flags, M: M, lab: lab, push: labPush, reset: function () { resetBtn.click(); } };
 })();
 </script>
+<script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
 </body>
 </html>

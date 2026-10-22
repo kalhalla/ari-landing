@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – Every machine</title>
+  <meta name="description" content="Playable machines that show children aged 7–12 how things work. Jet engines, drones, touchscreens, F1 cars, satellites and more. Free, no sign-up.">
+  <meta property="og:title" content="Ari – science you can play">
+  <meta property="og:description" content="Poke it, fly it, break it. Then you know how it works.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+    <style>
+    .gallery { display: grid; grid-template-columns: 1fr; gap: 12px; margin: 10px 0 40px; }
+    .gcard { display: flex; gap: 14px; align-items: center; background: white; border-radius: 20px; padding: 14px 16px; text-decoration: none; color: inherit; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .gcard .em { flex: 0 0 56px; height: 56px; border-radius: 16px; background: var(--rig); display: grid; place-items: center; font-size: 28px; }
+    .gcard .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .gcard h3 { font-family: 'Fredoka', sans-serif; font-size: 20px; color: var(--ink); margin: 1px 0 2px; }
+    .gcard p { font-size: 14.5px; color: var(--brown-mid); line-height: 1.35; }
+    .gcard .go { margin-left: auto; flex: 0 0 auto; font-weight: 800; font-size: 13px; background: var(--orange); color: white; border-radius: 999px; padding: 6px 12px; }
+    .gcard.soon { opacity: .6; box-shadow: none; background: var(--peach-mid); }
+    .gcard.soon .go { background: var(--brown-light); }
+    .gcard.soon .em { background: var(--brown-light); }
+    h2.sub { font-family: 'Fredoka', sans-serif; font-size: 24px; color: var(--ink); margin: 6px 0 10px; }
+    @media (min-width: 900px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="/#signup">Get the next one</a>
+    </nav>
+    <header class="intro">
+      <div class="eyebrow">The workshop · 9 machines</div>
+      <h1>Pick a machine. <em>Poke it, fly it, break it.</em></h1>
+      <p class="lede">Each one starts with a question a curious kid would ask. <b>Free to play, no sign-up, made for ages 7–12.</b></p>
+    </header>
+    <section class="gallery">
+      <a class="gcard" href="/heart.html"><div class="em">❤️</div><div><div class="no">FIG. 09</div><h3>The heart</h3><p>How does your heart pump blood?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/speaker.html"><div class="em">🔊</div><div><div class="no">FIG. 08</div><h3>Speaker</h3><p>How does a speaker make sound?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/orbit.html"><div class="em">🛰️</div><div><div class="no">FIG. 07</div><h3>Satellite</h3><p>Why doesn&#x27;t a satellite fall down?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/f1.html"><div class="em">🏎️</div><div><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/touch.html"><div class="em">📱</div><div><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/drone.html"><div class="em">🚁</div><div><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/solar.html"><div class="em">☀️</div><div><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/toilet.html"><div class="em">🚽</div><div><div class="no">FIG. 02</div><h3>The toilet</h3><p>Why does it stop filling by itself?</p></div><span class="go">Play</span></a>
+      <a class="gcard" href="/"><div class="em">✈️</div><div><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></div><span class="go">Play</span></a>
+    </section>
+    <h2 class="sub">On the workbench</h2>
+    <section class="gallery">
+      <div class="gcard soon"><div class="em">🚀</div><div><div class="no">COMING SOON</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div><span class="go">Soon</span></div>
+      <div class="gcard soon"><div class="em">🎢</div><div><div class="no">COMING SOON</div><h3>Roller coaster</h3><p>Why don&#x27;t you fall out at the top of the loop?</p></div><span class="go">Soon</span></div>
+      <div class="gcard soon"><div class="em">🌊</div><div><div class="no">COMING SOON</div><h3>Submarine</h3><p>How does a submarine sink and float?</p></div><span class="go">Soon</span></div>
+    </section>
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari</div>
+    </footer>
+  </div>
+</body>
+</html>

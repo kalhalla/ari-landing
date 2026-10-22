@@ -261,12 +261,12 @@
       <h2>More machines</h2>
       <p>Each one starts with a question a curious kid would ask.</p>
       <div class="figs">
+        <a class="fig" href="/speaker.html"><span class="tag go">Play</span><div class="no">FIG. 08</div><h3>Speaker</h3><p>How does a speaker make sound?</p></a>
+        <a class="fig" href="/orbit.html"><span class="tag go">Play</span><div class="no">FIG. 07</div><h3>Satellite</h3><p>Why doesn&#x27;t a satellite fall down?</p></a>
+        <a class="fig" href="/f1.html"><span class="tag go">Play</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></a>
         <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
         <a class="fig" href="/drone.html"><span class="tag go">Play</span><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></a>
-        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
-        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
-        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div>
-        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+        <a class="fig" href="/machines.html"><span class="tag go">All</span><div class="no">THE WORKSHOP</div><h3>See every machine →</h3><p>9 machines to play, and more on the way.</p></a>
       </div>
     </section>
     <!-- /MACHINES -->
@@ -419,9 +419,10 @@
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2.5);
     W = Math.max(260, cv.clientWidth);
-    bw = W < 600 ? W - 16 : Math.min(W * 0.62, 470); bh = bw * 0.95;
-    H = Math.round(bh + 44);
-    bx = W < 600 ? (W - bw) / 2 : Math.max(10, (W - bw) / 2 - (W >= 700 ? 80 : 0)); by = 16;
+    if (W < 600) { bw = W - 16; bx = 8; }
+    else if (W >= 640) { bw = Math.min(W - 250, 470); bx = Math.max(12, (W - bw - 230) / 2); }
+    else { bw = Math.min(W * 0.62, 470); bx = (W - bw) / 2; }
+    bh = bw * 0.95; H = Math.round(bh + 44); by = 16;
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     LW = Math.max(260, lc.clientWidth); LH = LW < 600 ? 290 : 290;
     lc.style.height = LH + 'px'; lc.width = Math.round(LW * dpr); lc.height = Math.round(LH * dpr); lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -540,13 +541,13 @@
     // backwards jet through the leaky valve
     if (leak && vs > .1) {
       var j = U([(AVX[1][0] + AVX[1][1]) / 2, AVY[1]]);
-      pill(c, '↑ backwards!', j[0], j[1] - bh * .14, 'center', '#3A2A06', '#FFC845', Math.max(9, Math.round(bw * .028)));
+      pill(c, '↑ backwards!', j[0], j[1] + bh * .1, 'center', '#3A2A06', '#FFC845', Math.max(9, Math.round(bw * .028)));
     }
     // labels
     var fs = Math.max(8.5, Math.round(bw * .026));
     c.font = '600 ' + fs + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillStyle = 'rgba(255,240,235,.75)';
-    var lab = function (r, t, bot) { var q = rectPx(r); c.fillText(t, q.x + q.w / 2, bot ? q.y + q.h - 5 : q.y + fs + 3); };
-    lab(cavA[0], 'R. ATRIUM', true); lab(cavA[1], 'L. ATRIUM', true); lab(cavV[0], 'R. VENTRICLE'); lab(cavV[1], 'L. VENTRICLE');
+    var lab = function (r, t, bot) { var q = rectPx(r); c.fillText(t, q.x + q.w / 2, bot ? q.y + q.h - (t.indexOf('VENT') > 0 ? q.h * .12 : 5) : q.y + fs + 3); };
+    lab(cavA[0], 'R. ATRIUM', true); lab(cavA[1], 'L. ATRIUM', true); lab(cavV[0], 'R. VENTRICLE', true); lab(cavV[1], 'L. VENTRICLE', true);
     var pf = Math.max(9, Math.round(bw * .027));
     pill(c, '← to lungs', bx + .01 * bw, by + .065 * bh, 'left', '#E9E4F5', 'rgba(74,28,61,.92)', pf);
     pill(c, 'to body →', bx + .99 * bw, by + .02 * bh, 'right', '#FFE1DC', 'rgba(122,22,34,.92)', pf);
@@ -564,10 +565,10 @@
       c.restore();
     }
     // side notes on wide screens
-    if (W >= 700) {
+    if (W >= 640) {
       var lx = bx + bw + 30; c.textAlign = 'left';
       c.font = '600 11px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.fillText('ONE BEAT', lx, by + 24);
-      var steps = [['1  Top rooms squeeze', as > 0], ['2  Bottom rooms squeeze', vs > 0], ['   lub: doors to the top shut', vs > 0 && phase < .3], ['   dub: doors to the pipes shut', phase >= .45 && phase < .6], ['3  Everything fills up', !as && !vs]];
+      var steps = [['1  Top rooms squeeze', as > 0], ['2  Bottom rooms squeeze', vs > 0], ['    lub: top doors shut', vs > 0 && phase < .3], ['    dub: pipe doors shut', phase >= .45 && phase < .6], ['3  Everything fills up', !as && !vs]];
       steps.forEach(function (st, i) { c.font = (st[1] ? '800 ' : '700 ') + '14px Nunito, sans-serif'; c.fillStyle = st[1] ? '#FFC845' : '#E9E4F5'; c.fillText(st[0], lx, by + 52 + i * 22); });
       c.font = '700 13px Nunito, sans-serif'; c.fillStyle = '#9EA3C4';
       ['The valves are the white flaps.', 'They only open one way.'].forEach(function (l, i) { c.fillText(l, lx, by + 52 + 5 * 22 + 14 + i * 19); });
@@ -717,6 +718,11 @@
       o.type = 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + len);
       g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
       o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + len + 0.05);
+      // phone speakers can't play very low notes, so add a higher 'knock' you can hear on a phone
+      var o2 = AC.createOscillator(), g2 = AC.createGain();
+      o2.type = 'triangle'; o2.frequency.setValueAtTime(f0 * 3.2, t); o2.frequency.exponentialRampToValueAtTime(f1 * 3.2, t + len);
+      g2.gain.setValueAtTime(0.0001, t); g2.gain.exponentialRampToValueAtTime(vol * 0.6, t + 0.008); g2.gain.exponentialRampToValueAtTime(0.0001, t + len * 0.8);
+      o2.connect(g2); g2.connect(AC.destination); o2.start(t); o2.stop(t + len + 0.05);
     } catch (e) {}
   }
   function whoosh(len) {
@@ -831,5 +837,6 @@
   };
 })();
 </script>
+<script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
 </body>
 </html>

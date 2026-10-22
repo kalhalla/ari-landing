@@ -200,8 +200,8 @@
         <div class="controls">
           <button class="app play" id="playBtn" aria-pressed="false"><span class="ic">▶</span><span id="playTxt">Play</span></button>
           <div class="panel-box" id="pitchBox">
-            <div class="box-head"><span>PITCH</span><b id="pitchVal">200 Hz</b></div>
-            <input type="range" id="pitch" min="0" max="1000" value="333" aria-label="Pitch: how many times a second the cone wiggles">
+            <div class="box-head"><span>PITCH</span><b id="pitchVal">440 Hz</b></div>
+            <input type="range" id="pitch" min="0" max="1000" value="447" aria-label="Pitch: how many times a second the cone wiggles">
             <div class="box-foot"><span>low rumble</span><span id="pitchWord">low hum</span><span>high squeak</span></div>
           </div>
           <div class="panel-box" id="volBox">
@@ -265,12 +265,12 @@
       <h2>More machines</h2>
       <p>Each one starts with a question a curious kid would ask.</p>
       <div class="figs">
+        <a class="fig" href="/heart.html"><span class="tag go">Play</span><div class="no">FIG. 09</div><h3>The heart</h3><p>How does your heart pump blood?</p></a>
+        <a class="fig" href="/orbit.html"><span class="tag go">Play</span><div class="no">FIG. 07</div><h3>Satellite</h3><p>Why doesn&#x27;t a satellite fall down?</p></a>
+        <a class="fig" href="/f1.html"><span class="tag go">Play</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></a>
         <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
         <a class="fig" href="/drone.html"><span class="tag go">Play</span><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></a>
-        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
-        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
-        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></div>
-        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+        <a class="fig" href="/machines.html"><span class="tag go">All</span><div class="no">THE WORKSHOP</div><h3>See every machine →</h3><p>9 machines to play, and more on the way.</p></a>
       </div>
     </section>
     <!-- /MACHINES -->
@@ -315,7 +315,7 @@
 
   // ===================== Model =====================
   // Real pitch (Hz) is shown slowed right down: the picture wiggles 0.5–4.5 times a second.
-  var freq = 200, vol = 0.5, playing = false, magnet = true, flipped = false, soundOn = false;
+  var freq = 440, vol = 0.5, playing = false, magnet = true, flipped = false, soundOn = false;
   var M = [false, false, false, false], seenLow = false, seenHigh = false;
   var env = 0, phase = 0, clock = 0, lastEvent = { kind: '', t: -10 };
   var I = 0, Iind = 0, drive = 0, coneD = 0;      // current (signal units), cone displacement (in R units)
@@ -576,8 +576,8 @@
   }
   function updateAudio() {
     if (!AC) return;
-    var t = AC.currentTime, target = (soundOn && playing && magnet) ? 0.12 * vol * vol * (freq > 8000 ? 0.6 : 1) : 0;
-    og.gain.setTargetAtTime(Math.min(0.15, target), t, 0.04);
+    var t = AC.currentTime, target = (soundOn && playing && magnet) ? 0.35 * vol * (freq > 8000 ? 0.4 : 1) : 0;
+    og.gain.setTargetAtTime(Math.min(0.35, target), t, 0.04);
     osc.frequency.setTargetAtTime(freq, t, 0.02);
   }
   function thump(strength) {
@@ -664,7 +664,7 @@
   }
   function setVol(v) { volEl.value = v; vol = v / 100; volVal.textContent = Math.round(v) + '%'; updateAudio(); }
   function refreshNote() {
-    volNote.innerHTML = !soundOn ? 'Sound is off. The picture shows everything.' : (freq >= 8000 ? '<b>Keep it low.</b> Very high sounds can be uncomfortable.' : 'Sound is on. Keep the volume comfortable.');
+    volNote.innerHTML = !soundOn ? 'Sound is off. The picture shows everything.' : (freq >= 8000 ? '<b>Keep it low.</b> Very high sounds can be uncomfortable.' : freq < 150 ? '<b>Hard to hear?</b> A phone speaker is too small to push enough air for very low notes. Try headphones.' : 'Sound is on. Can\'t hear it? Check your phone isn\'t on silent.');
   }
   function setMagnet(on) {
     var was = magnet; magnet = on;
@@ -676,17 +676,21 @@
   }
   function setFlip(on) { flipped = on; flipBtn.setAttribute('aria-pressed', String(on)); lastEvent = { kind: 'flip', t: clock }; track('flip'); }
   function setSound(on) {
-    soundOn = on; if (on) ensureAudio(); if (AC && AC.state === 'suspended') AC.resume();
+    soundOn = on;
+    // iPhones mute web sound when the silent switch is on, unless we ask for 'playback' audio
+    if (on) { try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {} ensureAudio(); }
+    if (AC && AC.state === 'suspended') AC.resume();
     soundBtn.setAttribute('aria-pressed', String(on)); soundBtn.textContent = on ? 'Sound on' : 'Sound off'; refreshNote(); updateAudio();
   }
-  playBtn.addEventListener('click', function () { stats.interactions++; setPlaying(!playing); });
+  var soundChosen = false;
+  playBtn.addEventListener('click', function () { stats.interactions++; if (!playing && !soundOn && !soundChosen) setSound(true); setPlaying(!playing); });
   pitchEl.addEventListener('input', function () { setPitch(+pitchEl.value); });
   pitchEl.addEventListener('change', function () { stats.interactions++; track('pitch'); });
   volEl.addEventListener('input', function () { setVol(+volEl.value); });
   volEl.addEventListener('change', function () { stats.interactions++; });
   magnetBtn.addEventListener('click', function () { stats.interactions++; setMagnet(!magnet); });
   flipBtn.addEventListener('click', function () { stats.interactions++; setFlip(!flipped); });
-  soundBtn.addEventListener('click', function () { stats.interactions++; setSound(!soundOn); });
+  soundBtn.addEventListener('click', function () { stats.interactions++; soundChosen = true; setSound(!soundOn); });
 
   // ===================== Loop =====================
   var last = performance.now();
@@ -736,5 +740,6 @@
   };
 })();
 </script>
+<script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
 </body>
 </html>
