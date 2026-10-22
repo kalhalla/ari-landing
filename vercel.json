@@ -24,6 +24,31 @@
       "source": "/touch",
       "destination": "/touch.html?utm_source=instagram&utm_medium=social&utm_content=touch",
       "permanent": false
+    },
+    {
+      "source": "/f1",
+      "destination": "/f1.html?utm_source=instagram&utm_medium=social&utm_content=f1",
+      "permanent": false
+    },
+    {
+      "source": "/orbit",
+      "destination": "/orbit.html?utm_source=instagram&utm_medium=social&utm_content=orbit",
+      "permanent": false
+    },
+    {
+      "source": "/speaker",
+      "destination": "/speaker.html?utm_source=instagram&utm_medium=social&utm_content=speaker",
+      "permanent": false
+    },
+    {
+      "source": "/heart",
+      "destination": "/heart.html?utm_source=instagram&utm_medium=social&utm_content=heart",
+      "permanent": false
+    },
+    {
+      "source": "/all",
+      "destination": "/machines.html?utm_source=instagram&utm_medium=social&utm_content=bio_all",
+      "permanent": false
     }
   ]
 }
