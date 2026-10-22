@@ -166,6 +166,7 @@
     .pedal small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; opacity: .8; letter-spacing: .06em; }
     .pedal.go { right: 10px; background: var(--mint); color: #10251C; box-shadow: 0 5px 0 var(--mint-dark); }
     .pedal.brake { left: 10px; background: #FF6B5E; color: #3A0D08; box-shadow: 0 5px 0 #B23A2E; width: 80px; }
+    @media (min-width: 900px) { .pedal { width: 80px; height: 64px; font-size: 17px; } .pedal.brake { width: 74px; } }
     .pedal.down { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.4); }
     .pedal.go.nudge { animation: nudge 1.4s ease-in-out infinite; }
     .wing-box { background: var(--rig-2); border-radius: 0; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
@@ -467,7 +468,7 @@
   // ----- track view -----
   function drawTrack() {
     var c = ctx;
-    var top = phone ? 62 : 56, bot = phone ? H - 96 : H - 12, th = bot - top;
+    var top = phone ? 62 : 58, bot = phone ? H - 96 : H - 90, th = bot - top;
     var sc = Math.min((W - 30) / (LS + 2 * R + 70), (th - 20) / (2 * R + 70));
     var cx = W / 2, cy = top + th / 2;
     function X(x) { return cx + x * sc; } function Y(y) { return cy + y * sc; }
@@ -644,7 +645,7 @@
     var c = sctx, w = SW, h = SH;
     var onCeil = mode === 'tunnel' && (tun.phase === 'ceiling' || (tun.phase === 'roll' && (tun.x - TUN.climb) / (TUN.ceil - TUN.climb) > 0.5));
     c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
-    var L = Math.min(w * 0.6, 430), hb = L * 0.1, cx = w * 0.5, gy = h * 0.8;
+    var L = Math.min(w * 0.6, 430), hb = L * 0.09, cx = w * 0.5, gy = h * 0.8;
     var nose = cx + L / 2, tail = cx - L / 2, rwX = tail + L * 0.06, rwY = gy - hb * 1.85, fwX = nose - L * 0.06, fwY = gy - hb * 0.14;
     c.save();
     if (onCeil) { c.translate(0, h); c.scale(1, -1); }
@@ -678,11 +679,15 @@
     // weight always points to the ground (down the screen)
     arrowS(c, cx + L * 0.14, carMid, base, '#C9CEE8', 'weight 1×', 'left');
     // downforce points into the road: down on the road, up when on the ceiling
-    arrowS(c, cx - L * 0.14, carMid, (onCeil ? -1 : 1) * base * Math.min(dw, 3.2), onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8', 'downforce ' + dw.toFixed(1) + '×', 'right');
-    if (wing > 0.01 && v > 8) {
+    var dl = base * Math.min(dw, 3.2), topY = gy - hb * 1.45;
+    if (dl > 3) arrowS(c, cx - L * 0.14, fy(topY - dl), (onCeil ? -1 : 1) * dl, onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8', 'downforce ' + dw.toFixed(1) + '×', 'right');
+    if (wing > 0.01 && v > 8 && !onCeil) {
       var ax = rwX, ay = fy(rwY) + (onCeil ? hb * 0.8 : -hb * 0.8);
       c.fillStyle = '#6FD3A8'; c.font = '600 10px "IBM Plex Mono", monospace'; c.textAlign = 'center';
-      c.fillText(onCeil ? 'air thrown ↓' : 'air thrown ↑', Math.max(40, ax), onCeil ? Math.min(h - 6, ay + 14) : Math.max(12, ay - 6));
+      var airY = onCeil ? Math.min(h - 6, ay + 14) : Math.max(12, ay - 6);
+      // keep clear of the downforce label, which sits by the top of its arrow
+      if (!onCeil) airY = Math.min(airY, 46);
+      c.fillText(onCeil ? 'air thrown ↓' : 'air thrown ↑', Math.max(40, ax), airY);
     }
     c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
     c.fillText(onCeil ? 'UPSIDE DOWN' : wing < 0.01 ? 'WINGS OFF' : 'WINGS ' + Math.round(wing * 100) + '%', 10, onCeil ? h - 8 : 16);
@@ -696,7 +701,9 @@
     c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + dy - u * hs); c.stroke();
     c.beginPath(); c.moveTo(x, y + dy); c.lineTo(x - hs * 0.8, y + dy - u * hs); c.lineTo(x + hs * 0.8, y + dy - u * hs); c.closePath(); c.fill();
     c.font = '700 12px Nunito, sans-serif'; c.textAlign = side === 'left' ? 'left' : 'right';
-    c.fillText(label, x + (side === 'left' ? 8 : -8), y + Math.max(-60, Math.min(60, dy * 0.5)) + 4);
+    var tx = x + (side === 'left' ? 8 : -8), ty = y + Math.max(-60, Math.min(60, dy * 0.5)) + 4, tw = c.measureText(label).width;
+    c.fillStyle = 'rgba(20,23,42,.85)'; rr(c, side === 'left' ? tx - 4 : tx - tw - 4, ty - 12, tw + 8, 17, 6); c.fill();
+    c.fillStyle = col; c.fillText(label, tx, ty);
   }
 
   // ===================== Gauges =====================
