@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – How does an F1 car stick to the road?</title>
+  <meta name="description" content="Drive an F1 car, add wings, take them off, then try to drive on the ceiling of a tunnel. Playable science for children aged 7–12.">
+  <meta property="og:title" content="How does an F1 car stick to the road?">
+  <meta property="og:description" content="Its wings push it down onto the track. Fast enough, and in theory it could drive upside down.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+  <style>
+    #scene, #side { display: block; width: 100%; touch-action: none; -webkit-user-select: none; user-select: none; }
+    .rig > *, .screens, .screen { min-width: 0; }
+    .tabs { display: flex; gap: 6px; }
+    .stage-wrap { position: relative; }
+    .pedal { position: absolute; bottom: 10px; width: 92px; height: 78px; border: none; border-radius: 20px; font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: 19px; letter-spacing: .02em;
+      cursor: pointer; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; transition: transform .06s, box-shadow .06s; }
+    .pedal small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; opacity: .8; letter-spacing: .06em; }
+    .pedal.go { right: 10px; background: var(--mint); color: #10251C; box-shadow: 0 5px 0 var(--mint-dark); }
+    .pedal.brake { left: 10px; background: #FF6B5E; color: #3A0D08; box-shadow: 0 5px 0 #B23A2E; width: 80px; }
+    .pedal.down { transform: translateY(4px); box-shadow: 0 1px 0 rgba(0,0,0,.4); }
+    .pedal.go.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    .wing-box { background: var(--rig-2); border-radius: 0; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .wing-box.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    .readout { font-family: var(--mono); font-size: 11px; color: var(--rig-dim); letter-spacing: .04em; margin-top: 4px; }
+    .readout b { color: var(--sun); font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="#signup">Get the next one</a>
+    </nav>
+
+    <header class="intro">
+      <div class="eyebrow">Fig. 06 · The F1 car</div>
+      <h1>How does an F1 car <em>stick</em> to the road?</h1>
+      <p class="lede">Its wings work like an aeroplane's, but upside down. <b>Drive it round the corner, take the wings off, then try to drive on the ceiling of a tunnel.</b></p>
+    </header>
+
+    <section class="rig" aria-label="A playable F1 car">
+      <div class="screens">
+        <div class="screen">
+          <div class="screen-bar">
+            <div class="tabs" role="group" aria-label="Where to drive">
+              <button class="tool" id="tabTrack" aria-pressed="true">Track</button>
+              <button class="tool" id="tabTunnel" aria-pressed="false">Tunnel</button>
+            </div>
+            <div class="clock" id="clock">0<small>KM/H</small></div>
+          </div>
+          <div class="stage-wrap">
+            <canvas id="scene" aria-label="An F1 car on a race track. Hold GO to speed up, BRAKE to slow down."></canvas>
+            <button class="pedal brake" id="brakeBtn" aria-label="Brake">BRAKE<small>HOLD</small></button>
+            <button class="pedal go" id="goBtn" aria-label="Accelerate">GO<small>HOLD</small></button>
+          </div>
+          <div class="wing-box" id="wingBox">
+            <div class="box-head"><span>WINGS</span><b id="wingVal">25%</b></div>
+            <input type="range" id="wing" min="0" max="100" value="25" aria-label="How steep the wings are">
+            <div class="box-foot"><span>off</span><span>steep</span></div>
+            <div class="readout">Fastest safe speed in the corner: <b id="limitVal">–</b></div>
+          </div>
+        </div>
+        <div class="screen">
+          <div class="screen-bar"><div class="screen-tag">Side view: the air over the wings</div></div>
+          <canvas id="side" aria-label="A side view of the car. Air hits the wings and is thrown upwards, which pushes the car down."></canvas>
+        </div>
+      </div>
+
+      <div class="cockpit">
+        <div class="gauges">
+          <div class="gauge" id="gSpeed"></div>
+          <div class="gauge" id="gDown"></div>
+          <div class="gauge" id="gGrip"></div>
+        </div>
+
+        <div class="ari" id="ari" aria-live="polite">
+          <div class="owl">🦉</div>
+          <div><p id="ariText"></p></div>
+        </div>
+
+        <div class="missions">
+          <div class="mission now"><i>01</i>Take the corner</div>
+          <div class="mission"><i>02</i>Flat out</div>
+          <div class="mission"><i>03</i>Break it</div>
+          <div class="mission"><i>04</i>Ceiling run</div>
+        </div>
+
+        <div class="experiments">
+          <button class="chip" id="wingsOffBtn" aria-pressed="false">Take the wings off</button>
+          <button class="chip fix hidden" id="resetBtn">Back on track</button>
+          <button class="tool" id="soundBtn" aria-pressed="false" style="margin-left:auto">Sound off</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <h2>Push the air up, and the car goes down</h2>
+      <p>What happens every time an F1 car goes round a corner.</p>
+      <div class="stage-grid">
+        <div class="stage"><div class="k">01 · WINGS</div><h3>Upside-down wings</h3><p>An aeroplane wing is shaped to lift. An F1 car's wings, and the shaped floor underneath, are made the other way round, so they push down.</p></div>
+        <div class="stage"><div class="k">02 · AIR</div><h3>Air goes up, car goes down</h3><p>The wings throw the air that hits them upwards. Push air up, and the air pushes the car down. That push is called downforce.</p></div>
+        <div class="stage"><div class="k">03 · SPEED</div><h3>Faster means much more</h3><p>Go twice as fast and you get four times the downforce. That's why F1 cars grip best at high speed.</p></div>
+        <div class="stage"><div class="k">04 · GRIP</div><h3>Pressed into the road</h3><p>The harder the tyres are pushed into the road, the more they grip. More grip means faster corners. The cost: wings also slow the car down on the straights.</p></div>
+      </div>
+      <p class="big-idea"><b>The big idea:</b> an F1 car's wings are an aeroplane wing turned upside down. At high speed they push down harder than the car weighs, so in theory an F1 car could drive upside down on a ceiling, at around 200 km/h. Nobody has actually tried it.</p>
+    </section>
+
+    <section class="signup" id="signup">
+      <div>
+        <h2>Stuck to the ceiling? There's a whole workshop of these.</h2>
+        <p>We make machines your child can poke, drive and break. Jet engines, drones, touchscreens, F1 cars. We'll email you when the next one is ready.</p>
+        <p class="fine">No spam. Unsubscribe in one click.</p>
+      </div>
+      <div class="form-box">
+        <iframe id="tallyForm" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Get the next Ari machine"></iframe>
+      </div>
+    </section>
+
+    <!-- MACHINES -->
+    <section class="next">
+      <h2>More machines</h2>
+      <p>Each one starts with a question a curious kid would ask.</p>
+      <div class="figs">
+        <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
+        <a class="fig" href="/drone.html"><span class="tag go">Play</span><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></a>
+        <a class="fig" href="/"><span class="tag go">Play</span><div class="no">FIG. 01</div><h3>Jet engine</h3><p>How does a jet engine push a plane?</p></a>
+        <a class="fig" href="/solar.html"><span class="tag go">Play</span><div class="no">FIG. 03</div><h3>Solar panel</h3><p>How does sunlight turn into electricity?</p></a>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 07</div><h3>Rocket</h3><p>How does a rocket get to space?</p></div>
+        <div class="fig"><span class="tag">Soon</span><div class="no">FIG. 08</div><h3>Roller coaster</h3><p>Why don't you fall out at the top of the loop?</p></div>
+      </div>
+    </section>
+    <!-- /MACHINES -->
+
+    <section class="why">
+      <h2>Why parents like it</h2>
+      <p>Built for children aged roughly 7 to 12.</p>
+      <div class="why-grid">
+        <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
+        <div class="why-item"><h3>Real physics, not a cartoon</h3><p>The car's grip, speed and downforce come from the same rules real engineers use, simplified so a child can feel them.</p></div>
+        <div class="why-item"><h3>No ads. No accounts.</h3><p>Children don't sign up for anything. Only you get the email, and only if you ask for it.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari</div>
+    </footer>
+  </div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== Sign-up form =====================
+  var params = new URLSearchParams(location.search);
+  var src = { object: 'f1' };
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ref'].forEach(function (k) { if (params.get(k)) src[k] = params.get(k); });
+  var stats = { interactions: 0 };
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'f1' }); } catch (e) {} }
+  function loadForm() {
+    var q = new URLSearchParams({ alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1' });
+    Object.keys(src).forEach(function (k) { q.set(k, src[k]); });
+    q.set('interactions', String(stats.interactions)); q.set('missions', String(M.filter(Boolean).length));
+    var f = document.getElementById('tallyForm');
+    f.setAttribute('data-tally-src', 'https://tally.so/embed/q45EaG?' + q.toString());
+    if (window.Tally) window.Tally.loadEmbeds(); else f.src = f.getAttribute('data-tally-src');
+  }
+  var formLoaded = false;
+  var io = new IntersectionObserver(function (e) { if (!formLoaded && e[0].isIntersecting) { formLoaded = true; loadForm(); io.disconnect(); } }, { rootMargin: '200px' });
+  io.observe(document.getElementById('signup'));
+
+  // ===================== Physics =====================
+  // Simplified but real: downforce and drag grow with speed squared, grip = tyre friction x how hard the tyres are pressed down.
+  var MASS = 800, G = 9.81, WEIGHT = MASS * G;          // about 800 kg with the driver
+  var CL = WEIGHT / Math.pow(200 / 3.6, 2);             // full wings: downforce equals weight at about 200 km/h
+  var MU = 1.7;                                         // racing slicks grip very hard
+  var POWER = 750000;                                   // about 1,000 horsepower
+  var R = 150, LS = 450, LAP = 2 * LS + 2 * Math.PI * R; // stadium-shaped track: two straights, two fast corners
+  var TS = 1.4;                                         // the simulation runs a little faster than real time
+  function eff(w) { return 0.06 + 0.94 * w; }           // the body and floor still make a little downforce with no wings
+  function dragK(w) { return 0.85 + 0.65 * w; }         // steeper wings = more drag
+  function downforce(v) { return CL * eff(wing) * v * v; }
+  function cornerLimit() { var den = MASS / R - MU * CL * eff(wing); return den <= 0 ? Infinity : Math.sqrt(MU * WEIGHT / den); }
+
+  var wing = 0.25, savedWing = 0.8, mode = 'track', go = false, brake = false;
+  var v = 0, s = 30, lap = 1, gripUse = 0;
+  var spin = null;                    // {t, x, y, hd, vx, vy, rot, corner}
+  var corner = 0, cornerHeld = false, cornerMaxV = 0;
+  var tun = { x: 0, phase: 'run', t: 0, best: 0 };   // tunnel run
+  var TUN = { climb: 300, ceil: 360, ceilEnd: 1160, out: 1220 };
+  var M = [false, false, false, false], clock = 0, lastEvent = { kind: '', t: -10 };
+  var trail = [];
+
+  function pos(sv) {
+    var x, y, hd, c = 0;
+    if (sv < LS) { x = -LS / 2 + sv; y = R; hd = 0; }
+    else if (sv < LS + Math.PI * R) { var th = Math.PI / 2 - (sv - LS) / R; x = LS / 2 + R * Math.cos(th); y = R * Math.sin(th); hd = th - Math.PI / 2; c = 1; }
+    else if (sv < 2 * LS + Math.PI * R) { x = LS / 2 - (sv - LS - Math.PI * R); y = -R; hd = Math.PI; }
+    else { th = -Math.PI / 2 - (sv - 2 * LS - Math.PI * R) / R; x = -LS / 2 + R * Math.cos(th); y = R * Math.sin(th); hd = th - Math.PI / 2; c = 2; }
+    return { x: x, y: y, hd: hd, corner: c };
+  }
+
+  function drive(N, dt) {
+    var grip = MU * Math.max(0, N);
+    var fd = go ? Math.min(POWER / Math.max(v, 8), 0.95 * grip) : 0;
+    var fb = brake ? 0.9 * grip : 0;
+    var drag = dragK(wing) * v * v + 0.015 * WEIGHT;
+    v = Math.max(0, v + (fd - fb - drag) / MASS * dt);
+    return grip;
+  }
+
+  function tick(dt) {
+    clock += dt;
+    if (mode === 'track') tickTrack(dt); else tickTunnel(dt);
+  }
+
+  function tickTrack(dt) {
+    if (spin) {
+      spin.t += dt; spin.x += spin.vx * dt; spin.y += spin.vy * dt;
+      var k = Math.exp(-1.4 * dt); spin.vx *= k; spin.vy *= k; spin.hd += spin.rot * dt; spin.rot *= Math.exp(-0.8 * dt);
+      if (spin.t > 3) { s = spin.corner === 1 ? LS + Math.PI * R + 5 : 5; v = 15; spin = null; trail = []; corner = 0; }
+      gripUse = 0; return;
+    }
+    var D = downforce(v), N = WEIGHT + D;
+    var grip = drive(N, dt);
+    var p = pos(s);
+    if (p.corner) {
+      var need = MASS * v * v / R;
+      gripUse = need / grip;
+      if (corner !== p.corner) { corner = p.corner; cornerHeld = go; cornerMaxV = v; }
+      if (!go) cornerHeld = false;
+      cornerMaxV = Math.max(cornerMaxV, v);
+      if (gripUse > 1) { startSpin(p); return; }
+    } else {
+      gripUse = (go ? Math.min(POWER / Math.max(v, 8), 0.95 * grip) : brake ? 0.9 * grip : 0) / grip * 0.6;
+      if (corner) {   // just came out of a corner without spinning
+        complete(0);
+        if (cornerHeld && cornerMaxV > 200 / 3.6) { complete(1); lastEvent = { kind: 'flat', t: clock }; }
+        corner = 0;
+      }
+    }
+    s += v * dt;
+    if (s >= LAP) { s -= LAP; lap++; }
+  }
+
+  function startSpin(p) {
+    spin = { t: 0, x: p.x, y: p.y, hd: p.hd, vx: v * Math.cos(p.hd), vy: v * Math.sin(p.hd), rot: (p.corner === 1 ? -1 : 1) * 7, corner: p.corner, v: v };
+    lastEvent = { kind: wing < 0.01 ? 'spin0' : 'spin', t: clock };
+    if (wing < 0.01) complete(2);
+    track(wing < 0.01 ? 'spin_nowings' : 'spin');
+    screech(); v = 0; corner = 0; gripUse = 1.2;
+  }
+
+  function tickTunnel(dt) {
+    var D = downforce(v);
+    tun.t += dt;
+    if (tun.phase === 'run' || tun.phase === 'roll' || tun.phase === 'rolldown') {
+      drive(WEIGHT + D, dt); tun.x += v * dt;
+      if (tun.phase === 'run' && tun.x >= TUN.climb) tun.phase = 'roll';
+      if (tun.phase === 'roll' && tun.x >= TUN.ceil) {
+        if (D >= WEIGHT) { tun.phase = 'ceiling'; lastEvent = { kind: 'ceiling', t: clock }; track('ceiling'); }
+        else { tun.phase = 'fall'; tun.t = 0; tun.fy = 1; lastEvent = { kind: 'nostick', t: clock }; track('ceiling_fail'); }
+      }
+      if (tun.phase === 'rolldown' && tun.x >= TUN.out) { tun.phase = 'done'; tun.t = 0; }
+      gripUse = 0.3;
+    } else if (tun.phase === 'ceiling') {
+      var N = D - WEIGHT;
+      if (N < 0) { tun.phase = 'fall'; tun.t = 0; tun.fy = 1; lastEvent = { kind: 'fell', t: clock }; track('ceiling_fall'); return; }
+      drive(N, dt); tun.x += v * dt;
+      tun.best = Math.max(tun.best, tun.x - TUN.ceil);
+      if (tun.x - TUN.ceil >= 500) complete(3);
+      if (tun.x >= TUN.ceilEnd) tun.phase = 'rolldown';
+      gripUse = WEIGHT / Math.max(D, 1);
+    } else if (tun.phase === 'fall') {
+      tun.x += v * dt; v *= Math.exp(-1.5 * dt);
+      tun.fy = Math.max(0, 1 - 0.5 * G * tun.t * tun.t / 7.5);   // drops about 7.5 m to the floor
+      if (tun.t > 3.2) resetTunnel();
+    } else if (tun.phase === 'done') {
+      v *= Math.exp(-1.2 * dt); tun.x += v * dt;
+      if (tun.t > 3) resetTunnel();
+    }
+  }
+  function resetTunnel() { tun = { x: 0, phase: 'run', t: 0, best: tun.best }; v = 20; }
+
+  // ===================== Canvas setup =====================
+  var cv = document.getElementById('scene'), ctx = cv.getContext('2d');
+  var sv = document.getElementById('side'), sctx = sv.getContext('2d');
+  var W, H, SW, SH, dpr, phone;
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    W = Math.max(260, cv.clientWidth); phone = W < 600;
+    H = Math.round(phone ? Math.min(W * 1.02, 440) : Math.min(W * 0.6, 470));
+    cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    SW = Math.max(260, sv.clientWidth); SH = phone ? 190 : 220;
+    sv.style.height = SH + 'px'; sv.width = Math.round(SW * dpr); sv.height = Math.round(SH * dpr); sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    initAir();
+  }
+  function rr(c, x, y, w, h, r) { c.beginPath(); w = Math.max(1, w); h = Math.max(1, h); r = Math.max(0, Math.min(r, w / 2, h / 2)); if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
+  function kmh(ms) { return Math.round(ms * 3.6); }
+
+  // ----- top-down car -----
+  function carTop(c, x, y, hd, L) {
+    c.save(); c.translate(x, y); c.rotate(hd);
+    var w = L * 0.36;
+    c.fillStyle = '#111';
+    [[-0.32, -0.5], [-0.32, 0.5], [0.3, -0.5], [0.3, 0.5]].forEach(function (q) { rr(c, q[0] * L - L * 0.09, q[1] * w - w * 0.17, L * 0.18, w * 0.34, 2); c.fill(); });
+    c.fillStyle = '#FF8C42'; c.strokeStyle = '#7A3510'; c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(L * 0.5, 0); c.lineTo(L * 0.1, -w * 0.16); c.lineTo(-L * 0.15, -w * 0.3); c.lineTo(-L * 0.42, -w * 0.22); c.lineTo(-L * 0.42, w * 0.22); c.lineTo(-L * 0.15, w * 0.3); c.lineTo(L * 0.1, w * 0.16); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#FFC845'; c.beginPath(); c.arc(-L * 0.05, 0, w * 0.11, 0, 6.3); c.fill();
+    if (wing > 0.01) {
+      c.fillStyle = '#E9E4F5'; var t = 1.5 + wing * 2.5;
+      rr(c, L * 0.44, -w * 0.52, t, w * 1.04, 1); c.fill();       // front wing
+      rr(c, -L * 0.5, -w * 0.4, t + 1, w * 0.8, 1); c.fill();      // rear wing
+    }
+    c.restore();
+  }
+
+  // ----- track view -----
+  function drawTrack() {
+    var c = ctx;
+    var top = 8, bot = phone ? H - 100 : H - 12, th = bot - top;
+    var sc = Math.min((W - 30) / (LS + 2 * R + 70), (th - 20) / (2 * R + 70));
+    var cx = W / 2, cy = top + th / 2;
+    function X(x) { return cx + x * sc; } function Y(y) { return cy + y * sc; }
+    c.fillStyle = '#152620'; c.fillRect(0, 0, W, H);
+    c.fillStyle = 'rgba(255,255,255,.025)'; for (var i = 0; i < W; i += 28) c.fillRect(i, 0, 14, H);
+    var tw = Math.max(18, 16 * sc);
+    // gravel run-off outside the corners
+    c.fillStyle = '#3A3528';
+    [1, -1].forEach(function (sd) { c.beginPath(); c.arc(X(sd * LS / 2), Y(0), R * sc + tw * 2.6, sd > 0 ? -Math.PI / 2 : Math.PI / 2, sd > 0 ? Math.PI / 2 : Math.PI * 1.5); c.fill(); });
+    // tarmac
+    function path() { c.beginPath(); c.moveTo(X(-LS / 2), Y(R)); c.lineTo(X(LS / 2), Y(R)); c.arc(X(LS / 2), Y(0), R * sc, Math.PI / 2, -Math.PI / 2, true); c.lineTo(X(-LS / 2), Y(-R)); c.arc(X(-LS / 2), Y(0), R * sc, -Math.PI / 2, Math.PI / 2, true); c.closePath(); }
+    c.lineJoin = 'round';
+    path(); c.strokeStyle = '#E9E4F5'; c.lineWidth = tw + 4; c.stroke();
+    path(); c.strokeStyle = '#3B4057'; c.lineWidth = tw; c.stroke();
+    // kerbs on the outside of the corners
+    c.lineWidth = 4; c.setLineDash([6, 6]);
+    [1, -1].forEach(function (sd) {
+      c.strokeStyle = '#FF4D3D'; c.beginPath(); c.arc(X(sd * LS / 2), Y(0), R * sc + tw / 2 + 2, sd > 0 ? -Math.PI / 2 : Math.PI / 2, sd > 0 ? Math.PI / 2 : Math.PI * 1.5); c.stroke();
+    });
+    c.setLineDash([]);
+    // start line
+    for (var k = 0; k < 6; k++) { c.fillStyle = k % 2 ? '#111' : '#fff'; c.fillRect(X(0) - 3, Y(R) - tw / 2 + k * tw / 6, 6, tw / 6 + 0.5); }
+    // corner speed sign (inside the right-hand corner)
+    var lim = cornerLimit(), lk = isFinite(lim) && lim < 120 ? Math.floor(kmh(lim) / 5) * 5 : null;
+    var sx = X(LS / 2 + R * 0.05), sy = Y(0), sr = Math.max(17, Math.min(26, R * sc * 0.36));
+    c.fillStyle = 'white'; c.beginPath(); c.arc(sx, sy, sr, 0, 6.3); c.fill();
+    c.strokeStyle = '#E83A2C'; c.lineWidth = sr * 0.22; c.beginPath(); c.arc(sx, sy, sr * 0.86, 0, 6.3); c.stroke();
+    c.fillStyle = '#222'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.font = '700 ' + Math.round(sr * (lk ? 0.62 : 0.5)) + 'px Fredoka, sans-serif';
+    c.fillText(lk ? String(lk) : 'ANY', sx, sy + 1);
+    c.font = '600 9px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.fillText('CORNER LIMIT', sx, sy + sr + 10);
+    c.textBaseline = 'alphabetic';
+    // trail + car
+    var p, L = Math.max(30, Math.min(46, W * 0.075));
+    if (spin) p = { x: spin.x, y: spin.y, hd: spin.hd }; else p = pos(s);
+    trail.push([X(p.x), Y(p.y), gripUse]); if (trail.length > 26) trail.shift();
+    for (i = 1; i < trail.length; i++) {
+      var g = trail[i][2]; c.strokeStyle = g > 1 ? 'rgba(255,77,61,.6)' : g > 0.85 ? 'rgba(255,200,69,.45)' : 'rgba(111,211,168,.3)';
+      c.lineWidth = 4 * i / trail.length; c.beginPath(); c.moveTo(trail[i - 1][0], trail[i - 1][1]); c.lineTo(trail[i][0], trail[i][1]); c.stroke();
+    }
+    if (spin) { c.fillStyle = 'rgba(200,200,200,' + Math.max(0, 0.35 - spin.t * 0.1) + ')'; for (i = 0; i < 6; i++) { c.beginPath(); c.arc(X(spin.x) + Math.sin(i * 2.1 + spin.t * 3) * 14, Y(spin.y) + Math.cos(i * 1.7) * 14, 8 + spin.t * 6, 0, 6.3); c.fill(); } }
+    carTop(c, X(p.x), Y(p.y), p.hd, L);
+    hud(c, true);
+    if (spin) banner(c, wing < 0.01 ? 'No wings, no grip!' : 'Spun off!', '#FF6B5E');
+  }
+
+  function hud(c, isTrack) {
+    var x = 12, y = 30;
+    c.textAlign = 'left'; c.fillStyle = 'white'; c.font = '700 26px Fredoka, sans-serif';
+    c.fillText(kmh(v) + '', x, y); var tw = c.measureText(kmh(v) + '').width;
+    c.font = '600 11px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.fillText('KM/H · ' + Math.round(v * 2.237) + ' MPH', x + tw + 6, y);
+    var bw = Math.min(130, W * 0.36), by = y + 12, val, label, mark;
+    if (isTrack) { val = Math.min(1.5, gripUse) / 1.5; label = 'GRIP USED'; mark = 1 / 1.5; }
+    else { val = Math.min(3, downforce(v) / WEIGHT) / 3; label = 'DOWNFORCE ÷ WEIGHT'; mark = 1 / 3; }
+    c.fillStyle = 'rgba(255,255,255,.12)'; rr(c, x, by, bw, 8, 4); c.fill();
+    var bad = isTrack ? gripUse > 1 : downforce(v) < WEIGHT;
+    c.fillStyle = bad ? '#FF4D3D' : (isTrack && gripUse > 0.85 ? '#FFC845' : '#6FD3A8'); rr(c, x, by, Math.max(2, bw * val), 8, 4); c.fill();
+    c.fillStyle = 'white'; c.fillRect(x + bw * mark - 1, by - 3, 2, 14);
+    c.fillStyle = '#9EA3C4'; c.font = '600 9.5px "IBM Plex Mono", monospace'; c.fillText(label, x, by + 21);
+  }
+  function banner(c, txt, col) {
+    c.font = '700 ' + (phone ? 22 : 28) + 'px Fredoka, sans-serif'; c.textAlign = 'center';
+    var tw = c.measureText(txt).width + 30, bx = W / 2 - tw / 2, by = (phone ? H - 100 : H) * 0.5 - 24;
+    c.fillStyle = 'rgba(15,17,36,.82)'; rr(c, bx, by, tw, 44, 14); c.fill();
+    c.fillStyle = col; c.fillText(txt, W / 2, by + 30);
+  }
+
+  // ----- tunnel view (side-on) -----
+  function drawTunnel() {
+    var c = ctx;
+    var floorY = phone ? H - 104 : H - 70, ceilY = phone ? 64 : 70, ppm = (floorY - ceilY) / 8;
+    var camX = tun.x, carSX = W * 0.46;
+    function SX(m) { return carSX + (m - camX) * ppm; }
+    c.fillStyle = '#10121F'; c.fillRect(0, 0, W, H);
+    // back wall with lights
+    c.fillStyle = '#1D2136'; c.fillRect(0, ceilY, W, floorY - ceilY);
+    var sp = 12, first = Math.floor((camX - carSX / ppm) / sp) - 1;
+    for (var i = first; i < first + W / (sp * ppm) + 3; i++) {
+      var lx = SX(i * sp);
+      c.fillStyle = 'rgba(255,214,120,.18)'; c.fillRect(lx - 2, ceilY + (floorY - ceilY) * 0.45, sp * ppm * 0.45, 6);
+      c.fillStyle = '#FFD678'; c.fillRect(lx, ceilY + (floorY - ceilY) * 0.45, sp * ppm * 0.3, 3);
+    }
+    // ceiling and floor slabs
+    c.fillStyle = '#3B4057'; c.fillRect(0, ceilY - 14, W, 14); c.fillRect(0, floorY, W, H - floorY);
+    c.fillStyle = '#4C5270'; c.fillRect(0, ceilY - 2, W, 2); c.fillRect(0, floorY, W, 2);
+    // lane dashes on floor and ceiling
+    c.fillStyle = 'rgba(255,255,255,.5)';
+    var d0 = Math.floor((camX - carSX / ppm) / 8) - 1;
+    for (i = d0; i < d0 + W / (8 * ppm) + 3; i++) { var dx = SX(i * 8); c.fillRect(dx, floorY + 6, 4 * ppm, 3); if (i * 8 > TUN.climb && i * 8 < TUN.out) c.fillRect(dx, ceilY - 9, 4 * ppm, 3); }
+    // the ceiling section is marked out
+    c.fillStyle = 'rgba(111,211,168,.9)'; c.font = '600 10px "IBM Plex Mono", monospace'; c.textAlign = 'center';
+    [0, 100, 200, 300, 400, 500, 600, 700, 800].forEach(function (m) {
+      var mx = SX(TUN.ceil + m); if (mx < -40 || mx > W + 40) return;
+      c.fillRect(mx - 1, ceilY, 2, 12); c.fillText(m === 500 ? '500 m ★' : m + ' m', mx, ceilY + 24);
+    });
+    var cx1 = SX(TUN.climb), cx2 = SX(TUN.ceil);
+    if (cx2 > -60 && cx1 < W + 60) {
+      c.strokeStyle = 'rgba(255,200,69,.6)'; c.setLineDash([5, 5]); c.lineWidth = 2;
+      c.beginPath(); c.moveTo(cx1, floorY - 4); c.bezierCurveTo(cx1 + (cx2 - cx1) * 0.6, floorY - 4, cx2 - (cx2 - cx1) * 0.6, ceilY + 4, cx2, ceilY + 4); c.stroke(); c.setLineDash([]);
+      c.fillStyle = '#FFC845'; c.textAlign = 'center'; c.font = '700 13px Nunito, sans-serif';
+      c.fillText('the wall curves up', (cx1 + cx2) / 2, (floorY + ceilY) / 2 - 8); c.fillText('onto the ceiling', (cx1 + cx2) / 2, (floorY + ceilY) / 2 + 8);
+    }
+    // car
+    var L = 5.6 * ppm, hgt = 1.0 * ppm, f, cy, flip;
+    if (tun.phase === 'run') { cy = floorY; flip = 0; }
+    else if (tun.phase === 'roll') { f = (tun.x - TUN.climb) / (TUN.ceil - TUN.climb); f = f * f * (3 - 2 * f); cy = floorY + (ceilY - floorY) * f; flip = f; }
+    else if (tun.phase === 'ceiling') { cy = ceilY; flip = 1; }
+    else if (tun.phase === 'rolldown') { f = (tun.x - TUN.ceilEnd) / (TUN.out - TUN.ceilEnd); f = f * f * (3 - 2 * f); cy = ceilY + (floorY - ceilY) * f; flip = 1 - f; }
+    else if (tun.phase === 'fall') { cy = floorY + (ceilY - floorY) * tun.fy; flip = tun.fy > 0 ? 1 : 1; }
+    else { cy = floorY; flip = 0; }
+    c.save(); c.translate(carSX, cy);
+    if (tun.phase === 'fall') c.rotate(-(1 - tun.fy) * 0.25);
+    c.scale(1, Math.cos(flip * Math.PI) || 0.05);
+    drawProfile(c, 0, 0, L, hgt);
+    c.restore();
+    // force arrows when on (or near) the ceiling
+    if (tun.phase === 'ceiling' || tun.phase === 'roll') {
+      var Dw = downforce(v) / WEIGHT, base = Math.max(26, ppm * 1.4);
+      arrow(c, carSX + L * 0.12, cy + (flip > 0.5 ? hgt * 1.4 : -hgt * 1.4), 0, (flip > 0.5 ? 1 : -1) * base, '#C9CEE8', 'weight');
+      arrow(c, carSX - L * 0.12, cy + (flip > 0.5 ? hgt * 1.4 : -hgt * 1.4), 0, (flip > 0.5 ? -1 : 1) * base * Math.min(Dw, 3), Dw >= 1 ? '#6FD3A8' : '#FF4D3D', 'downforce');
+    }
+    hud(c, false);
+    if (tun.phase === 'ceiling' || tun.phase === 'rolldown') {
+      c.textAlign = 'right'; c.fillStyle = '#6FD3A8'; c.font = '700 20px Fredoka, sans-serif';
+      c.fillText(Math.round(Math.min(800, tun.x - TUN.ceil)) + ' m upside down', W - 12, 30);
+    } else if (tun.best > 0) {
+      c.textAlign = 'right'; c.fillStyle = '#9EA3C4'; c.font = '600 11px "IBM Plex Mono", monospace'; c.fillText('BEST ' + Math.round(Math.min(800, tun.best)) + ' M', W - 12, 28);
+    }
+    if (tun.phase === 'fall') banner(c, lastEvent.kind === 'nostick' ? 'Not enough downforce!' : 'It dropped off!', '#FF6B5E');
+    if (tun.phase === 'done') banner(c, 'You drove on the ceiling!', '#6FD3A8');
+  }
+  function arrow(c, x, y, dx, dy, col, label) {
+    var len = Math.hypot(dx, dy); if (len < 3) return;
+    var ux = dx / len, uy = dy / len, hs = Math.min(10, len * 0.5);
+    c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 4; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x, y); c.lineTo(x + dx - ux * hs, y + dy - uy * hs); c.stroke();
+    c.beginPath(); c.moveTo(x + dx, y + dy); c.lineTo(x + dx - ux * hs - uy * hs * 0.7, y + dy - uy * hs + ux * hs * 0.7); c.lineTo(x + dx - ux * hs + uy * hs * 0.7, y + dy - uy * hs - ux * hs * 0.7); c.closePath(); c.fill();
+    if (label) { c.font = '700 12px Nunito, sans-serif'; c.textAlign = dx === 0 && x < W / 2 ? 'right' : 'left'; c.fillText(label, x + (c.textAlign === 'right' ? -8 : 8), y + dy * 0.55 + 4); }
+  }
+
+  // side profile of the car, wheels sitting on y=0, nose pointing right, drawn upwards (negative y)
+  function drawProfile(c, x, y, L, hb) {
+    var nose = x + L / 2, tail = x - L / 2, wr = hb * 0.62;
+    c.fillStyle = '#FF8C42'; c.strokeStyle = '#7A3510'; c.lineWidth = 1.5;
+    c.beginPath();
+    c.moveTo(nose, y - hb * 0.35);
+    c.lineTo(x + L * 0.18, y - hb * 0.62);
+    c.lineTo(x + L * 0.02, y - hb * 0.95);
+    c.lineTo(x - L * 0.06, y - hb * 1.35);
+    c.lineTo(x - L * 0.2, y - hb * 1.2);
+    c.lineTo(tail + L * 0.06, y - hb * 0.85);
+    c.lineTo(tail + L * 0.04, y - hb * 0.25);
+    c.lineTo(nose - L * 0.1, y - hb * 0.18);
+    c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#FFC845'; c.beginPath(); c.arc(x - L * 0.02, y - hb * 1.08, hb * 0.24, 0, 6.3); c.fill();
+    c.strokeStyle = '#222'; c.lineWidth = 2; c.beginPath(); c.moveTo(x + L * 0.08, y - hb * 0.9); c.quadraticCurveTo(x - L * 0.02, y - hb * 1.5, x - L * 0.1, y - hb * 1.1); c.stroke();
+    // wings
+    var ang = (0.12 + wing * 0.38);
+    if (wing > 0.01) {
+      c.fillStyle = '#2B2F45'; c.strokeStyle = '#E9E4F5'; c.lineWidth = 1;
+      c.save(); c.translate(nose - L * 0.06, y - hb * 0.14); c.rotate(-ang * 0.6); rr(c, -L * 0.06, -hb * 0.07, L * 0.12, hb * 0.14, 2); c.fill(); c.stroke(); c.restore();
+      c.fillStyle = '#3B4057'; c.fillRect(tail + L * 0.06, y - hb * 1.8, 3, hb * 1.0);
+      c.fillStyle = '#2B2F45'; c.save(); c.translate(tail + L * 0.06, y - hb * 1.85); c.rotate(-ang); rr(c, -L * 0.065, -hb * 0.09, L * 0.13, hb * 0.18, 2); c.fill(); c.stroke(); c.restore();
+    } else {
+      c.strokeStyle = 'rgba(233,228,245,.45)'; c.setLineDash([3, 3]); c.lineWidth = 1.2;
+      rr(c, nose - L * 0.12, y - hb * 0.2, L * 0.12, hb * 0.14, 2); c.stroke();
+      rr(c, tail - L * 0.005, y - hb * 1.95, L * 0.13, hb * 0.18, 2); c.stroke(); c.setLineDash([]);
+    }
+    // wheels
+    [x + L * 0.3, x - L * 0.3].forEach(function (wx) {
+      c.fillStyle = '#111'; c.beginPath(); c.arc(wx, y - wr, wr, 0, 6.3); c.fill();
+      c.fillStyle = '#555'; c.beginPath(); c.arc(wx, y - wr, wr * 0.45, 0, 6.3); c.fill();
+    });
+  }
+
+  // ----- side view: air over the wings -----
+  var air = [];
+  function initAir() { air = []; for (var i = 0; i < 46; i++) air.push({ x: Math.random() * SW, lane: Math.random(), up: 0 }); }
+  function drawSide(dt) {
+    var c = sctx, w = SW, h = SH;
+    var onCeil = mode === 'tunnel' && (tun.phase === 'ceiling' || (tun.phase === 'roll' && (tun.x - TUN.climb) / (TUN.ceil - TUN.climb) > 0.5));
+    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
+    var L = Math.min(w * 0.6, 430), hb = L * 0.1, cx = w * 0.5, gy = h * 0.8;
+    var nose = cx + L / 2, tail = cx - L / 2, rwX = tail + L * 0.06, rwY = gy - hb * 1.85, fwX = nose - L * 0.06, fwY = gy - hb * 0.14;
+    c.save();
+    if (onCeil) { c.translate(0, h); c.scale(1, -1); }
+    // road / ceiling surface
+    c.fillStyle = '#2B2F45'; c.fillRect(0, gy, w, h - gy);
+    c.fillStyle = 'rgba(255,255,255,.35)'; var off = (clock * v * 4) % 40; for (var x = -off; x < w; x += 40) c.fillRect(x, gy + 6, 20, 2);
+    // air streams (air moves right-to-left past the car)
+    var e = eff(wing), speedPx = 30 + v * 3.2, lift = e * Math.min(1, v / 55);
+    air.forEach(function (a) {
+      a.x -= speedPx * dt;
+      if (a.x < -20) { a.x = w + Math.random() * 40; a.lane = Math.random(); a.up = 0; }
+      var y0 = gy - 12 - a.lane * (gy - 22);
+      // bend over the body
+      var over = Math.exp(-Math.pow((a.x - cx) / (L * 0.38), 2)) * Math.max(0, 1 - Math.abs(y0 - (gy - hb)) / (hb * 3.5)) * hb * 0.9;
+      // wings throw the air upwards behind them
+      var nearR = Math.max(0, 1 - Math.abs(y0 - rwY) / (hb * 1.6)), nearF = Math.max(0, 1 - Math.abs(y0 - fwY) / (hb * 1.2));
+      var behindR = Math.max(0, rwX - a.x), behindF = Math.max(0, fwX - a.x);
+      var deflect = wing > 0.01 ? (nearR * Math.min(behindR, L * 0.4) * 0.55 + nearF * Math.min(behindF, L * 0.25) * 0.35) * lift : 0;
+      var y = y0 - over - deflect;
+      var dy = deflect > 0.5 ? -0.5 * lift : 0;
+      c.strokeStyle = deflect > 2 ? 'rgba(111,211,168,.75)' : 'rgba(158,163,196,.45)'; c.lineWidth = 1.6;
+      c.beginPath(); c.moveTo(a.x, y); c.lineTo(a.x + 14, y - dy * 14); c.stroke();
+    });
+    drawProfile(c, cx, gy, L, hb);
+    c.restore();
+    // arrows (drawn upright so the labels read correctly)
+    function fy(y) { return onCeil ? h - y : y; }
+    var D = downforce(v), base = Math.max(22, h * 0.16), dw = D / WEIGHT;
+    var carMid = fy(gy - hb * 0.7);
+    c.save(); c.font = '700 12px Nunito, sans-serif';
+    // weight always points to the ground (down the screen)
+    arrowS(c, cx + L * 0.14, carMid, base, '#C9CEE8', 'weight 1×', 'left');
+    // downforce points into the road: down on the road, up when on the ceiling
+    arrowS(c, cx - L * 0.14, carMid, (onCeil ? -1 : 1) * base * Math.min(dw, 3.2), onCeil ? (dw >= 1 ? '#6FD3A8' : '#FF4D3D') : '#6FD3A8', 'downforce ' + dw.toFixed(1) + '×', 'right');
+    if (wing > 0.01 && v > 8) {
+      var ax = rwX, ay = fy(rwY) + (onCeil ? hb * 0.8 : -hb * 0.8);
+      c.fillStyle = '#6FD3A8'; c.font = '600 10px "IBM Plex Mono", monospace'; c.textAlign = 'center';
+      c.fillText(onCeil ? 'air thrown ↓' : 'air thrown ↑', Math.max(40, ax), onCeil ? Math.min(h - 6, ay + 14) : Math.max(12, ay - 6));
+    }
+    c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
+    c.fillText(onCeil ? 'UPSIDE DOWN' : wing < 0.01 ? 'WINGS OFF' : 'WINGS ' + Math.round(wing * 100) + '%', 10, onCeil ? h - 8 : 16);
+    if (onCeil) { c.textAlign = 'right'; c.fillStyle = dw >= 1 ? '#6FD3A8' : '#FF6B5E'; c.font = '700 13px Nunito, sans-serif'; c.fillText(dw >= 1 ? 'Downforce beats weight: it sticks!' : 'Weight wins: it falls!', w - 10, h - 8); }
+    c.restore();
+  }
+  function arrowS(c, x, y, dy, col, label, side) {
+    if (Math.abs(dy) < 3) return;
+    var u = dy > 0 ? 1 : -1, hs = Math.min(9, Math.abs(dy) * 0.5);
+    c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 4; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x, y); c.lineTo(x, y + dy - u * hs); c.stroke();
+    c.beginPath(); c.moveTo(x, y + dy); c.lineTo(x - hs * 0.8, y + dy - u * hs); c.lineTo(x + hs * 0.8, y + dy - u * hs); c.closePath(); c.fill();
+    c.font = '700 12px Nunito, sans-serif'; c.textAlign = side === 'left' ? 'left' : 'right';
+    c.fillText(label, x + (side === 'left' ? 8 : -8), y + Math.max(-60, Math.min(60, dy * 0.5)) + 4);
+  }
+
+  // ===================== Gauges =====================
+  function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
+  function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
+  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
+    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
+    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="#6FD3A8" stroke-width="2.5" stroke-linecap="round"/>'; }
+    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+    el.innerHTML = html;
+    return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
+  }
+  var gSpeed = makeGauge('gSpeed', 'KM/H', 350, [200 / 350, 1], 'rgba(255,140,66,.35)', '#FF8C42');
+  var gDown = makeGauge('gDown', 'DOWNFORCE ×WT', 3, null, null, '#6FD3A8', 1 / 3);
+  var gGrip = makeGauge('gGrip', 'GRIP USED', 150, [100 / 150, 1], 'rgba(255,77,61,.45)', '#FFC845', 100 / 150);
+  function setGauge(g, val, fmt, dt) {
+    g.shown += (val - g.shown) * Math.min(1, dt * 10);
+    var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
+    g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.val.textContent = fmt(g.shown);
+  }
+
+  // ===================== Sound (off by default) =====================
+  var AC = null, soundOn = false, eng = null;
+  function ensureAudio() {
+    if (AC) return;
+    try {
+      AC = new (window.AudioContext || window.webkitAudioContext)();
+      var o = AC.createOscillator(), o2 = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain();
+      o.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 900; g.gain.value = 0;
+      o.connect(f); o2.connect(f); f.connect(g); g.connect(AC.destination); o.start(); o2.start();
+      eng = { o: o, o2: o2, g: g };
+    } catch (e) { AC = null; }
+  }
+  function engineSound() {
+    if (!eng) return;
+    var t = AC.currentTime, f = 70 + v * 4.2;
+    eng.o.frequency.setTargetAtTime(f, t, 0.05); eng.o2.frequency.setTargetAtTime(f * 0.5, t, 0.05);
+    var moving = (mode === 'track' && !spin) || (mode === 'tunnel' && tun.phase !== 'fall');
+    eng.g.gain.setTargetAtTime(soundOn && moving && v > 1 ? (go ? 0.05 : 0.025) : 0, t, 0.08);
+  }
+  function screech() {
+    if (!soundOn || !AC) return;
+    try {
+      var n = AC.createBufferSource(), b = AC.createBuffer(1, AC.sampleRate * 0.8, AC.sampleRate), d = b.getChannelData(0);
+      for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / d.length * 3);
+      var f = AC.createBiquadFilter(), g = AC.createGain(); f.type = 'bandpass'; f.frequency.value = 2200; f.Q.value = 3; g.gain.value = 0.12;
+      n.buffer = b; n.connect(f); f.connect(g); g.connect(AC.destination); n.start();
+    } catch (e) {}
+  }
+
+  // ===================== Ari =====================
+  var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), lastMsg = '';
+  function say(html) { if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop'); }
+  var mEls = Array.prototype.slice.call(document.querySelectorAll('.mission'));
+  function complete(i) { if (M[i]) return; M[i] = true; track('mission_' + (i + 1)); mEls.forEach(function (el, k) { el.classList.toggle('done', M[k]); el.classList.toggle('now', k === M.indexOf(false)); }); }
+  function coach() {
+    var k = lastEvent.kind, recent = clock - lastEvent.t < 7;
+    if (recent && k === 'spin0') return say('<b>No wings, no grip!</b> Without wings nothing pushes the car into the road, so the tyres can\'t grip hard enough and it slides straight on. That\'s why F1 cars are covered in wings.');
+    if (recent && k === 'spin') return say('<b>Spun off!</b> In a corner the tyres must push the car sideways. Too fast, and they need more grip than they\'ve got. ' + (M[0] ? 'More wing means more downforce, and more grip.' : 'Let go of GO, or brake, before the corner.'));
+    if (recent && k === 'nostick') return say('<b>Not enough downforce!</b> To stick to the ceiling, the wings must push up harder than the car weighs. You need more speed, or <b>steeper wings</b>.');
+    if (recent && k === 'fell') return say('<b>It dropped off!</b> You slowed down, so the downforce shrank until it was weaker than the car\'s weight. Keep holding GO the whole way.');
+    if (recent && k === 'flat') return say('<b>Flat out!</b> At this speed the wings push the car down harder than it weighs. The tyres are squashed into the road, so they grip much harder.');
+    if (mode === 'tunnel' && tun.phase === 'ceiling') return say('<b>You\'re upside down!</b> The air pushes the car up into the ceiling harder than gravity pulls it down. Keep your foot down: if you slow down, the downforce shrinks.');
+    if (mode === 'tunnel' && tun.phase === 'done') return say('<b>You drove on the ceiling!</b> In theory a real F1 car could do this at around 200 km/h. No one has actually tried it.');
+    if (!M[0]) return say('This F1 car weighs about 800 kg with the driver. <b>Hold GO</b> to drive, and get round a corner without spinning off. Use <b>BRAKE</b> if you need to.');
+    if (!M[1]) return say('Now make the <b>wings</b> steeper with the slider, then hold GO <b>all the way</b> round a corner. Watch the corner limit sign change.');
+    if (!M[2]) return say('Wings push the car down. So what happens without them? Tap <b>Take the wings off</b> and try a corner fast.');
+    if (!M[3]) return mode === 'tunnel' ? say('Hold <b>GO</b> and keep it held. The tunnel wall curves up onto the ceiling. Will the wings hold you there? Put the wings up high first.') : say('Here\'s the big one. Put the wings back up high, tap <b>Tunnel</b>, and try to drive <b>500 m on the ceiling</b>.');
+    return say('You\'ve cracked it! Try the ceiling with less wing. What\'s the least wing that still sticks?');
+  }
+
+  // ===================== Controls =====================
+  var goBtn = document.getElementById('goBtn'), brakeBtn = document.getElementById('brakeBtn');
+  function pedal(btn, set) {
+    btn.addEventListener('pointerdown', function (e) { e.preventDefault(); try { btn.setPointerCapture(e.pointerId); } catch (x) {} set(true); btn.classList.add('down'); stats.interactions++; if (soundOn) ensureAudio(); });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) { btn.addEventListener(ev, function () { set(false); btn.classList.remove('down'); }); });
+    btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    ['touchstart', 'touchmove'].forEach(function (ev) { btn.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); });
+  }
+  pedal(goBtn, function (b) { go = b; });
+  pedal(brakeBtn, function (b) { brake = b; });
+  [cv, sv].forEach(function (el) { ['touchstart', 'touchmove'].forEach(function (ev) { el.addEventListener(ev, function (e) { e.preventDefault(); }, { passive: false }); }); });
+  // tapping the track itself also drives: hold anywhere on the right half for GO, left half for BRAKE
+  cv.addEventListener('pointerdown', function (e) {
+    var r = cv.getBoundingClientRect(), right = e.clientX - r.left > r.width / 2;
+    try { cv.setPointerCapture(e.pointerId); } catch (x) {}
+    if (right) { go = true; goBtn.classList.add('down'); } else { brake = true; brakeBtn.classList.add('down'); }
+    cv._which = right ? 'go' : 'brake'; stats.interactions++;
+  });
+  ['pointerup', 'pointercancel'].forEach(function (ev) { cv.addEventListener(ev, function () { if (cv._which === 'go') { go = false; goBtn.classList.remove('down'); } else if (cv._which === 'brake') { brake = false; brakeBtn.classList.remove('down'); } cv._which = null; }); });
+  var rigVisible = false;
+  new IntersectionObserver(function (e) { rigVisible = e[0].isIntersecting; }, { threshold: 0.3 }).observe(document.querySelector('.rig'));
+  window.addEventListener('keydown', function (e) {
+    if (!rigVisible) return;
+    if (e.key === 'ArrowUp' || e.key === 'w') { go = true; e.preventDefault(); }
+    if (e.key === 'ArrowDown' || e.key === 's') { brake = true; e.preventDefault(); }
+  });
+  window.addEventListener('keyup', function (e) {
+    if (e.key === 'ArrowUp' || e.key === 'w') go = false;
+    if (e.key === 'ArrowDown' || e.key === 's') brake = false;
+  });
+
+  var wingEl = document.getElementById('wing'), wingVal = document.getElementById('wingVal'), wingBox = document.getElementById('wingBox'), limitVal = document.getElementById('limitVal');
+  var wingsOffBtn = document.getElementById('wingsOffBtn'), resetBtn = document.getElementById('resetBtn');
+  function setWing(pct) {
+    wing = Math.max(0, Math.min(1, pct / 100)); wingEl.value = Math.round(wing * 100);
+    wingVal.textContent = wing < 0.01 ? 'Off' : Math.round(wing * 100) + '%';
+    wingsOffBtn.setAttribute('aria-pressed', String(wing < 0.01));
+    var lim = cornerLimit(); limitVal.textContent = isFinite(lim) && lim < 120 ? kmh(lim) + ' km/h' : 'flat out!';
+  }
+  wingEl.addEventListener('input', function () { setWing(+wingEl.value); if (wing > 0.01) savedWing = wing; });
+  wingEl.addEventListener('change', function () { stats.interactions++; track('wing'); });
+  wingsOffBtn.addEventListener('click', function () {
+    stats.interactions++;
+    if (wing > 0.01) { savedWing = wing; setWing(0); track('wings_off'); } else setWing(Math.max(savedWing, 0.25) * 100);
+  });
+  resetBtn.addEventListener('click', function () { if (mode === 'track') { spin = null; s = 5; v = 15; } else resetTunnel(); });
+  var tabTrack = document.getElementById('tabTrack'), tabTunnel = document.getElementById('tabTunnel');
+  function setMode(m) {
+    mode = m; tabTrack.setAttribute('aria-pressed', String(m === 'track')); tabTunnel.setAttribute('aria-pressed', String(m === 'tunnel'));
+    trail = []; spin = null;
+    if (m === 'tunnel') { tun = { x: 0, phase: 'run', t: 0, best: tun.best }; v = 20; } else { s = 5; v = 15; corner = 0; }
+    stats.interactions++; track('tab_' + m);
+  }
+  tabTrack.addEventListener('click', function () { setMode('track'); });
+  tabTunnel.addEventListener('click', function () { setMode('tunnel'); });
+  var soundBtn = document.getElementById('soundBtn');
+  soundBtn.addEventListener('click', function () { soundOn = !soundOn; if (soundOn) { ensureAudio(); if (AC && AC.resume) AC.resume(); } soundBtn.setAttribute('aria-pressed', String(soundOn)); soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; });
+
+  // ===================== Loop =====================
+  var clockEl = document.getElementById('clock');
+  var last = performance.now(), simAcc = 0;
+  function step(dtReal) {
+    var dt = Math.min(0.05, dtReal) * TS, n = Math.ceil(dt / 0.01);
+    for (var i = 0; i < n; i++) tick(dt / n);
+    return dt;
+  }
+  function render(dtReal) {
+    if (mode === 'track') drawTrack(); else drawTunnel();
+    drawSide(dtReal);
+    var D = downforce(v);
+    setGauge(gSpeed, kmh(v), function (x) { return Math.round(x) + ''; }, dtReal);
+    setGauge(gDown, D / WEIGHT, function (x) { return x.toFixed(1) + '×'; }, dtReal);
+    setGauge(gGrip, mode === 'track' ? gripUse * 100 : Math.min(150, gripUse * 100), function (x) { return Math.round(x) + '%'; }, dtReal);
+    clockEl.innerHTML = mode === 'track' ? 'LAP ' + lap + '<small>' + kmh(v) + ' KM/H</small>' : (tun.phase === 'ceiling' ? Math.round(tun.x - TUN.ceil) + '<small>M ON CEILING</small>' : kmh(v) + '<small>KM/H</small>');
+    goBtn.classList.toggle('nudge', !M[0] && v < 2);
+    wingBox.classList.toggle('nudge', M[0] && !M[1]);
+    wingsOffBtn.classList.toggle('nudge', M[1] && !M[2] && wing > 0.01);
+    tabTunnel.classList.toggle('nudge', M[2] && !M[3] && mode === 'track');
+    resetBtn.classList.toggle('hidden', !(mode === 'track' ? spin : tun.phase === 'fall'));
+    engineSound();
+    coach();
+  }
+  function frame(now) {
+    var dtReal = Math.min(0.05, (now - last) / 1000); last = now;
+    step(dtReal); render(dtReal);
+    requestAnimationFrame(frame);
+  }
+  window.addEventListener('resize', resize);
+  resize(); setWing(25);
+  requestAnimationFrame(frame);
+
+  window.__ari = {
+    M: M,
+    state: function () { return { mode: mode, v: v, kmh: kmh(v), s: s, wing: wing, spin: !!spin, gripUse: gripUse, downforceX: downforce(v) / WEIGHT, tun: JSON.parse(JSON.stringify(tun)), limit: kmh(cornerLimit()) }; },
+    setWing: function (p) { setWing(p); if (wing > 0.01) savedWing = wing; },
+    go: function (b) { go = !!b; }, brake: function (b) { brake = !!b; },
+    tab: setMode,
+    run: function (sec) { for (var i = 0; i < Math.round(sec * 60); i++) step(1 / 60); render(1 / 60); },
+    wingsOff: function () { wingsOffBtn.click(); }
+  };
+})();
+</script>
+</body>
+</html>
