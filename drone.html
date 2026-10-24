@@ -205,6 +205,86 @@
       color: white; background: rgba(25,28,48,.8); border: 1.5px solid rgba(255,255,255,.4); border-radius: 999px; padding: 7px 10px; cursor: pointer; }
     .screen.fly .fly-enter { display: none; }
   </style>
+  <style>
+    /* ===== Ari blueprint system =====
+       Three drawing styles, picked by job:
+       1. Blueprint sheet (white on blue): explainer canvases, cutaways, plan views.
+       2. Instrument panel (blueprint rig): gauges, sliders, tests, controls.
+       3. Graph-paper figures (ink on squared paper): the explanation cards below the rig. */
+    :root {
+      --bp: #0D3B6E; --bp-deep: #082A4F; --bp-grid: rgba(170,210,255,.07); --bp-grid2: rgba(170,210,255,.16);
+      --bp-line: #EEF5FF; --bp-dim: #9FC6F2; --bp-faint: rgba(159,198,242,.42);
+      --bp-amber: #FFC94A; --bp-air: #79E3FF; --bp-warn: #FF8A7A; --bp-ok: #7CF0BC;
+      --gp: #F4F8FC; --gp-grid: rgba(52,124,190,.12); --gp-grid2: rgba(52,124,190,.24); --gp-rule: #B7CCE0;
+      --gp-ink: #17324F; --gp-dim: #5B7A99; --gp-red: #D4452F; --gp-blue: #1F86C7;
+    }
+    /* 2. Instrument panel */
+    .rig { background-color: var(--bp-deep); border-radius: 12px; box-shadow: 0 30px 70px rgba(20,40,80,.3);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -5px; }
+    .rig::before { border-radius: 12px; }
+    .screen { border-radius: 4px; background: var(--bp); box-shadow: 0 0 0 1px var(--bp-faint); }
+    .screen-bar { background: var(--bp-deep); border-bottom: 1px solid var(--bp-faint); }
+    .screen-tag { color: var(--bp-dim); }
+    .tool { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); }
+    .tool[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-line); }
+    .gauge, .panel-box, .stick-box { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; }
+    .gauge { padding: 8px 6px 7px; }
+    .g-val { display: inline-block; margin-top: 2px; padding: 1px 7px; background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 2px; font-size: 14px; color: var(--bp-line); font-variant-numeric: tabular-nums; }
+    .g-lbl { color: var(--bp-dim); margin-top: 5px; }
+    .ari { border-radius: 6px; }
+    .mission { border-radius: 2px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-dim); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+    .mission i::before { content: 'TEST '; }
+    .mission.now { background: rgba(255,201,74,.12); border-color: var(--bp-amber); color: var(--bp-line); }
+    .mission.done { background: rgba(124,240,188,.1); border-color: var(--bp-ok); color: var(--bp-ok); }
+    .mission.done i::after { content: ' ✓'; }
+    .experiments span { color: var(--bp-dim); }
+    .chip { border-radius: 3px; border: 1px dashed var(--bp-faint); color: var(--bp-line); }
+    .chip[aria-pressed="true"] { background: var(--bp-warn); border-color: var(--bp-warn); color: #2A0E08; }
+    .chip.reset { border-style: solid; border-color: var(--bp-faint); }
+    .lab-controls { background: var(--bp); border-top: 1px solid var(--bp-faint); padding-top: 10px; }
+    .lab-controls label { color: var(--bp-dim); }
+    input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-moz-range-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-webkit-slider-thumb { width: 16px; height: 28px; margin-top: -7px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); box-shadow: 0 0 0 1px var(--bp-amber); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 26px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); }
+    input[type=range]:focus-visible { outline: 2px solid var(--bp-amber); outline-offset: 2px; }
+    .screen.fly { background: var(--bp); }
+
+    /* 3. Graph-paper figures */
+    .stage { background-color: var(--gp); border: 1px solid var(--gp-rule); border-radius: 4px; box-shadow: none; color: var(--gp-dim);
+      background-image: linear-gradient(var(--gp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gp-grid) 1px, transparent 1px); background-size: 10px 10px; }
+    .stage .k { color: var(--gp-red); }
+    .stage h3 { color: var(--gp-ink); }
+    .stage p { color: #3E5875; }
+    .dwg { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gp-rule); overflow: visible; }
+    .dwg text { font-family: var(--mono); font-size: 8px; font-weight: 600; fill: var(--gp-ink); letter-spacing: .03em; }
+    .dwg .tr { fill: var(--gp-red); } .dwg .tb { fill: var(--gp-blue); } .dwg .td { fill: var(--gp-dim); }
+    .dwg .ink { stroke: var(--gp-ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .inkf { stroke: var(--gp-ink); stroke-width: 1.4; fill: #fff; stroke-linejoin: round; }
+    .dwg .inkh { fill: var(--gp-ink); }
+    .dwg .hatchf { fill: url(#gpHatch); stroke: var(--gp-ink); stroke-width: 1.5; }
+    .dwg .dimln { stroke: var(--gp-dim); stroke-width: .8; fill: none; }
+    .dwg .dsh { stroke-dasharray: 4 3; }
+    .dwg .ctrln { stroke: var(--gp-dim); stroke-width: .7; fill: none; stroke-dasharray: 9 2 2 2; }
+    .dwg .red { stroke: var(--gp-red); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .redf { fill: var(--gp-red); }
+    .dwg .blu { stroke: var(--gp-blue); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .bluso { stroke: var(--gp-blue); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .bluf { fill: var(--gp-blue); }
+    .dwg .spin { transform-box: view-box; animation: figspin 2.6s linear infinite; }
+    .dwg .spin.acw { animation-direction: reverse; }
+    @keyframes figflow { to { stroke-dashoffset: -18; } }
+    @keyframes figspin { to { transform: rotate(360deg); } }
+    .big-idea { background: var(--gp); border: 1.5px solid var(--gp-ink); border-radius: 4px; color: #3E5875; position: relative; padding-top: 26px; }
+    .big-idea::before { content: 'NOTE 1'; position: absolute; top: 0; left: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--bp-line); background: var(--gp-ink); padding: 3px 9px; }
+    .big-idea b { color: var(--gp-ink); }
+    @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .dwg .blu, .dwg .spin { animation: none; } }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -292,11 +372,82 @@
     <section class="stages">
       <h2>No wings, no rudder, just four propellers</h2>
       <p>A drone does everything by changing how fast each propeller spins.</p>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="gpHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#17324F" stroke-width=".9"/></pattern></defs></svg>
       <div class="stage-grid">
-        <div class="stage"><div class="k">01 · LIFT</div><h3>Push air down</h3><p>Each blade is a small tilted wing. As it swings round it throws air downwards, and the air pushes back up. Twice the speed gives four times the push.</p></div>
-        <div class="stage"><div class="k">02 · TILT</div><h3>Lean to move</h3><p>Speed up the back two propellers and the drone tips forward. Now some of the push points backwards, so it flies forwards.</p></div>
-        <div class="stage"><div class="k">03 · TURN</div><h3>Twist to turn</h3><p>Every spinning propeller twists the drone the opposite way. Two spin clockwise and two anticlockwise, so the twists cancel. Speed up one pair and the drone turns.</p></div>
-        <div class="stage"><div class="k">04 · BALANCE</div><h3>A tiny pilot inside</h3><p>A small computer called a flight controller checks the drone's angle hundreds of times a second and adjusts each motor to keep it level.</p></div>
+        <div class="stage">
+          <div class="k">FIG 4.1 · LIFT</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A propeller blade cut in half. Air arriving from the right is bent downwards behind the blade, and the blade is pushed up.">
+            <path class="blu" d="M214 30H160Q122 30 92 48L34 82"/>
+            <path class="blu" d="M214 44H156Q124 44 98 60L44 96"/>
+            <path class="blu" d="M214 86H160Q126 86 102 94L52 114"/>
+            <path class="bluf" d="M34 82L41.5 81.1L38.5 75.9Z"/><path class="bluf" d="M44 96L51.5 94.7L48.2 89.7Z"/><path class="bluf" d="M52 114L59.6 114.2L57.4 108.6Z"/>
+            <g transform="translate(110 66) rotate(-12)"><path class="ctrln" d="M-52 0H58"/><path class="hatchf" d="M40 0C36 -8 10 -9 -40 -0.5C-10 3 28 4.5 40 0Z"/></g>
+            <path class="dimln" d="M149 57.7H198"/><path class="dimln dsh" d="M149 57.7L198 47.3"/><path class="dimln" d="M189 57.7A40 40 0 0 0 188.1 49.4"/>
+            <text x="194" y="55">12°</text>
+            <path class="red" d="M118 50V17"/><path class="redf" d="M118 8L113 18H123Z"/>
+            <text class="tr" x="124" y="16">PUSH UP</text>
+            <text class="tb" x="4" y="56">AIR GOES</text><text class="tb" x="4" y="66">DOWN ↙</text>
+            <text class="td" x="138" y="116">BLADE MOVES →</text>
+          </svg>
+          <h3>Push air down</h3><p>Each blade is a small tilted wing. As it swings round it throws air downwards, and the air pushes back up. Twice the speed gives four times the push.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 4.2 · TILT</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A drone tilted forwards. Its push points up and slightly forwards: most of it holds the drone up, and a little moves it forwards.">
+            <g transform="translate(96 78) rotate(25)">
+              <path class="ctrln" d="M-68 0H68"/>
+              <path class="ink" d="M-14 0H-44M14 0H44"/>
+              <rect class="inkf" x="-50" y="-11" width="12" height="9" rx="1.5"/><rect class="inkf" x="38" y="-11" width="12" height="9" rx="1.5"/>
+              <path class="ink" d="M-62 -13H-26M26 -13H62"/>
+              <rect class="inkf" x="-15" y="-6" width="30" height="12" rx="3"/>
+            </g>
+            <path class="dimln dsh" d="M96 78V27"/><path class="inkh" d="M96 20L92.5 28H99.5Z"/>
+            <path class="dimln dsh" d="M96 20H116"/><path class="inkh" d="M122 20L115 16.5V23.5Z"/>
+            <path class="red" d="M96 76L119.7 27.3"/><path class="redf" d="M123.1 20L123.3 28.9L116.1 25.5Z"/>
+            <text class="tr" x="113" y="50">PUSH</text>
+            <text x="91" y="12" text-anchor="end">HOLDS IT UP</text>
+            <text x="128" y="23">MOVES IT →</text>
+            <text class="tr" x="6" y="44">BACK</text><text class="tr" x="6" y="53">FASTER +</text>
+            <path class="ink" d="M126 110H180"/><path class="inkh" d="M188 110L179 105.5V114.5Z"/>
+            <text x="120" y="113" text-anchor="end">FLIES FORWARD</text>
+          </svg>
+          <h3>Lean to move</h3><p>Speed up the back two propellers and the drone tips forward. Now part of the push points forwards, so it flies forwards.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 4.3 · TURN</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="The drone from above. Two propellers spin clockwise and two anticlockwise, so their twists cancel out.">
+            <path class="ctrln" d="M40 30H160M40 94H160M68 4V116M132 4V116"/>
+            <circle class="dimln dsh" cx="68" cy="30" r="21"/><circle class="dimln dsh" cx="132" cy="30" r="21"/><circle class="dimln dsh" cx="68" cy="94" r="21"/><circle class="dimln dsh" cx="132" cy="94" r="21"/>
+            <path class="ink" d="M68 30L132 94M132 30L68 94"/>
+            <rect class="inkf" x="88" y="48" width="24" height="28" rx="4"/>
+            <path class="redf" d="M100 41L96 47.5H104Z"/>
+            <circle class="inkf" cx="68" cy="30" r="4"/><circle class="inkf" cx="132" cy="30" r="4"/><circle class="inkf" cx="68" cy="94" r="4"/><circle class="inkf" cx="132" cy="94" r="4"/>
+            <g class="spin" style="transform-origin:68px 30px"><path class="red" d="M68 16A14 14 0 1 1 54 30"/><path class="redf" d="M54 23L50.5 31H57.5Z"/></g>
+            <g class="spin" style="transform-origin:132px 94px"><path class="red" d="M132 80A14 14 0 1 1 118 94"/><path class="redf" d="M118 87L114.5 95H121.5Z"/></g>
+            <g class="spin acw" style="transform-origin:132px 30px"><path class="bluso" d="M132 16A14 14 0 1 0 146 30"/><path class="bluf" d="M146 23L142.5 31H149.5Z"/></g>
+            <g class="spin acw" style="transform-origin:68px 94px"><path class="bluso" d="M68 80A14 14 0 1 0 82 94"/><path class="bluf" d="M82 87L78.5 95H85.5Z"/></g>
+            <text class="tr" x="166" y="42">2 × CW ↻</text>
+            <text class="tb" x="166" y="56">2 × ACW ↺</text>
+            <path class="dimln" d="M166 63H214"/>
+            <text x="166" y="76">TWISTS</text><text x="166" y="86">CANCEL</text>
+          </svg>
+          <h3>Twist to turn</h3><p>Every spinning propeller twists the drone the opposite way. Two spin clockwise and two anticlockwise, so the twists cancel. Speed up one pair and the drone turns.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 4.4 · BALANCE</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A loop: a sensor feels the tilt, the flight controller decides, the four motors change speed, the drone moves, and the sensor checks again, hundreds of times a second.">
+            <path class="ink" d="M56 29H79M135 29H158M189 42V93H141M85 93H31V48"/>
+            <path class="inkh" d="M85 29L78 25.5V32.5Z"/><path class="inkh" d="M164 29L157 25.5V32.5Z"/><path class="inkh" d="M135 93L142 89.5V96.5Z"/><path class="inkh" d="M31 42L27.5 49H34.5Z"/>
+            <rect class="inkf" x="6" y="16" width="50" height="26" rx="2"/><text x="31" y="32" text-anchor="middle">SENSOR</text>
+            <rect class="inkf" x="85" y="16" width="50" height="26" rx="2"/><text x="110" y="27" text-anchor="middle">FLIGHT</text><text x="110" y="37" text-anchor="middle">CONTROL</text>
+            <rect class="inkf" x="164" y="16" width="50" height="26" rx="2"/><text x="189" y="32" text-anchor="middle">4 MOTORS</text>
+            <rect class="inkf" x="85" y="80" width="50" height="26" rx="2"/><text x="110" y="96" text-anchor="middle">DRONE</text>
+            <text class="tr" x="110" y="60" text-anchor="middle">100s OF TIMES</text><text class="tr" x="110" y="70" text-anchor="middle">A SECOND</text>
+            <text class="td" x="6" y="112">CHECKS AGAIN</text>
+            <circle class="redf" r="3.2"><animateMotion dur="3.2s" repeatCount="indefinite" path="M31 29H189V93H31Z"/></circle>
+          </svg>
+          <h3>A tiny pilot inside</h3><p>A small computer called a flight controller checks the drone's angle hundreds of times a second and adjusts each motor to keep it level.</p>
+        </div>
       </div>
       <p class="big-idea"><b>The big idea:</b> pushing air down pushes the drone up. Everything else, from flying forwards to turning round, comes from making some propellers spin a bit faster than the others.</p>
     </section>
@@ -482,7 +633,7 @@
     cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     TW = flyMode ? document.querySelector('.screens').clientWidth : cv.clientWidth; TH = W < 600 ? 190 : 210;
     tv.style.height = TH + 'px'; tv.width = Math.round(TW * dpr); tv.height = Math.round(TH * dpr); tctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    LW = TW; LH = W < 600 ? 230 : 250;
+    LW = TW; LH = W < 600 ? 250 : 270;
     lc.style.height = LH + 'px'; lc.width = Math.round(LW * dpr); lc.height = Math.round(LH * dpr); lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
@@ -607,8 +758,8 @@
     drawHUD();
     if (D.crashed) {
       ctx.font = '700 ' + (W < 560 ? 18 : 24) + 'px Fredoka, sans-serif'; ctx.textAlign = 'center';
-      ctx.fillStyle = 'rgba(25,28,48,.75)'; ctx.fillRect(W / 2 - 110, H * 0.22 - 24, 220, 36);
-      ctx.fillStyle = '#FFB0A0'; ctx.fillText('CRASHED · tap to reset', W / 2, H * 0.22);
+      ctx.fillStyle = 'rgba(8,42,79,.9)'; ctx.fillRect(W / 2 - 110, H * 0.22 - 24, 220, 36); ctx.strokeStyle = BP.warn; ctx.strokeRect(W / 2 - 109.5, H * 0.22 - 23.5, 219, 35);
+      ctx.fillStyle = BP.warn; ctx.fillText('CRASHED · tap to reset', W / 2, H * 0.22);
     }
   }
 
@@ -632,24 +783,25 @@
     if (t) {
       ctx.font = '800 ' + fs + 'px Nunito, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
       var tw = ctx.measureText(t).width, px = 10, py = 10, ph = fs + 14;
-      ctx.fillStyle = 'rgba(25,28,48,.78)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(px, py, tw + 20, ph, ph / 2); else ctx.rect(px, py, tw + 20, ph); ctx.fill();
+      ctx.fillStyle = 'rgba(8,42,79,.9)'; ctx.strokeStyle = BP.faint; ctx.lineWidth = 1; ctx.beginPath(); rr(ctx, px, py, tw + 20, ph, 3); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#FFFFFF'; ctx.fillText(t, px + 10, py + ph / 2 + 1); ctx.textBaseline = 'alphabetic';
     }
     // motor inset (top right)
     var s = W < 420 ? 66 : 84, x0 = W - s - 10, y0 = t ? 10 + fs + 22 : 10;
     if (W >= 420) y0 = 10;
     if (flyMode) { x0 = W / 2 - s / 2; y0 = H - s - 14 - 30; }
-    ctx.fillStyle = 'rgba(25,28,48,.78)'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x0, y0, s, s + 14, 10); else ctx.rect(x0, y0, s, s + 14); ctx.fill();
+    ctx.fillStyle = 'rgba(13,59,110,.92)'; ctx.strokeStyle = BP.faint; ctx.lineWidth = 1; ctx.beginPath(); rr(ctx, x0, y0, s, s + 14, 3); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = BP.grid2; ctx.beginPath(); for (var gq = 10; gq < s; gq += 10) { ctx.moveTo(x0 + gq, y0 + 1); ctx.lineTo(x0 + gq, y0 + s + 13); ctx.moveTo(x0 + 1, y0 + gq); ctx.lineTo(x0 + s - 1, y0 + gq); } ctx.stroke();
     var cx = x0 + s / 2, cy = y0 + s / 2 + 2, arm = s * 0.27;
-    ctx.strokeStyle = '#5D6386'; ctx.lineWidth = 3;
+    ctx.strokeStyle = BP.dim; ctx.lineWidth = 1.5;
     MOTORS.forEach(function (m) { ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.sign(m.x) * arm, cy - Math.sign(m.z) * arm); ctx.stroke(); });
     MOTORS.forEach(function (m, i) {
       var mx = cx + Math.sign(m.x) * arm, my = cy - Math.sign(m.z) * arm, col = propColour(i), u = D.u[i], r = s * 0.17;
       ctx.fillStyle = 'rgba(' + col.join(',') + ',.2)'; ctx.beginPath(); ctx.arc(mx, my, r, 0, 6.3); ctx.fill();
       ctx.fillStyle = 'rgba(' + col.join(',') + ',.95)'; ctx.beginPath(); ctx.moveTo(mx, my); ctx.arc(mx, my, r, -Math.PI / 2, -Math.PI / 2 + u * Math.PI * 2); ctx.closePath(); ctx.fill();
     });
-    ctx.fillStyle = '#FF8C42'; ctx.beginPath(); ctx.moveTo(cx - 4, cy - 2); ctx.lineTo(cx + 4, cy - 2); ctx.lineTo(cx, cy - 9); ctx.closePath(); ctx.fill();
-    ctx.font = '600 8.5px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillStyle = '#C9CDE6';
+    ctx.fillStyle = BP.amber; ctx.beginPath(); ctx.moveTo(cx - 4, cy - 2); ctx.lineTo(cx + 4, cy - 2); ctx.lineTo(cx, cy - 9); ctx.closePath(); ctx.fill();
+    ctx.font = '600 8.5px "IBM Plex Mono", monospace'; ctx.textAlign = 'center'; ctx.fillStyle = BP.dim;
     ctx.fillText('MOTOR SPEEDS', cx, y0 + s + 9);
   }
   function drawPad(x, z, r, fill, edge, label) {
@@ -724,60 +876,106 @@
     }
   }
 
-  // ===================== Top view =====================
+  // ===================== Blueprint drawing kit =====================
+  var BP = { bg: '#0D3B6E', deep: '#082A4F', grid: 'rgba(170,210,255,.07)', grid2: 'rgba(170,210,255,.16)', line: '#EEF5FF', dim: '#9FC6F2',
+    faint: 'rgba(159,198,242,.42)', amber: '#FFC94A', air: '#79E3FF', warn: '#FF8A7A', ok: '#7CF0BC', cw: [255, 176, 103], acw: [143, 208, 255] };
+  var MONO = '"IBM Plex Mono", ui-monospace, monospace', DASHDOT = [10, 3, 2, 3];
+  function rr(c, x, y, w, h, r) { if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
+  function bpSheet(c, w, h) {
+    c.fillStyle = BP.bg; c.fillRect(0, 0, w, h); c.lineWidth = 1;
+    for (var x = 0; x < w; x += 12) { c.strokeStyle = x % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); c.stroke(); }
+    for (var y = 0; y < h; y += 12) { c.strokeStyle = y % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(0, y + 0.5); c.lineTo(w, y + 0.5); c.stroke(); }
+    c.strokeStyle = BP.faint; c.strokeRect(4.5, 4.5, w - 9, h - 9);
+  }
+  function bpText(c, t, x, y, o) {
+    o = o || {}; c.font = (o.weight || 600) + ' ' + (o.size || 9.5) + 'px ' + MONO; c.fillStyle = o.col || BP.dim; c.textAlign = o.align || 'left'; c.fillText(t, x, y);
+  }
+  function bpLine(c, pts, col, wd, dash) {
+    c.strokeStyle = col; c.lineWidth = wd || 1; c.setLineDash(dash || []); c.beginPath();
+    for (var i = 0; i < pts.length; i += 2) { if (i) c.lineTo(pts[i], pts[i + 1]); else c.moveTo(pts[i], pts[i + 1]); }
+    c.stroke(); c.setLineDash([]);
+  }
+  function bpHatch(c, gap, col) {   // hatches inside the current path
+    c.save(); c.clip(); c.strokeStyle = col; c.lineWidth = 0.8; c.beginPath();
+    for (var k = -700; k < 1500; k += gap) { c.moveTo(k, -700); c.lineTo(k - 1400, 700); }
+    c.stroke(); c.restore();
+  }
+  function bpCorners(c, x, y, w, h) {
+    var k = 8; c.strokeStyle = BP.line; c.lineWidth = 1.4; c.beginPath();
+    c.moveTo(x, y + k); c.lineTo(x, y); c.lineTo(x + k, y); c.moveTo(x + w - k, y); c.lineTo(x + w, y); c.lineTo(x + w, y + k);
+    c.moveTo(x + w, y + h - k); c.lineTo(x + w, y + h); c.lineTo(x + w - k, y + h); c.moveTo(x + k, y + h); c.lineTo(x, y + h); c.lineTo(x, y + h - k); c.stroke();
+  }
+  function bpCallout(c, t, tx, ty, px, py) {
+    bpText(c, t, tx, ty, { size: 8.5 });
+    var tw = c.measureText(t).width;
+    bpLine(c, [tx + tw + 3, ty - 3, px, py], BP.faint, 0.8);
+    c.fillStyle = BP.line; c.beginPath(); c.arc(px, py, 1.8, 0, 6.3); c.fill();
+  }
+
+  // ===================== Top view (plan + twist balance) =====================
   function drawTop(dt) {
     var c = tctx, w = TW, h = TH;
-    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
-    var cx = Math.min(w * 0.3, 150), cy = h / 2, s = Math.min(h * 0.27, 60);
-    // arms + body
-    c.strokeStyle = '#3B4268'; c.lineWidth = 6; c.lineCap = 'round';
-    MOTORS.forEach(function (m) { c.beginPath(); c.moveTo(cx, cy); c.lineTo(cx + (m.x / ARM) * s, cy - (m.z / ARM) * s); c.stroke(); });
-    c.fillStyle = '#E9ECF5'; c.strokeStyle = '#11132A'; c.lineWidth = 2;
-    c.beginPath(); if (c.roundRect) c.roundRect(cx - 12, cy - 17, 24, 34, 6); else c.rect(cx - 12, cy - 17, 24, 34); c.fill(); c.stroke();
-    c.fillStyle = '#FF8C42'; c.beginPath(); c.moveTo(cx - 6, cy - 10); c.lineTo(cx + 6, cy - 10); c.lineTo(cx, cy - 18); c.closePath(); c.fill();
-    c.font = '600 9px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillStyle = '#9EA3C4';
-    c.fillText('FRONT', cx, cy - s - 18);
-    // motors
+    bpSheet(c, w, h);
+    var cx = Math.min(w * 0.3, 150), cy = h / 2 + 6, s = Math.min(h * 0.26, 58);
+    bpText(c, w < 420 ? 'FIG 4.B · PLAN' : 'FIG 4.B · PLAN VIEW', 12, 20, { col: BP.line });
+    // centre lines through the motors
+    bpLine(c, [cx - s * 1.6, cy - s, cx + s * 1.6, cy - s], BP.faint, 0.7, DASHDOT);
+    bpLine(c, [cx - s * 1.6, cy + s, cx + s * 1.6, cy + s], BP.faint, 0.7, DASHDOT);
+    bpLine(c, [cx - s, cy - s * 1.6, cx - s, cy + s * 1.6], BP.faint, 0.7, DASHDOT);
+    bpLine(c, [cx + s, cy - s * 1.6, cx + s, cy + s * 1.6], BP.faint, 0.7, DASHDOT);
+    // arms, drawn as outlined bars
+    MOTORS.forEach(function (m) {
+      var mx = cx + (m.x / ARM) * s, my = cy - (m.z / ARM) * s, dx = mx - cx, dy = my - cy, l = Math.hypot(dx, dy), nx = -dy / l * 3, ny = dx / l * 3;
+      c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.lineWidth = 1.2;
+      c.beginPath(); c.moveTo(cx + nx, cy + ny); c.lineTo(mx + nx, my + ny); c.lineTo(mx - nx, my - ny); c.lineTo(cx - nx, cy - ny); c.closePath(); c.fill(); c.stroke();
+    });
+    // propeller discs with spin (moment) arrows
     var twist = 0;
     MOTORS.forEach(function (m, i) {
-      var mx = cx + (m.x / ARM) * s, my = cy - (m.z / ARM) * s, u = D.u[i], col = propColour(i), sp = spinOf(i);
+      var mx = cx + (m.x / ARM) * s, my = cy - (m.z / ARM) * s, u = D.u[i], sp = spinOf(i), col = sp > 0 ? BP.cw : BP.acw, rgb = 'rgb(' + col.join(',') + ')', r = s * 0.48;
       twist += -sp * u * u;
-      var r = s * 0.48;
-      c.fillStyle = 'rgba(' + col.join(',') + ',' + (0.15 + 0.35 * u) + ')'; c.strokeStyle = 'rgba(' + col.join(',') + ',.95)'; c.lineWidth = 2;
-      c.beginPath(); c.arc(mx, my, r, 0, 6.3); c.fill(); c.stroke();
-      // spin arrow
-      var a0 = D.ang[i] * 0.25;
-      c.strokeStyle = 'rgba(' + col.join(',') + ',1)'; c.lineWidth = 2.5;
-      c.beginPath(); c.arc(mx, my, r * 0.68, a0, a0 + 4.2 * 1, sp < 0); c.stroke();
-      var ae = a0 + (sp > 0 ? 4.2 : -4.2), axp = mx + Math.cos(ae) * r * 0.68, ayp = my + Math.sin(ae) * r * 0.68;
-      var tx = -Math.sin(ae) * (sp > 0 ? 1 : -1), ty = Math.cos(ae) * (sp > 0 ? 1 : -1);
-      c.fillStyle = 'rgba(' + col.join(',') + ',1)';
-      c.beginPath(); c.moveTo(axp + tx * 7, ayp + ty * 7); c.lineTo(axp - ty * 5, ayp + tx * 5); c.lineTo(axp + ty * 5, ayp - tx * 5); c.closePath(); c.fill();
-      c.fillStyle = '#FFFFFF'; c.font = '700 11px "IBM Plex Mono", monospace';
-      c.fillText(Math.round(u * 100) + '%', mx, my + 4);
+      c.fillStyle = 'rgba(' + col.join(',') + ',' + (0.05 + 0.22 * u) + ')'; c.beginPath(); c.arc(mx, my, r, 0, 6.3); c.fill();
+      c.setLineDash([4, 3]); c.strokeStyle = rgb; c.lineWidth = 1; c.stroke(); c.setLineDash([]);
+      var a0 = D.ang[i] * 0.25, end = a0 + 4.2 * sp, ar = r * 0.74;
+      c.strokeStyle = rgb; c.lineWidth = 1.8; c.beginPath(); c.arc(mx, my, ar, a0, end, sp < 0); c.stroke();
+      var ex = mx + Math.cos(end) * ar, ey = my + Math.sin(end) * ar, tx = -Math.sin(end) * sp, ty = Math.cos(end) * sp;
+      c.fillStyle = rgb; c.beginPath(); c.moveTo(ex + tx * 6, ey + ty * 6); c.lineTo(ex - ty * 4, ey + tx * 4); c.lineTo(ex + ty * 4, ey - tx * 4); c.closePath(); c.fill();
+      // speed tag on the motor
+      var pct = Math.round(u * 100) + '%';
+      c.font = '700 10px ' + MONO; var tw = c.measureText(pct).width + 8;
+      c.fillStyle = BP.deep; c.strokeStyle = rgb; c.lineWidth = 1; c.beginPath(); rr(c, mx - tw / 2, my - 7, tw, 14, 2); c.fill(); c.stroke();
+      bpText(c, pct, mx, my + 3.5, { col: BP.line, weight: 700, size: 10, align: 'center' });
     });
-    // twist meter
-    var tw = twist * KQ / 0.2;   // normalised
-    var bx = cx + s + s * 0.55 + 18, bw = w - bx - 14;
-    c.textAlign = 'left'; c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4';
-    c.fillText(bw < 200 ? 'TWIST ON THE DRONE' : 'PROPELLER TWIST ON THE DRONE', bx, 26);
-    c.fillStyle = '#2E3454'; c.fillRect(bx, 36, bw, 14);
-    c.fillStyle = '#FFFFFF'; c.fillRect(bx + bw / 2 - 1, 32, 2, 22);
-    var tv2 = clamp(tw, -1, 1);
-    c.fillStyle = flags.same ? '#FF4D3D' : (Math.abs(tw) > 0.08 ? '#FFC845' : '#6FD3A8');
-    if (tv2 > 0) c.fillRect(bx + bw / 2, 38, bw / 2 * tv2, 10); else c.fillRect(bx + bw / 2 + bw / 2 * tv2, 38, -bw / 2 * tv2, 10);
-    c.fillStyle = '#9EA3C4'; c.font = '600 ' + (bw < 200 ? 12 : 10) + 'px "IBM Plex Mono", monospace';
-    c.fillText(bw < 200 ? '↺' : '↺ anticlockwise', bx, 66); c.textAlign = 'right'; c.fillText(bw < 200 ? '↻' : 'clockwise ↻', bx + bw, 66);
-    c.textAlign = 'left'; c.font = '700 ' + (w < 420 ? 11.5 : 13) + 'px Nunito, sans-serif';
+    // body and nose
+    c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.lineWidth = 1.4; c.beginPath(); rr(c, cx - 11, cy - 15, 22, 30, 5); c.fill(); c.stroke();
+    bpLine(c, [cx - 6, cy - 2, cx + 6, cy - 2, cx + 6, cy + 9, cx - 6, cy + 9, cx - 6, cy - 2], BP.dim, 0.8, [2, 2]);
+    c.fillStyle = BP.amber; c.beginPath(); c.moveTo(cx - 5, cy - 9); c.lineTo(cx + 5, cy - 9); c.lineTo(cx, cy - 15); c.closePath(); c.fill();
+    bpText(c, 'FRONT', cx, cy - 20, { size: 8.5, align: 'center' });
+
+    // twist balance
+    var tw2 = twist * KQ / 0.2, tv2 = clamp(tw2, -1, 1);
+    var bx = cx + s + s * 0.55 + 18, bw = w - bx - 14, fx = bx + bw / 2, fy = 50, L = bw * 0.42;
+    bpText(c, bw < 200 ? 'TWIST BALANCE' : 'TWIST ON THE DRONE · BALANCE', bx, 20, { col: BP.line });
+    var state = flags.same ? BP.warn : (Math.abs(tw2) > 0.08 ? BP.amber : BP.ok);
+    c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.lineWidth = 1.2;
+    c.beginPath(); c.moveTo(fx, fy); c.lineTo(fx - 9, fy + 14); c.lineTo(fx + 9, fy + 14); c.closePath(); c.fill(); c.stroke();
+    bpLine(c, [fx - 18, fy + 14, fx + 18, fy + 14], BP.line, 1.2);
+    c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.beginPath(); for (var k = -14; k <= 18; k += 5) { c.moveTo(fx + k, fy + 14); c.lineTo(fx + k - 5, fy + 19); } c.stroke();
+    var ang = tv2 * 0.32, ca2 = Math.cos(ang), sa2 = Math.sin(ang), lx = fx - L * ca2, ly = fy - L * sa2, rx = fx + L * ca2, ry = fy + L * sa2;
+    bpLine(c, [lx, ly, rx, ry], state, 3);
+    [[lx, ly], [rx, ry]].forEach(function (p) { bpLine(c, [p[0], p[1], p[0], p[1] + 8], BP.dim, 1); c.strokeStyle = BP.dim; c.lineWidth = 1.2; c.beginPath(); c.arc(p[0], p[1] + 8, 7, 0, Math.PI); c.stroke(); });
+    c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.beginPath(); c.arc(fx, fy, 2.5, 0, 6.3); c.fill(); c.stroke();
+    var small = bw < 200;
+    bpText(c, small ? '↺ ACW' : '↺ ANTICLOCKWISE', bx, fy + 40, { size: 9 });
+    bpText(c, small ? 'CW ↻' : 'CLOCKWISE ↻', bx + bw, fy + 40, { size: 9, align: 'right' });
     var msg, col2;
-    if (flags.same && D.u[0] > 0.2) { msg = 'All four twist the same way. Nothing cancels!'; col2 = '#FFB0A0'; }
-    else if (Math.abs(D.yawRate) > 0.3 && !flags.same) { msg = 'One pair is faster, so the drone turns.'; col2 = '#FFE08A'; }
-    else { msg = 'Two spin each way, so the twists cancel.'; col2 = '#7CF0BC'; }
-    wrapText(c, msg, bx, 92, bw, 16, col2);
-    // legend
-    c.font = '600 10px "IBM Plex Mono", monospace';
-    c.fillStyle = 'rgb(255,140,66)'; c.fillText('● clockwise', bx, h - 34);
-    c.fillStyle = 'rgb(90,160,255)'; c.fillText('● anticlockwise', bx, h - 18);
+    if (flags.same && D.u[0] > 0.2) { msg = 'All four twist the same way. Nothing cancels!'; col2 = BP.warn; }
+    else if (Math.abs(D.yawRate) > 0.3 && !flags.same) { msg = 'One pair is faster, so the drone turns.'; col2 = BP.amber; }
+    else { msg = 'Two spin each way, so the twists cancel.'; col2 = BP.ok; }
+    c.font = '700 ' + (w < 420 ? 11.5 : 13) + 'px Nunito, sans-serif'; c.textAlign = 'left';
+    wrapText(c, msg, bx, fy + 60, bw, 15, col2);
+    bpText(c, '● CLOCKWISE', bx, h - 28, { col: 'rgb(' + BP.cw.join(',') + ')', size: 9 });
+    bpText(c, '● ANTICLOCKWISE', bx, h - 14, { col: 'rgb(' + BP.acw.join(',') + ')', size: 9 });
   }
   function wrapText(c, text, x, y, maxW, lh, col) {
     var words = text.split(' '), line = ''; c.fillStyle = col;
@@ -785,7 +983,7 @@
     if (line) c.fillText(line, x, y);
   }
 
-  // ===================== Inside a propeller =====================
+  // ===================== Inside a propeller (test stand + blade section) =====================
   function aerofoil(c, chord) {
     var h = chord * 0.13;
     c.beginPath();
@@ -797,96 +995,122 @@
   function drawLab(dt) {
     var c = lctx, w = LW, h = LH;
     lab.u += (lab.target - lab.u) * Math.min(1, dt * 5);
-    var push = labPush(), pf = pitchFactor(), flat = lab.angle === 0;
+    var push = labPush(), flat = lab.angle === 0, ok = push >= 300 && !flat;
     lab.ang += lab.u * 50 * dt;
-    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
+    bpSheet(c, w, h);
     var small = w < 560;
-    // ---------- left: test stand ----------
-    var sx = w * (small ? 0.17 : 0.2), benchY = h - 22, motorY = h * 0.5, R = Math.min(w * (small ? 0.13 : 0.15), 66);
-    c.strokeStyle = '#3B4268'; c.lineWidth = 3; c.beginPath(); c.moveTo(6, benchY); c.lineTo(w * 0.44, benchY); c.stroke();
-    // air flow through the propeller
+    // ---------- left: test stand, drawn in elevation ----------
+    var sx = w * 0.2, benchY = h - 30, motorY = h * 0.52, R = Math.min(w * (small ? 0.13 : 0.15), 66), hubY = motorY - 9;
+    var tilt = lab.angle * Math.PI / 180, blur = Math.min(0.8, lab.u * 1.2);
+    bpText(c, small ? 'FIG 4.A · TEST' : 'FIG 4.A · TEST STAND', 12, 20, { col: BP.line });
+    bpLine(c, [8, benchY, w * 0.44, benchY], BP.line, 1.4);
+    c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.beginPath(); for (var hx = 14; hx < w * 0.44; hx += 7) { c.moveTo(hx, benchY); c.lineTo(hx - 6, benchY + 6); } c.stroke();
+    // stream tube: the column of air the propeller pulls through
     var flow = Math.sqrt(Math.max(0, push) / 300);
-    if (!flat && Math.random() < flow * 45 * dt * 1.8) for (var k = 0; k < 2; k++) lab.air.push({ x: sx + (Math.random() - 0.5) * R * 2.6, y: 8 + Math.random() * (motorY - 40), life: 1.6 });
-    c.strokeStyle = 'rgba(190,230,255,.85)'; c.lineWidth = 1.6; c.lineCap = 'round';
+    if (!flat && flow > 0.05) {
+      c.strokeStyle = 'rgba(121,227,255,' + Math.min(0.7, 0.2 + 0.4 * flow) + ')'; c.lineWidth = 1; c.setLineDash([6, 4]); c.lineDashOffset = -clock * 30 * flow;
+      [-1, 1].forEach(function (sd) { c.beginPath(); c.moveTo(sx + sd * R * 1.45, 30); c.quadraticCurveTo(sx + sd * R * 1.08, hubY - 24, sx + sd * R, hubY); c.quadraticCurveTo(sx + sd * R * 0.8, hubY + 26, sx + sd * R * 0.76, benchY - 34); c.stroke(); });
+      c.setLineDash([]); c.lineDashOffset = 0;
+    }
+    if (!flat && Math.random() < flow * 45 * dt * 1.8) for (var k = 0; k < 2; k++) lab.air.push({ x: sx + (Math.random() - 0.5) * R * 2.6, y: 30 + Math.random() * (motorY - 60), life: 1.6 });
+    c.strokeStyle = BP.air; c.lineWidth = 1.4; c.lineCap = 'round';
     for (var i = lab.air.length - 1; i >= 0; i--) {
       var a = lab.air[i], above = a.y < motorY - 4;
       var vy = (above ? 35 : 80) * Math.max(0.15, flow) * (flat ? 0.2 : 1);
       var tx = sx + (a.x - sx) * (above ? 0.97 : 0.995);
-      if (above) a.x += (tx - a.x) * Math.min(1, dt * 2); 
+      if (above) a.x += (tx - a.x) * Math.min(1, dt * 2);
       else a.x += (sx + (a.x - sx) * 0.8 - a.x) * Math.min(1, dt * 1.5);
       a.y += vy * dt; a.life -= dt;
-      if (a.y > benchY - 28 || a.life <= 0) { lab.air.splice(i, 1); continue; }
-      c.globalAlpha = Math.min(1, a.life); c.beginPath(); c.moveTo(a.x, a.y - vy * 0.08); c.lineTo(a.x, a.y); c.stroke();
+      if (a.y > benchY - 30 || a.life <= 0) { lab.air.splice(i, 1); continue; }
+      c.globalAlpha = Math.min(1, a.life) * 0.9; c.beginPath(); c.moveTo(a.x, a.y - vy * 0.08); c.lineTo(a.x, a.y); c.stroke();
     }
     c.globalAlpha = 1;
-    // scale + post + motor
-    c.fillStyle = '#D9DEEE'; c.strokeStyle = '#0F1124'; c.lineWidth = 2;
-    c.beginPath(); if (c.roundRect) c.roundRect(sx - 46, benchY - 24, 92, 24, 6); else c.rect(sx - 46, benchY - 24, 92, 24); c.fill(); c.stroke();
-    c.fillStyle = '#1E3B2E'; c.fillRect(sx - 34, benchY - 20, 68, 15);
-    c.fillStyle = '#7CF0BC'; c.font = '700 11px "IBM Plex Mono", monospace'; c.textAlign = 'center';
-    c.fillText(Math.round(push) + ' g', sx, benchY - 8.5);
-    c.fillStyle = '#8A90B5'; c.fillRect(sx - 3, motorY + 6, 6, benchY - 24 - motorY - 6);
-    c.fillStyle = '#3B4268'; c.strokeStyle = '#0F1124';
-    c.beginPath(); if (c.roundRect) c.roundRect(sx - 9, motorY - 6, 18, 14, 3); else c.rect(sx - 9, motorY - 6, 18, 14); c.fill(); c.stroke();
-    // propeller seen from the side
-    var hubY = motorY - 9, blur = Math.min(0.8, lab.u * 1.2);
-    c.fillStyle = 'rgba(255,140,66,' + 0.35 * blur + ')';
-    c.beginPath(); c.ellipse(sx, hubY, R, 5, 0, 0, 6.3); c.fill();
-    var tilt = lab.angle * Math.PI / 180;
-    c.strokeStyle = 'rgba(255,140,66,' + (1 - 0.6 * blur) + ')'; c.lineWidth = 4;
+    // scale with a digital readout
+    c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.lineWidth = 1.3; c.beginPath(); rr(c, sx - 46, benchY - 24, 92, 24, 3); c.fill(); c.stroke();
+    c.fillStyle = BP.deep; c.fillRect(sx - 32, benchY - 20, 64, 15); c.strokeStyle = BP.faint; c.lineWidth = 1; c.strokeRect(sx - 31.5, benchY - 19.5, 63, 14);
+    bpText(c, Math.round(push) + ' g', sx, benchY - 8.5, { col: ok ? BP.ok : BP.line, size: 11, weight: 700, align: 'center' });
+    // post (a hollow tube) and its centre line
+    bpLine(c, [sx - 3, motorY + 8, sx - 3, benchY - 24], BP.line, 1.1); bpLine(c, [sx + 3, motorY + 8, sx + 3, benchY - 24], BP.line, 1.1);
+    bpLine(c, [sx, hubY - 16, sx, benchY - 24], BP.faint, 0.7, DASHDOT);
+    // motor with its windings
+    c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.lineWidth = 1.3; c.beginPath(); rr(c, sx - 10, motorY - 6, 20, 14, 2); c.fill(); c.stroke();
+    [-5, 0, 5].forEach(function (o) { bpLine(c, [sx + o, motorY - 3, sx + o, motorY + 5], BP.dim, 0.8); });
+    // propeller: swept envelope, then the blades
+    if (lab.u > 0.03) { c.setLineDash([4, 3]); c.strokeStyle = 'rgba(255,201,74,' + (0.3 + 0.5 * blur) + ')'; c.lineWidth = 1; c.beginPath(); c.ellipse(sx, hubY, R, 5, 0, 0, 6.3); c.stroke(); c.setLineDash([]); }
+    c.strokeStyle = 'rgba(255,201,74,' + (1 - 0.55 * blur) + ')'; c.lineWidth = 3; c.lineCap = 'round';
     for (var b2 = 0; b2 < 2; b2++) {
       var ca = Math.cos(lab.ang + b2 * Math.PI), ex = sx + R * ca;
       c.beginPath(); c.moveTo(sx, hubY); c.lineTo(ex, hubY - Math.sin(tilt) * 6 * Math.sign(ca)); c.stroke();
     }
-    c.fillStyle = '#0F1124'; c.beginPath(); c.arc(sx, hubY, 3.5, 0, 6.3); c.fill();
-    // push meter
-    var mx = sx + R + (small ? 12 : 22), mTop = 18, mBot = benchY - 4, mH = mBot - mTop;
-    c.fillStyle = '#2E3454'; c.fillRect(mx, mTop, 12, mH);
-    var frac = Math.min(1, push / 600), ok = push >= 300 && !flat;
-    c.fillStyle = ok ? '#6FD3A8' : '#FFC845'; c.fillRect(mx, mBot - mH * frac, 12, mH * frac);
+    c.fillStyle = BP.bg; c.strokeStyle = BP.line; c.lineWidth = 1.2; c.beginPath(); c.arc(sx, hubY, 3.5, 0, 6.3); c.fill(); c.stroke();
+    // push vector
+    var pv = Math.min(hubY - 38, (push / 600) * (hubY - 38));
+    if (pv > 4 && !flat) { arrow(c, sx, hubY - 8, sx, hubY - 8 - pv, BP.amber, 2.5); bpText(c, 'PUSH', sx + 8, hubY - 12 - pv * 0.55, { col: BP.amber, weight: 700 }); }
+    if (!small) {
+      bpCallout(c, 'PROPELLER', 12, hubY - 26, sx - R * 0.62, hubY - 1);
+      bpCallout(c, 'MOTOR', 12, motorY + 22, sx - 10, motorY + 2);
+      bpCallout(c, 'SCALE', 12, benchY - 34, sx - 46, benchY - 14);
+    }
+    // graduated push scale with the lift-off datum
+    var mx = sx + R + (small ? 16 : 26), mTop = 32, mBot = benchY - 4, mH = mBot - mTop, frac = Math.min(1, push / 600);
+    bpText(c, 'PUSH g', mx - 10, mTop - 10, { size: 8.5 });
+    c.strokeStyle = BP.faint; c.lineWidth = 1; c.strokeRect(mx - 9.5, mTop + 0.5, 7, mH - 1);
+    c.fillStyle = ok ? BP.ok : BP.amber; c.fillRect(mx - 9, mBot - mH * frac, 6, mH * frac);
+    bpLine(c, [mx, mTop, mx, mBot], BP.line, 1);
+    for (var g = 0; g <= 600; g += 50) {
+      var gy = mBot - mH * g / 600, major = g % 100 === 0;
+      bpLine(c, [mx, gy, mx + (major ? 7 : 4), gy], major ? BP.line : BP.dim, 0.9);
+      if (major && g !== 300 && (!small || g === 0 || g === 600)) bpText(c, String(g), mx + 10, gy + 3, { size: 8 });
+    }
     var ty = mBot - mH * 0.5;
-    c.fillStyle = '#FFFFFF'; c.fillRect(mx - 4, ty - 1, 20, 2);
-    c.font = '600 9px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillStyle = '#E9E4F5';
-    c.fillText('300 g', mx + 16, ty + 3);
-    if (!small) { c.fillStyle = '#9EA3C4'; c.fillText('needed to lift', mx + 16, ty + 14); }
-    c.fillText('PUSH', mx - 2, mTop - 6);
-    if (ok) { c.fillStyle = '#7CF0BC'; c.font = '700 10px "IBM Plex Mono", monospace'; c.fillText(small ? '✓' : 'ENOUGH ✓', mx + 16, mTop + 8); }
-    c.font = '600 9.5px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'center';
-    c.fillText('TEST STAND', sx, 14);
-    // ---------- right: one blade, close up ----------
-    var bx0 = w * (small ? 0.52 : 0.47), bw = w - bx0 - 8, by0 = 8, bh = h - 16, cx = bx0 + bw * 0.52, cy = by0 + bh * 0.46;
-    c.strokeStyle = 'rgba(255,255,255,.12)'; c.lineWidth = 1; c.strokeRect(bx0, by0, bw, bh);
+    bpLine(c, [mx - 14, ty, mx + 9, ty], BP.line, 1.3, [3, 2]);
+    bpText(c, '300', mx + 11, ty + 3, { col: BP.line, weight: 700, size: 9 });
+    if (!small) bpText(c, 'LIFT-OFF', mx + 11, ty + 14, { size: 8 });
+    if (ok) bpText(c, small ? '✓' : 'ENOUGH ✓', mx + 11, mTop + 8, { col: BP.ok, weight: 700 });
+
+    // ---------- right: detail B, one blade cut in section ----------
+    var bx0 = w * (small ? 0.52 : 0.47), bw = w - bx0 - 12, by0 = 12, bh = h - 24, cx = bx0 + bw * 0.5, cy = by0 + bh * 0.52;
+    c.strokeStyle = BP.faint; c.lineWidth = 1; c.strokeRect(bx0 + 0.5, by0 + 0.5, bw, bh); bpCorners(c, bx0, by0, bw, bh);
     c.save(); c.beginPath(); c.rect(bx0, by0, bw, bh); c.clip();
     var chord = Math.min(bw * 0.42, 120), rel = 70 + 300 * lab.u;
     if (lab.u > 0.03 && Math.random() < lab.u * 60 * dt * 3) for (k = 0; k < 2; k++) lab.close.push({ x: bx0 + bw + 4, y: by0 + 10 + Math.random() * (bh - 20), vy: 0 });
     var turn = Math.tan(tilt) * 1.6;
-    c.strokeStyle = 'rgba(190,230,255,.9)'; c.lineWidth = 1.6;
+    c.strokeStyle = 'rgba(121,227,255,.9)'; c.lineWidth = 1.4;
     for (i = lab.close.length - 1; i >= 0; i--) {
-      var q = lab.close[i];
-      var dx = q.x - cx;
+      var q = lab.close[i], dx = q.x - cx;
       if (dx < chord * 0.45 && Math.abs(q.y - cy) < chord * 0.9) q.vy += (rel * turn - q.vy) * Math.min(1, dt * 6);
       q.x -= rel * dt; q.y += q.vy * dt;
       if (q.x < bx0 - 10 || q.y > by0 + bh + 10) { lab.close.splice(i, 1); continue; }
       var sp = Math.hypot(rel, q.vy), ux = -rel / sp, uy = q.vy / sp;
       c.beginPath(); c.moveTo(q.x, q.y); c.lineTo(q.x - ux * 9, q.y - uy * 9); c.stroke();
     }
-    // blade
+    // reference line, chord line and the hatched blade section
+    bpLine(c, [cx - chord * 0.8, cy, cx + chord * 0.9, cy], BP.faint, 0.8, [3, 3]);
     c.save(); c.translate(cx, cy); c.rotate(-tilt);
-    aerofoil(c, chord); c.fillStyle = '#FF8C42'; c.fill(); c.strokeStyle = '#0F1124'; c.lineWidth = 2; c.stroke();
+    bpLine(c, [-chord * 0.8, 0, chord * 0.9, 0], BP.dim, 0.8, DASHDOT);
+    aerofoil(c, chord); c.fillStyle = BP.bg; c.fill();
+    aerofoil(c, chord); bpHatch(c, 5, 'rgba(255,201,74,.55)');
+    aerofoil(c, chord); c.strokeStyle = BP.amber; c.lineWidth = 1.6; c.stroke();
     c.restore();
-    // arrows
-    var pushLen = Math.min(bh * 0.32, (push / 600) * bh * 0.32);
-    if (pushLen > 3 && !flat) arrow(c, cx, cy - 14, cx, cy - 14 - pushLen, '#7CF0BC', 4);
-    if (!flat && lab.u > 0.1) arrow(c, cx - chord * 0.9, cy + 10, cx - chord * 0.9 - 10, cy + 10 + Math.min(bh * 0.3, 20 + push / 12), 'rgba(190,230,255,.95)', 3);
+    // blade angle, dimensioned
+    if (!flat) {
+      var ar = chord * 0.74;
+      c.strokeStyle = BP.line; c.lineWidth = 0.9; c.beginPath(); c.arc(cx, cy, ar, -tilt, 0); c.stroke();
+      [0, -tilt].forEach(function (an) { var px = cx + Math.cos(an) * ar, py = cy + Math.sin(an) * ar; bpLine(c, [px - 3 * Math.cos(an), py - 3 * Math.sin(an), px + 3 * Math.cos(an), py + 3 * Math.sin(an)], BP.line, 1); });
+      var la = -tilt / 2;
+      bpText(c, lab.angle + '°', cx + Math.cos(la) * (ar + 5), cy + Math.sin(la) * (ar + 5) + 4, { col: BP.amber, weight: 700, size: 10 });
+    }
+    var pushLen = Math.min(bh * 0.3, (push / 600) * bh * 0.3);
+    if (pushLen > 3 && !flat) arrow(c, cx, cy - 14, cx, cy - 14 - pushLen, BP.amber, 3);
+    if (!flat && lab.u > 0.1) arrow(c, cx - chord * 0.9, cy + 10, cx - chord * 0.9 - 10, cy + 10 + Math.min(bh * 0.3, 20 + push / 12), BP.air, 2.5);
     c.restore();
-    c.font = '600 9.5px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
-    c.fillText(small ? 'ONE BLADE' : 'ONE BLADE, CLOSE UP', bx0 + 8, by0 + 14);
-    c.textAlign = 'right'; c.fillText('blade moves →', bx0 + bw - 8, by0 + (small ? 28 : 14));
+    bpText(c, small ? 'DETAIL B · BLADE' : 'DETAIL B · ONE BLADE, CUT THROUGH', bx0 + 10, by0 + 16, { col: BP.line });
+    bpText(c, 'BLADE MOVES →', bx0 + bw - 8, by0 + (small ? 30 : 16), { align: 'right', size: 8.5 });
     c.textAlign = 'left';
-    if (flat && lab.u > 0.15) { c.fillStyle = '#FFB0A0'; c.font = '700 ' + (small ? 11 : 12.5) + 'px Nunito, sans-serif'; c.fillText('Flat blade: air just slides past', bx0 + 8, by0 + bh - 10); }
+    if (flat && lab.u > 0.15) { c.fillStyle = BP.warn; c.font = '700 ' + (small ? 11 : 12.5) + 'px Nunito, sans-serif'; c.fillText('Flat blade: air just slides past', bx0 + 10, by0 + bh - 10); }
     else if (!flat && lab.u > 0.1) {
-      c.fillStyle = '#7CF0BC'; c.font = '700 ' + (small ? 10.5 : 12) + 'px Nunito, sans-serif'; c.fillText('push up', cx + 8, cy - 14 - pushLen * 0.6);
-      c.fillStyle = 'rgba(190,230,255,.95)'; c.fillText('air thrown down', bx0 + 8, by0 + bh - 10);
+      c.fillStyle = BP.amber; c.font = '700 ' + (small ? 10.5 : 12) + 'px Nunito, sans-serif'; c.fillText('push up', cx + 8, cy - 14 - pushLen * 0.6);
+      c.fillStyle = BP.air; c.fillText('air thrown down', bx0 + 10, by0 + bh - 10);
     }
   }
   function arrow(c, x1, y1, x2, y2, col, wd) {
@@ -896,27 +1120,33 @@
     c.beginPath(); c.moveTo(x2, y2); c.lineTo(x2 - Math.cos(a - 0.5) * hl, y2 - Math.sin(a - 0.5) * hl); c.lineTo(x2 - Math.cos(a + 0.5) * hl, y2 - Math.sin(a + 0.5) * hl); c.closePath(); c.fill();
   }
 
-  // ===================== Gauges =====================
+  // ===================== Gauges: engineering dial faces =====================
   function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
   function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
   function makeGauge(id, label, max, zone, zoneCol, needleCol) {
-    var el = document.getElementById(id), d0 = -125, d1 = 125;
-    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
-    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
-    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
-    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
-    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+    var el = document.getElementById(id), d0 = -125, d1 = 125, nc = needleCol || BP.amber;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true">';
+    html += '<path d="' + arc(50, 52, 40, d0, d1) + '" fill="none" stroke="' + BP.line + '" stroke-width="1"/>';
+    html += '<path d="' + arc(50, 52, 33, d0, d1) + '" fill="none" stroke="' + BP.faint + '" stroke-width=".7"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 36.5, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + (zoneCol || BP.warn) + '" stroke-opacity=".4" stroke-width="6.5"/>';
+    html += '<path class="fill" d="" fill="none" stroke="' + nc + '" stroke-opacity=".6" stroke-width="3"/>';
+    for (var i = 0; i <= 20; i++) {
+      var dd = d0 + (d1 - d0) * i / 20, maj = i % 5 === 0, a1 = polar(50, 52, 40, dd), a2 = polar(50, 52, maj ? 33 : 36.5, dd);
+      html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="' + (maj ? BP.line : BP.dim) + '" stroke-width="' + (maj ? 1.1 : 0.7) + '"/>';
+      if (i % 10 === 0) { var tp = polar(50, 52, 25, dd); html += '<text x="' + tp[0].toFixed(1) + '" y="' + (tp[1] + 2.4).toFixed(1) + '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6.5" fill="' + BP.dim + '">' + (max * i / 20) + '</text>'; }
+    }
+    html += '<g class="needle"><line x1="50" y1="60" x2="50" y2="14" stroke="' + nc + '" stroke-width="1.6" stroke-linecap="round"/></g><circle cx="50" cy="52" r="3.5" fill="' + BP.bg + '" stroke="' + BP.line + '" stroke-width="1.2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
     el.innerHTML = html;
     return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
   }
-  var gH = makeGauge('gHeight', 'HEIGHT', 30, null, null, '#6FD3A8');
-  var gS = makeGauge('gSpeed', 'SPEED', 60, null, null, '#FFC845');
-  var gT = makeGauge('gTwist', 'SPIN', 720, [0.5, 1], '#FF4D3D', '#FF8C42');
+  var gH = makeGauge('gHeight', 'HEIGHT', 30, null, null, BP.ok);
+  var gS = makeGauge('gSpeed', 'SPEED', 60, null, null, BP.amber);
+  var gT = makeGauge('gTwist', 'SPIN', 720, [0.5, 1], BP.warn, 'rgb(255,176,103)');
   function setGauge(g, v, fmt, dt) {
     g.shown += (v - g.shown) * Math.min(1, dt * 8);
     var f = clamp(g.shown / g.max, 0, 1), deg = g.d0 + (g.d1 - g.d0) * f;
     g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
-    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 36.5, g.d0, deg) : '');
     g.val.textContent = fmt(g.shown);
   }
 
@@ -987,7 +1217,7 @@
     }
     if (!M[3]) return say('Full circle! Now be a scientist. Two ways to break it: <b>Flatten the blades</b>, or <b>Spin all props the same way</b>. Guess what will happen first.');
     if (bonus.pad && D.landed) return say('<b>Perfect landing!</b> You know how a drone flies now: tilted blades throw air down, and changing their speeds tips and turns it.');
-    if (Math.abs(input.fwd) > 0.2 || Math.abs(input.right) > 0.2) return say('To fly forwards, the back propellers speed up for a moment and <b>tip the drone forwards</b>. Now some of the push points backwards, so it moves.');
+    if (Math.abs(input.fwd) > 0.2 || Math.abs(input.right) > 0.2) return say('To fly forwards, the back propellers speed up for a moment and <b>tip the drone forwards</b>. Now part of the push points forwards, so it moves.');
     return say('Free flight! Try landing on the <b>orange pad</b>, or cut a motor high up, if you dare.');
   }
 
@@ -1117,6 +1347,7 @@
   window.addEventListener('resize', resize);
   resize(); renderMissions();
   requestAnimationFrame(frame);
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) Array.prototype.forEach.call(document.querySelectorAll('svg.dwg'), function (sv) { if (sv.pauseAnimations) sv.pauseAnimations(); });
   window.__ari = { D: function () { return D; }, input: input, flags: flags, M: M, lab: lab, push: labPush, reset: function () { resetBtn.click(); } };
 })();
 </script>
