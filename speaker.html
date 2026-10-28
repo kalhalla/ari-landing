@@ -170,6 +170,169 @@
     .vol-note b { color: var(--sun); }
     #volBox input[type=range] { height: 30px; }
   </style>
+  <style>
+    /* ===== Ari blueprint system =====
+       Three drawing styles, picked by job:
+       1. Blueprint sheet (white on blue): the cut-away, the signal trace, the take-apart drawing.
+       2. Instrument panel (blueprint rig): gauges, sliders, tests, controls.
+       3. Graph-paper figures (ink on squared paper): the explanation cards below. */
+    :root {
+      --bp: #0D3B6E; --bp-deep: #082A4F; --bp-grid: rgba(170,210,255,.07); --bp-grid2: rgba(170,210,255,.16);
+      --bp-line: #EEF5FF; --bp-dim: #9FC6F2; --bp-faint: rgba(159,198,242,.42);
+      --bp-amber: #FFC94A; --bp-air: #79E3FF; --bp-warn: #FF8A7A; --bp-ok: #7CF0BC;
+      --gp: #F4F8FC; --gp-grid: rgba(52,124,190,.12); --gp-grid2: rgba(52,124,190,.24); --gp-rule: #B7CCE0;
+      --gp-ink: #17324F; --gp-dim: #5B7A99; --gp-red: #D4452F; --gp-blue: #1F86C7;
+    }
+    /* 2. Instrument panel */
+    .rig { background-color: var(--bp-deep); border-radius: 12px; box-shadow: 0 30px 70px rgba(20,40,80,.3);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -5px; }
+    .rig::before { border-radius: 12px; }
+    .screen { border-radius: 4px; background: var(--bp); box-shadow: 0 0 0 1px var(--bp-faint); }
+    .screen-bar { background: var(--bp-deep); border-bottom: 1px solid var(--bp-faint); }
+    .screen-tag { color: var(--bp-dim); }
+    .clock { color: var(--bp-line); } .clock small { color: var(--bp-dim); }
+    .tool { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); }
+    .tool[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-line); }
+    .gauge, .panel-box { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; }
+    .gauge { padding: 8px 6px 7px; }
+    .g-val { display: inline-block; margin-top: 2px; padding: 1px 7px; background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 2px; font-size: 14px; color: var(--bp-line); font-variant-numeric: tabular-nums; }
+    .g-lbl { color: var(--bp-dim); margin-top: 5px; }
+    .box-head, .box-foot { color: var(--bp-dim); }
+    .box-head b { color: var(--bp-amber); }
+    .box-head b.secret { color: var(--bp-ok); }
+    .vol-note { color: var(--bp-dim); } .vol-note b { color: var(--bp-amber); }
+    .ari { border-radius: 6px; }
+    .mission { border-radius: 2px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-dim); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+    .mission i::before { content: 'TEST '; }
+    .mission.now { background: rgba(255,201,74,.12); border-color: var(--bp-amber); color: var(--bp-line); }
+    .mission.done { background: rgba(124,240,188,.1); border-color: var(--bp-ok); color: var(--bp-ok); }
+    .mission.done i::after { content: ' ✓'; }
+    .chip { border-radius: 3px; border: 1px dashed var(--bp-faint); color: var(--bp-line); }
+    .chip[aria-pressed="true"] { background: var(--bp-warn); border-color: var(--bp-warn); color: #2A0E08; }
+    .chip.fix[aria-pressed="true"] { background: var(--bp-ok); border-color: var(--bp-ok); color: #06261A; }
+    .app { border-radius: 4px; background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); box-shadow: none; color: var(--bp-line); }
+    .play { background: var(--bp-amber); color: #2A1E02; border: none; box-shadow: 0 4px 0 #B88A1A, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .play:active { box-shadow: 0 1px 0 #B88A1A; }
+    .play.on { background: transparent; color: var(--bp-line); border: 1px solid var(--bp-line); box-shadow: none; }
+    .play.nudge { animation: bpNudgeBtn 1.4s ease-in-out infinite; }
+    .panel-box.nudge, .chip.nudge { animation: bpNudge 1.4s ease-in-out infinite; border-color: var(--bp-amber); }
+    @keyframes bpNudgeBtn { 0%,100% { box-shadow: 0 4px 0 #B88A1A, 0 0 0 0 rgba(255,201,74,0); } 50% { box-shadow: 0 4px 0 #B88A1A, 0 0 0 5px rgba(255,201,74,.45); } }
+    @keyframes bpNudge { 0%,100% { box-shadow: 0 0 0 0 rgba(255,201,74,0); } 50% { box-shadow: 0 0 0 4px rgba(255,201,74,.4); } }
+    input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-moz-range-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-webkit-slider-thumb { width: 16px; height: 28px; margin-top: -7px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); box-shadow: 0 0 0 1px var(--bp-amber); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 26px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); }
+    input[type=range]:focus-visible { outline: 2px solid var(--bp-amber); outline-offset: 2px; }
+
+    /* 3. Graph-paper figures */
+    .stage { background-color: var(--gp); border: 1px solid var(--gp-rule); border-radius: 4px; box-shadow: none; color: var(--gp-dim);
+      background-image: linear-gradient(var(--gp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gp-grid) 1px, transparent 1px); background-size: 10px 10px; }
+    .stage .k { color: var(--gp-red); }
+    .stage h3 { color: var(--gp-ink); }
+    .stage p { color: #3E5875; }
+    .dwg { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gp-rule); overflow: visible; }
+    .dwg text { font-family: var(--mono); font-size: 8px; font-weight: 600; fill: var(--gp-ink); letter-spacing: .03em; }
+    .dwg .tr { fill: var(--gp-red); } .dwg .tb { fill: var(--gp-blue); } .dwg .td { fill: var(--gp-dim); }
+    .dwg .ink { stroke: var(--gp-ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .inkf { stroke: var(--gp-ink); stroke-width: 1.4; fill: #fff; stroke-linejoin: round; }
+    .dwg .inkh { fill: var(--gp-ink); }
+    .dwg .hatchf { fill: url(#gpHatch); stroke: var(--gp-ink); stroke-width: 1.4; }
+    .dwg .dimln { stroke: var(--gp-dim); stroke-width: .8; fill: none; }
+    .dwg .dsh { stroke-dasharray: 4 3; }
+    .dwg .ctrln { stroke: var(--gp-dim); stroke-width: .7; fill: none; stroke-dasharray: 9 2 2 2; }
+    .dwg .red { stroke: var(--gp-red); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .redf { fill: var(--gp-red); }
+    .dwg .blu { stroke: var(--gp-blue); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .bluso { stroke: var(--gp-blue); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .bluf { fill: var(--gp-blue); }
+    .dwg .copper { stroke: #B5651D; stroke-width: 1.6; fill: none; }
+    .dwg .turn { fill: #fff; stroke: #B5651D; stroke-width: 1.3; }
+    .dwg .wob { animation: figwob 1.2s ease-in-out infinite; transform-box: view-box; }
+    @keyframes figflow { to { stroke-dashoffset: -18; } }
+    @keyframes figwob { 0%, 100% { transform: translateX(-3px); } 50% { transform: translateX(3px); } }
+    .stages > p.big-idea { color: #3E5875; }
+    .big-idea { background: var(--gp); border: 1.5px solid var(--gp-ink); border-radius: 4px; color: #3E5875; position: relative; padding-top: 26px; }
+    .big-idea::before { content: 'NOTE 1'; position: absolute; top: 0; left: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--bp-line); background: var(--gp-ink); padding: 3px 9px; }
+    .big-idea b { color: var(--gp-ink); }
+    @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .dwg .blu, .dwg .wob { animation: none; } }
+
+    /* ===== Fig 8.C: take it apart + drawing sheet ===== */
+    .xsec { margin: 40px 0 6px; }
+    .xhead { max-width: 760px; margin-bottom: 14px; }
+    .xhead h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin: 4px 0 6px; }
+    .xhead p { color: var(--brown-mid); font-size: 16px; }
+    .xrig .screen { overflow: hidden; }
+    #xvSpk { display: block; width: 100%; cursor: pointer; touch-action: manipulation; }
+    .xctl { display: grid; gap: 8px; padding: 10px 12px 12px; background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .xctl .box-head { margin: 0; }
+    .xctl .btns { display: flex; gap: 8px; }
+    .xctl .btn { flex: 1; min-height: 48px; border: none; border-radius: 4px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; cursor: pointer; background: var(--bp-amber); color: #2A1E02; box-shadow: 0 4px 0 #B88A1A, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .xctl .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B88A1A; }
+    .part-card { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; padding: 12px 14px; min-height: 118px; }
+    .pc-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--bp-amber); }
+    .part-card h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--bp-line); margin: 3px 0 4px; }
+    .part-card p { font-size: 14.5px; line-height: 1.45; color: #C6DCF5; }
+    .plist-wrap { overflow-x: auto; }
+    .plist { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; color: var(--bp-line); }
+    .plist th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; color: var(--bp-dim); padding: 0 8px 6px 0; border-bottom: 1px solid var(--bp-line); }
+    .plist td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--bp-faint); cursor: pointer; vertical-align: top; }
+    .plist td:first-child { width: 2.4em; font-weight: 600; color: var(--bp-amber); }
+    .plist td small { display: block; color: var(--bp-dim); font-size: 10.5px; letter-spacing: .02em; }
+    .plist tr.on td { color: var(--bp-amber); }
+    .plist tr:hover td { background: rgba(255,255,255,.04); }
+
+    .sheet { display: grid; gap: 10px; margin-top: 10px; }
+    .sheet-card { margin: 0; background-color: var(--bp); border: 1px solid var(--bp-faint); border-radius: 4px; padding: 12px; color: var(--bp-line);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -6px; }
+    .sheet-card svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+    .sheet-card figcaption { margin-top: 8px; border-top: 1px solid var(--bp-line); padding-top: 8px; font-size: 14px; line-height: 1.45; color: #C6DCF5; }
+    .sheet-card figcaption b { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--bp-line); margin-bottom: 2px; }
+    .sheet-card figcaption span { display: block; }
+    .bpg text { font-family: var(--mono); font-size: 9px; font-weight: 600; fill: var(--bp-line); letter-spacing: .04em; }
+    .bpg text.dimt { fill: var(--bp-dim); font-weight: 500; font-size: 8.5px; }
+    .bpg text.amber { fill: var(--bp-amber); } .bpg text.air { fill: var(--bp-air); }
+    .bpg text.big { font-size: 13px; font-weight: 700; }
+    .bpg .ln { fill: none; stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .ln.dim { stroke: var(--bp-dim); stroke-width: .8; }
+    .bpg .ln.thick { stroke-width: 2; }
+    .bpg .lnf { fill: var(--bp-deep); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .hid { fill: none; stroke: var(--bp-dim); stroke-width: .8; stroke-dasharray: 3 3; }
+    .bpg .steel { fill: url(#spkHatch); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .magN { fill: rgba(255,138,122,.32); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .magS { fill: rgba(121,227,255,.24); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .wind { fill: rgba(255,154,77,.35); stroke: #FFB067; stroke-width: 1; }
+    .bpg .cuf { fill: #FFB067; }
+    .bpg .cl { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 10 3 2 3; fill: none; }
+    .bpg .dl { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .ext { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 2 3; fill: none; }
+    .bpg .dh { fill: var(--bp-dim); }
+    .bpg .lead { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .amberl { stroke: var(--bp-amber); stroke-width: 1.6; fill: none; } .bpg .amberf { fill: var(--bp-amber); }
+    .bpg .airl { stroke: var(--bp-air); stroke-width: 1.1; fill: none; } .bpg .airf { fill: var(--bp-air); }
+    .bpg .plusf { fill: var(--bp-warn); }
+    .bpg .bg { fill: var(--bp); }
+    .spec, .tblock { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; color: var(--bp-line); }
+    .spec th { text-align: left; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 0 7px; border-bottom: 1px solid var(--bp-line); }
+    .spec td { padding: 6px 0; border-bottom: 1px solid var(--bp-faint); }
+    .spec td:first-child { color: var(--bp-dim); padding-right: 10px; }
+    .spec td:last-child { text-align: right; font-weight: 600; }
+    .tblock { margin-top: 14px; border: 1.5px solid var(--bp-line); }
+    .tblock td { border: 1px solid var(--bp-faint); padding: 6px 7px; font-size: 11.5px; }
+    .tblock td:nth-child(odd) { color: var(--bp-dim); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; width: 1%; white-space: nowrap; }
+    .tblock td[colspan] { font-weight: 600; letter-spacing: .05em; }
+    .nts { margin-top: 8px; font-size: 12.5px; color: var(--bp-dim); line-height: 1.4; }
+    @media (min-width: 900px) {
+      .xrig { grid-template-columns: 1.75fr 1fr; }
+      .sheet { grid-template-columns: 1fr 1fr 1fr; }
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -187,11 +350,11 @@
     <section class="rig" aria-label="A playable speaker, cut in half">
       <div class="screens">
         <div class="screen">
-          <div class="screen-bar"><div class="screen-tag">Cut-away: a speaker sliced in half</div><div class="clock" id="slowTag">SLOW-MO</div></div>
+          <div class="screen-bar"><div class="screen-tag">Fig. 08 — A speaker, cut in half</div><div class="clock" id="slowTag">SLOW-MO</div></div>
           <canvas id="scene" aria-label="A speaker cut in half. Electricity flows in a coil, a magnet pushes it, the cone moves and squashes the air on its way to an ear. Tap or push the cone."></canvas>
         </div>
         <div class="screen">
-          <div class="screen-bar"><div class="screen-tag">The electric signal going into the coil</div></div>
+          <div class="screen-bar"><div class="screen-tag">Fig. 8.B — The electric signal going into the coil</div></div>
           <canvas id="trace" aria-label="A graph of the electric signal flowing into the coil"></canvas>
         </div>
       </div>
@@ -237,14 +400,215 @@
       </div>
     </section>
 
+    <section class="xsec" id="takeApart">
+      <div class="xhead">
+        <div class="eyebrow">Fig. 8.C · General arrangement</div>
+        <h2>Take the speaker apart</h2>
+        <p>This is a real-sized 6.5-inch speaker, the kind inside a hi-fi or a car door. Eight parts, and every one has a job. Pull it apart, then tap a part to find out what it does.</p>
+      </div>
+      <div class="rig xrig" aria-label="An exploded drawing of a loudspeaker">
+        <div class="screen">
+          <canvas id="xvSpk" aria-label="A 165 millimetre speaker drawn from the side as a blueprint. Explode it to see its eight parts: dust cap, surround, cone, spider, voice coil, frame, terminals and magnet."></canvas>
+          <div class="xctl">
+            <div class="box-head"><span>ASSEMBLED</span><b id="xsVal">0%</b><span>EXPLODED</span></div>
+            <input type="range" id="xs" min="0" max="100" value="0" aria-label="How far apart the parts are">
+            <div class="btns"><button class="btn go" id="xsBtn">Take it apart</button></div>
+          </div>
+        </div>
+        <div class="cockpit">
+          <div class="part-card">
+            <div class="pc-k" id="xsK">TAP A PART</div>
+            <h3 id="xsName">Tap any part of the drawing</h3>
+            <p id="xsNote">Take the speaker apart first, then tap a part or its number to find out what it does.</p>
+          </div>
+          <div class="plist-wrap"><table class="plist" id="xsList"></table></div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 270" role="img" aria-label="Section A: the middle of the speaker cut in half. A ring magnet sits between two steel plates. The voice coil hangs in a narrow gap between the top plate and the steel pole. The coil is 12 millimetres tall, the gap is 6 millimetres tall, so the coil and cone can move about 3 millimetres in and out.">
+            <defs><pattern id="spkHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#082A4F"/><line x1="0" y1="0" x2="0" y2="5" stroke="#9FC6F2" stroke-width=".8" stroke-opacity=".7"/></pattern></defs>
+            <g class="bpg">
+              <path class="cl" d="M232 4 V266"/>
+              <!-- magnet and steel, cut through -->
+              <rect class="magN" x="65.5" y="154.7" width="81.4" height="31.45"/>
+              <rect class="magS" x="65.5" y="186.15" width="81.4" height="31.45"/>
+              <path class="steel" d="M65.5 217.6 H191.3 V132.5 H219 V239.8 H65.5 Z"/>
+              <rect class="steel" x="65.5" y="132.5" width="107.3" height="22.2"/>
+              <rect class="bg" x="92" y="138" width="36" height="12"/><text x="110" y="147" text-anchor="middle">STEEL</text>
+              <rect class="bg" x="92" y="223" width="36" height="12"/><text x="110" y="232" text-anchor="middle">STEEL</text>
+              <text class="big" x="72" y="176">N</text><text x="88" y="175">MAGNET</text>
+              <text class="big" x="72" y="208">S</text><text class="dimt" x="88" y="207">(FERRITE)</text>
+              <!-- the magnet's pull across the gap -->
+              <path class="airl" d="M173 137 H186 M173 143.6 H186 M173 150.2 H186"/>
+              <path class="airf" d="M191 137 l-6 -3 v6z M191 143.6 l-6 -3 v6z M191 150.2 l-6 -3 v6z"/>
+              <path class="lead" d="M176 152 L160 170"/><text class="air" x="150" y="180">PULL</text>
+              <!-- moving parts: former, coil, cone, dust cap, spider -->
+              <path class="ln" d="M186.5 62.2 V165.8"/>
+              <rect class="wind" x="178.4" y="121.4" width="7.4" height="44.4"/>
+              <g id="secTurns"></g>
+              <path class="ln thick" d="M186.5 80.7 L113.6 37.8"/>
+              <path class="ln dim" d="M110 42 l3 -3 l1 3 l3 -3"/>
+              <path class="ln" d="M158 64 A74 24 0 0 1 232 40" style="stroke-width:1.6"/>
+              <path class="ln" d="M186.5 95.5 q-5.125 -6 -10.25 0 t-10.25 0 t-10.25 0 t-10.25 0 t-10.25 0 t-10.25 0 t-10.25 0 t-10.25 0 t-10.25 0 t-10.25 0" style="stroke-width:1.6"/>
+              <path class="ln dim" d="M81 100 l3 -3 l1 3 l3 -3"/>
+              <!-- labels -->
+              <path class="lead" d="M42 21 H70 L130 47.5"/><text x="12" y="24">CONE</text>
+              <path class="lead" d="M50 109 L95 97"/><text x="12" y="112">SPIDER</text>
+              <path class="lead" d="M238 55 L214 44"/><text x="240" y="58">DUST CAP</text>
+              <path class="lead" d="M187 127 L236 109"/><text x="240" y="112">COIL Ø25</text><text class="dimt" x="240" y="123">(12 TALL)</text>
+              <path class="lead" d="M207 182 H236"/><text x="240" y="185">POLE</text>
+              <!-- which way it moves -->
+              <path class="amberl" d="M250 12 V36"/><path class="amberf" d="M250 5 l-4 8 h8z M250 43 l-4 -8 h8z"/>
+              <text class="amber" x="258" y="13">OUT</text><text class="amber" x="258" y="27">±3</text><text class="amber" x="258" y="41">IN</text>
+              <!-- dimensions -->
+              <path class="ext" d="M62 132.5 H20 M62 154.7 H44 M62 239.8 H20"/>
+              <path class="dl" d="M48 132.5 V154.7 M24 132.5 V239.8"/>
+              <path class="dh" d="M48 132.5 l-2.5 6 h5z M48 154.7 l-2.5 -6 h5z M24 132.5 l-2.5 6 h5z M24 239.8 l-2.5 -6 h5z"/>
+              <text x="40" y="147" text-anchor="end">6</text>
+              <text x="0" y="0" transform="translate(20 186) rotate(-90)" text-anchor="middle">29</text>
+              <path class="ext" d="M65.5 243 V262"/>
+              <path class="dl" d="M65.5 256 H232"/><path class="dh" d="M65.5 256 l6 -2.5 v5z"/>
+              <text x="148" y="252" text-anchor="middle">Ø90 MAGNET</text>
+            </g>
+          </svg>
+          <figcaption><b>Section A · the motor, cut in half</b><span>⊙ means electricity in the coil is flowing towards you. The magnet's pull crosses the narrow gap (blue), so the coil is pushed out. Flip the electricity and it is pulled in. The coil is 12 mm tall but the gap is only 6 mm, so it can move about 3 mm each way and stay in the pull.</span></figcaption>
+        </figure>
+
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 300" role="img" aria-label="Front view of the speaker. It is 165 millimetres across. Four screw holes, 4.5 millimetres wide, sit on a circle 155 millimetres across. The rubber surround is 136 millimetres across, the cone 116 and the dust cap 40.">
+            <g class="bpg">
+              <path class="cl" d="M14 162 H286 M150 30 V294"/>
+              <circle class="lnf" cx="150" cy="162" r="123.75"/>
+              <circle class="cl" cx="150" cy="162" r="116.25"/>
+              <circle class="lnf" cx="150" cy="162" r="102" style="stroke-width:1"/>
+              <circle class="ln dim" cx="150" cy="162" r="94.5"/>
+              <circle class="lnf" cx="150" cy="162" r="87" style="fill:#0D3B6E"/>
+              <circle class="ln dim" cx="150" cy="162" r="68" style="stroke-opacity:.5"/>
+              <circle class="ln dim" cx="150" cy="162" r="48" style="stroke-opacity:.5"/>
+              <circle class="lnf" cx="150" cy="162" r="30"/>
+              <circle class="ln dim" cx="150" cy="162" r="20" style="stroke-opacity:.6"/>
+              <g id="fvHoles"></g>
+              <!-- overall size -->
+              <path class="ext" d="M26.25 158 V14 M273.75 158 V14"/>
+              <path class="dl" d="M26.25 20 H273.75"/><path class="dh" d="M26.25 20 l6 -2.5 v5z M273.75 20 l-6 -2.5 v5z"/>
+              <rect class="bg" x="128" y="13" width="44" height="13"/><text x="150" y="23" text-anchor="middle">Ø165</text>
+              <!-- callouts -->
+              <path class="lead" d="M66 56 L128.8 140.8"/><text x="30" y="44">DUST CAP</text><text class="dimt" x="30" y="55">Ø40</text>
+              <path class="lead" d="M232 56 L222.1 89.9"/><text x="226" y="44">SURROUND</text><text class="dimt" x="226" y="55">Ø136</text>
+              <path class="lead" d="M88.5 223.5 L40 272 H6"/><text x="6" y="268">CONE Ø116</text>
+              <path class="lead" d="M234.5 246.5 L262 272 H296"/><text x="296" y="268" text-anchor="end">4 HOLES Ø4.5</text><text class="dimt" x="296" y="282" text-anchor="end">ON A Ø155 CIRCLE</text>
+            </g>
+          </svg>
+          <figcaption><b>Front view</b><span>Sizes in mm. "6.5 inch" is the size of the frame: 165 mm across. Four screws through the holes hold it in the box.</span></figcaption>
+        </figure>
+
+        <div class="sheet-card tb">
+          <table class="spec">
+            <thead><tr><th colspan="2">Specifications</th></tr></thead>
+            <tbody>
+              <tr><td>Size</td><td>6.5 in (165 mm)</td></tr>
+              <tr><td>Depth</td><td>72 mm</td></tr>
+              <tr><td>Weight</td><td>about 1.2 kg</td></tr>
+              <tr><td>Voice coil</td><td>Ø25 mm, copper</td></tr>
+              <tr><td>Moving parts weigh</td><td>about 12 g</td></tr>
+              <tr><td>Cone travel</td><td>≈ 3 mm each way</td></tr>
+              <tr><td>Notes it plays well</td><td>≈ 45 – 5,000 Hz</td></tr>
+              <tr><td>Human hearing</td><td>20 – 20,000 Hz</td></tr>
+              <tr><td>Sound travels at</td><td>343 m/s</td></tr>
+              <tr><td>Power turned into sound</td><td>only ≈ 1%</td></tr>
+            </tbody>
+          </table>
+          <table class="tblock">
+            <tr><td>Model</td><td colspan="3">ARI 165 · 6.5 IN SPEAKER</td></tr>
+            <tr><td>Drawn by</td><td>Ari 🦉</td><td>Fig.</td><td>8.C</td></tr>
+            <tr><td>Units</td><td>mm</td><td>Scale</td><td>NTS</td></tr>
+            <tr><td>Sheet</td><td>1 of 1</td><td>Rev.</td><td>A</td></tr>
+          </table>
+          <p class="nts">NTS: not to scale. A typical 6.5-inch speaker, rounded so the numbers are easy to remember. In Section A the gap is drawn wider so you can see the coil.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="stages">
       <h2>Wiggly electricity, a magnet, and a shove</h2>
       <p>What happens inside a speaker, hundreds of times every second.</p>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="gpHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#17324F" stroke-width=".9"/></pattern></defs></svg>
       <div class="stage-grid">
-        <div class="stage"><div class="k">01 · SIGNAL</div><h3>Wiggly electricity</h3><p>Your phone sends electricity down the wire that flows one way, then the other, then back again. The faster it flips, the higher the sound.</p></div>
-        <div class="stage"><div class="k">02 · COIL</div><h3>The coil becomes a magnet</h3><p>Electricity flowing round a coil of wire turns it into a magnet. Every time the electricity flips, the coil's north and south swap over.</p></div>
-        <div class="stage"><div class="k">03 · PUSH</div><h3>Push, pull, push</h3><p>The coil sits right next to a big, strong magnet, which pushes it, then pulls it. The coil is glued to the paper cone, so the cone moves in and out too.</p></div>
-        <div class="stage"><div class="k">04 · AIR</div><h3>The cone shoves the air</h3><p>Each push squashes the air into a bunch, and each pull spreads it out. The bunches race to your ear at about 343 metres a second and wiggle your eardrum the same way.</p></div>
+        <div class="stage">
+          <div class="k">FIG 8.1 · SIGNAL</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A phone sends electricity that flows one way, then the other way, drawn as a wavy line. One wiggle is marked.">
+            <rect class="inkf" x="6" y="36" width="24" height="44" rx="4"/><rect class="dimln" x="9.5" y="41" width="17" height="30" rx="1"/><circle class="inkh" cx="18" cy="75.5" r="1.6"/>
+            <path class="ink" d="M30 60 H44"/>
+            <path class="ctrln" d="M44 60 H212"/>
+            <path class="red" d="M44 60L48 50.8L52 43L56 37.8L60 36L64 37.8L68 43L72 50.8L76 60L80 69.2L84 77L88 82.2L92 84L96 82.2L100 77L104 69.2L108 60L112 50.8L116 43L120 37.8L124 36L128 37.8L132 43L136 50.8L140 60L144 69.2L148 77L152 82.2L156 84L160 82.2L164 77L168 69.2L172 60L176 50.8L180 43L184 37.8L188 36L192 37.8L196 43L200 50.8L204 60"/>
+            <text class="tr" x="124" y="28" text-anchor="middle">ONE WAY ↑</text>
+            <text class="tb" x="36" y="104">OTHER WAY ↓</text>
+            <path class="dimln dsh" d="M92 88 V112 M156 88 V112"/>
+            <path class="dimln" d="M92 108 H156"/><path class="inkh" d="M92 108 l6 -2.5 v5z M156 108 l-6 -2.5 v5z"/>
+            <text x="124" y="104" text-anchor="middle">1 WIGGLE</text>
+            <text class="td" x="214" y="12" text-anchor="end">440 WIGGLES</text><text class="td" x="214" y="21" text-anchor="end">A SECOND</text>
+          </svg>
+          <h3>Wiggly electricity</h3><p>Your phone sends electricity down the wire that flows one way, then the other, then back again. The faster it flips, the higher the sound.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 8.2 · COIL</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A coil of wire with electricity flowing round it. It becomes a magnet with a north end and a south end. Flip the electricity and they swap.">
+            <path class="blu" d="M158 50 C198 50 198 8 106 8 C14 8 14 50 54 50"/>
+            <path class="blu" d="M158 70 C198 70 198 110 106 110 C14 110 14 70 54 70"/>
+            <path class="bluf" d="M60 50 l-8 -4 v8z M60 70 l-8 -4 v8z"/>
+            <ellipse class="copper" cx="70" cy="60" rx="6" ry="22"/><ellipse class="copper" cx="82" cy="60" rx="6" ry="22"/><ellipse class="copper" cx="94" cy="60" rx="6" ry="22"/><ellipse class="copper" cx="106" cy="60" rx="6" ry="22"/><ellipse class="copper" cx="118" cy="60" rx="6" ry="22"/><ellipse class="copper" cx="130" cy="60" rx="6" ry="22"/><ellipse class="copper" cx="142" cy="60" rx="6" ry="22"/>
+            <path class="red" d="M112 44 V70"/><path class="redf" d="M112 78 l-4 -8 h8z"/>
+            <text class="tr" x="118" y="100">CURRENT</text>
+            <text class="tr" x="160" y="64" style="font-size:13px">N</text>
+            <text class="tb" x="44" y="64" style="font-size:13px">S</text>
+            <text class="td" x="110" y="119" text-anchor="middle">FLIP THE ELECTRICITY: N ↔ S</text>
+          </svg>
+          <h3>The coil becomes a magnet</h3><p>Electricity flowing round a coil of wire turns it into a magnet. Every time the electricity flips, the coil's north and south swap over.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 8.3 · PUSH</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A speaker cut in half. The coil sits in a narrow gap in the big magnet. The coil is glued to the cone, so when the magnet pushes and pulls the coil, the cone moves in and out.">
+            <path class="ctrln" d="M4 60 H216"/>
+            <path class="hatchf" d="M8 16 H24 V54 H68 V66 H24 V104 H8 Z"/>
+            <rect class="inkf" x="24" y="20" width="26" height="24"/><rect class="inkf" x="24" y="76" width="26" height="24"/>
+            <path class="ink" d="M37 20 V44 M37 76 V100"/>
+            <text class="tb" x="27" y="35">S</text><text class="tr" x="40" y="35">N</text><text class="tb" x="27" y="91">S</text><text class="tr" x="40" y="91">N</text>
+            <path class="hatchf" d="M50 18 H58 V48 H50 Z M50 72 H58 V102 H50 Z"/>
+            <g class="wob">
+              <path class="ink" d="M48 51 H76 M48 69 H76"/>
+              <circle class="turn" cx="52" cy="51" r="2.4"/><circle class="turn" cx="57" cy="51" r="2.4"/><circle class="turn" cx="52" cy="69" r="2.4"/><circle class="turn" cx="57" cy="69" r="2.4"/>
+              <path class="ink" d="M76 51 L134 12 M76 69 L134 108"/>
+              <path class="inkf" d="M76 51 Q92 60 76 69 Z"/>
+              <path class="ink" d="M134 12 q5 -5 10 0 M134 108 q5 5 10 0"/>
+            </g>
+            <path class="red" d="M154 60 H196"/><path class="redf" d="M204 60 l-8 -4 v8z M146 60 l8 -4 v8z"/>
+            <text class="tr" x="175" y="52" text-anchor="middle">PUSH, PULL</text>
+            <text class="td" x="8" y="11">BIG MAGNET</text>
+            <path class="dimln" d="M58 47 L84 30"/><text x="86" y="30">COIL</text>
+            <text x="150" y="18">CONE</text>
+          </svg>
+          <h3>Push, pull, push</h3><p>The coil sits right next to a big, strong magnet, which pushes it, then pulls it. The coil is glued to the paper cone, so the cone moves in and out too.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 8.4 · AIR</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="The cone pushes the air into bunches and spreads it out between them. The bunches travel to an ear at 343 metres a second. At 440 wiggles a second, bunches are about 78 centimetres apart.">
+            <rect class="hatchf" x="4" y="50" width="10" height="20"/>
+            <g class="wob"><path class="ink" d="M14 53 L34 22 M14 67 L34 98"/><path class="ink" d="M34 22 q4 -4 8 0 M34 98 q4 4 8 0"/></g>
+            <path class="ink" d="M50 28V92M57 28V92M63.5 28V92M69.2 28V92M73.9 28V92M77.7 28V92M80.8 28V92M83.8 28V92M87 28V92M91 28V92M95.9 28V92M101.8 28V92M108.4 28V92M115.4 28V92M122.3 28V92M128.7 28V92M134.2 28V92M138.7 28V92M142.3 28V92M145.4 28V92M148.4 28V92M151.8 28V92M155.9 28V92M161 28V92M167 28V92M173.8 28V92" style="stroke-width:1"/>
+            <path class="dimln dsh" d="M82 26 V12 M146 26 V12"/>
+            <path class="dimln" d="M82 15 H146"/><path class="inkh" d="M82 15 l6 -2.5 v5z M146 15 l-6 -2.5 v5z"/>
+            <text x="114" y="10" text-anchor="middle">78 cm AT 440 Hz</text>
+            <text class="tr" x="82" y="103" text-anchor="middle">SQUASHED</text>
+            <text class="tb" x="114" y="114" text-anchor="middle">SPREAD OUT</text>
+            <path class="ink" d="M206 34 C186 30 182 58 198 60 C188 68 190 92 206 88"/>
+            <text class="td" x="214" y="104" text-anchor="end">EAR</text>
+            <path class="blu" d="M156 106 H182"/><path class="bluf" d="M190 106 l-8 -4 v8z"/>
+            <text class="tb" x="174" y="118" text-anchor="middle">343 m/s</text>
+          </svg>
+          <h3>The cone shoves the air</h3><p>Each push squashes the air into a bunch, and each pull spreads it out. The bunches race to your ear at about 343 metres a second and wiggle your eardrum the same way.</p>
+        </div>
       </div>
       <p class="big-idea"><b>The big idea:</b> a speaker turns wiggles of electricity into wiggles of air. A microphone is the same machine backwards: sound wiggles a coil next to a magnet, and that makes wiggles of electricity.</p>
     </section>
@@ -362,15 +726,42 @@
   }
   function mono(px) { return '600 ' + px + 'px "IBM Plex Mono", monospace'; }
 
+  // ===================== Blueprint drawing kit =====================
+  var BP = { bg: '#0D3B6E', deep: '#082A4F', grid: 'rgba(170,210,255,.07)', grid2: 'rgba(170,210,255,.16)', line: '#EEF5FF', dim: '#9FC6F2',
+    faint: 'rgba(159,198,242,.42)', amber: '#FFC94A', air: '#79E3FF', warn: '#FF8A7A', ok: '#7CF0BC', orange: '#FF9A4D', copper: '#FFB067' };
+  var DASHDOT = [10, 3, 2, 3];
+  function bpSheet(c, w, h) {
+    c.fillStyle = BP.bg; c.fillRect(0, 0, w, h); c.lineWidth = 1;
+    for (var x = 0; x < w; x += 12) { c.strokeStyle = x % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); c.stroke(); }
+    for (var y = 0; y < h; y += 12) { c.strokeStyle = y % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(0, y + 0.5); c.lineTo(w, y + 0.5); c.stroke(); }
+    c.strokeStyle = BP.faint; c.strokeRect(4.5, 4.5, w - 9, h - 9);
+  }
+  function bpLine(c, pts, col, wd, dash) {
+    c.strokeStyle = col; c.lineWidth = wd || 1; c.setLineDash(dash || []); c.beginPath();
+    for (var i = 0; i < pts.length; i += 2) { if (i) c.lineTo(pts[i], pts[i + 1]); else c.moveTo(pts[i], pts[i + 1]); }
+    c.stroke(); c.setLineDash([]);
+  }
+  function bpHatch(c, gap, col) {   // hatches inside the current path
+    c.save(); c.clip(); c.strokeStyle = col; c.lineWidth = 0.8; c.beginPath();
+    for (var k = -900; k < 2600; k += gap) { c.moveTo(k, -900); c.lineTo(k - 1800, 900); }
+    c.stroke(); c.restore();
+  }
+  // a part cut through: dark fill, hatching, white outline (how engineers draw solid steel)
+  function steel(c, x, y, w, h) {
+    c.beginPath(); c.rect(x, y, w, h); c.fillStyle = BP.deep; c.fill();
+    c.beginPath(); c.rect(x, y, w, h); bpHatch(c, 5, BP.faint);
+    c.beginPath(); c.rect(x, y, w, h); c.strokeStyle = BP.line; c.lineWidth = 1.2; c.stroke();
+  }
+
   // ===================== Drawing the speaker =====================
   var dotT = 0;
   function drawScene(dt) {
     var c = ctx, R = G.R, xL = G.xL, xR = G.xR, sp = G.sp, ay = G.ay, small = G.small;
     var d = coneD * R;                                   // cone displacement in px (+ = out towards the ear)
     c.clearRect(0, 0, W, H);
-    var bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1C2038'); bg.addColorStop(1, '#14172A');
-    c.fillStyle = bg; c.fillRect(0, 0, W, H);
+    bpSheet(c, W, H);
     var fs = small ? 9 : 10.5;
+    bpLine(c, [6, ay, W - 6, ay], BP.faint, 0.8, DASHDOT);     // the speaker's axis
 
     // ----- air in front of the cone -----
     var gap = Math.max(7, Math.min(11, W / 70)), rows = Math.max(7, Math.round(R * 1.7 / gap));
@@ -380,8 +771,7 @@
     for (var k = 0; k < cols.length; k++) {
       var nx = k < cols.length - 1 ? disp[k + 1] : disp[k], comp = -(nx - disp[k]) / gap;   // + = squashed together
       var t = Math.max(-1, Math.min(1, comp * 1.6));
-      var col = t > 0 ? 'rgba(255,' + Math.round(200 - 80 * t) + ',' + Math.round(140 - 90 * t) + ',' + (0.55 + 0.45 * t) + ')' : 'rgba(190,200,235,' + (0.55 + 0.35 * t) + ')';
-      c.fillStyle = col;
+      c.fillStyle = t > 0 ? 'rgba(255,201,74,' + (0.5 + 0.5 * t) + ')' : 'rgba(159,198,242,' + (0.55 + 0.35 * t) + ')';
       var r0 = small ? 1.7 : 2.1;
       for (var j = 0; j < rows; j++) {
         var yy = ay - R * 0.85 + (j + 0.5) * (R * 1.7 / rows) + ((k % 2) ? gap * 0.25 : -gap * 0.25);
@@ -393,39 +783,42 @@
 
     // ----- the ear -----
     var ex = G.earX, eDisp = histAt(hist, (ex - xR) / G.c) * ampAir * 0.6;
-    c.fillStyle = '#F2C3A0'; c.strokeStyle = '#A8705A'; c.lineWidth = 2;
+    c.fillStyle = BP.deep; c.strokeStyle = BP.line; c.lineWidth = 1.4;
     c.beginPath(); c.moveTo(ex + 6, ay - R * 0.7); c.bezierCurveTo(ex - R * 0.32, ay - R * 0.78, ex - R * 0.22, ay - R * 0.05, ex - 2, ay - R * 0.12);
     c.lineTo(ex - 2, ay + R * 0.12); c.bezierCurveTo(ex - R * 0.14, ay + R * 0.3, ex - R * 0.12, ay + R * 0.6, ex + 6, ay + R * 0.66); c.lineTo(W + 4, ay + R * 0.66); c.lineTo(W + 4, ay - R * 0.7); c.closePath(); c.fill(); c.stroke();
-    c.fillStyle = '#5E3A2E'; rr(c, ex - 2, ay - R * 0.12, W - ex + 6, R * 0.24, 4); c.fill();      // ear canal
-    c.strokeStyle = '#FFD678'; c.lineWidth = 3;                                                        // eardrum
+    c.fillStyle = '#05213F'; rr(c, ex - 2, ay - R * 0.12, W - ex + 6, R * 0.24, 4); c.fill(); c.strokeStyle = BP.dim; c.lineWidth = 0.8; c.stroke();   // ear canal
+    c.strokeStyle = BP.amber; c.lineWidth = 3;                                                          // eardrum
     var edx = ex + Math.min(16, (W - ex) * 0.45);
     c.beginPath(); c.moveTo(edx, ay - R * 0.11); c.quadraticCurveTo(edx + eDisp * 1.2, ay, edx, ay + R * 0.11); c.stroke();
-    c.font = mono(fs); c.fillStyle = '#E9E4F5'; c.textAlign = 'right'; c.fillText('YOUR EAR', W - 6, ay - R * 0.76);
+    c.font = mono(fs); c.fillStyle = BP.line; c.textAlign = 'right'; c.fillText('YOUR EAR', W - 8, ay - R * 0.76);
 
     // ----- frame (basket) -----
     var plateX0 = xL + 0.30 * sp, plateX1 = xL + 0.38 * sp;
-    c.strokeStyle = '#59607F'; c.lineWidth = 2.5;
     [-1, 1].forEach(function (s) {
-      c.beginPath(); c.moveTo(plateX1, ay + s * 0.5 * R); c.lineTo(xR - 0.02 * sp, ay + s * 1.0 * R); c.stroke();
-      c.fillStyle = '#59607F'; rr(c, xR - 0.03 * sp, ay + (s > 0 ? R * 0.96 : -R * 1.06), 0.06 * sp + 4, R * 0.1, 2); c.fill();
+      bpLine(c, [plateX1, ay + s * 0.5 * R, xR - 0.02 * sp, ay + s * 1.0 * R], BP.line, 1.6);
+      bpLine(c, [plateX1 + 4, ay + s * 0.5 * R - s * 3, xR - 0.02 * sp, ay + s * 1.0 * R - s * 6], BP.faint, 0.8);
+      var fy = ay + (s > 0 ? R * 0.96 : -R * 1.06);
+      c.beginPath(); rr(c, xR - 0.03 * sp, fy, 0.06 * sp + 4, R * 0.1, 1); c.fillStyle = BP.deep; c.fill(); c.strokeStyle = BP.line; c.lineWidth = 1.2; c.stroke();
     });
 
-    // ----- magnet: steel plates + ring magnet -----
-    c.fillStyle = '#7E869F';
-    rr(c, xL, ay - 0.5 * R, 0.08 * sp, R, 3); c.fill();                       // back plate
-    rr(c, xL, ay - 0.12 * R, 0.42 * sp, 0.24 * R, 3); c.fill();               // pole piece (centre)
-    [-1, 1].forEach(function (s) { rr(c, plateX0, ay + (s > 0 ? 0.175 * R : -0.5 * R), 0.08 * sp, 0.325 * R, 3); c.fill(); }); // front plate
+    // ----- magnet: steel plates (cut through, so hatched) + ring magnet -----
+    steel(c, xL, ay - 0.5 * R, 0.08 * sp, R);                                // back plate
+    steel(c, xL + 0.08 * sp - 1, ay - 0.12 * R, 0.34 * sp + 1, 0.24 * R);     // pole piece (centre)
+    [-1, 1].forEach(function (s) { steel(c, plateX0, ay + (s > 0 ? 0.175 * R : -0.5 * R), 0.08 * sp, 0.325 * R); }); // front plate
     var mx0 = xL + 0.08 * sp, mx1 = plateX0;
     if (magnet) {
       [-1, 1].forEach(function (s) {
-        var y0 = ay + (s > 0 ? 0.2 * R : -0.48 * R), hh = 0.28 * R;
-        c.fillStyle = '#3E6FD6'; c.fillRect(mx0, y0, (mx1 - mx0) / 2, hh);
-        c.fillStyle = '#E2493B'; c.fillRect((mx0 + mx1) / 2, y0, (mx1 - mx0) / 2, hh);
-        c.fillStyle = 'white'; c.font = '800 ' + Math.max(10, Math.round(R * 0.13)) + 'px Nunito, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
-        c.fillText('S', mx0 + (mx1 - mx0) * 0.25, y0 + hh / 2); c.fillText('N', mx0 + (mx1 - mx0) * 0.75, y0 + hh / 2); c.textBaseline = 'alphabetic';
+        var y0 = ay + (s > 0 ? 0.2 * R : -0.48 * R), hh = 0.28 * R, hw = (mx1 - mx0) / 2;
+        c.fillStyle = BP.deep; c.fillRect(mx0, y0, mx1 - mx0, hh);
+        c.fillStyle = 'rgba(121,227,255,.32)'; c.fillRect(mx0, y0, hw, hh);
+        c.fillStyle = 'rgba(255,138,122,.42)'; c.fillRect(mx0 + hw, y0, hw, hh);
+        c.strokeStyle = BP.line; c.lineWidth = 1.2; c.strokeRect(mx0, y0, mx1 - mx0, hh);
+        bpLine(c, [mx0 + hw, y0, mx0 + hw, y0 + hh], BP.dim, 0.8);
+        c.font = '700 ' + Math.max(10, Math.round(R * 0.13)) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
+        c.fillStyle = BP.air; c.fillText('S', mx0 + hw * 0.5, y0 + hh / 2); c.fillStyle = BP.warn; c.fillText('N', mx0 + hw * 1.5, y0 + hh / 2); c.textBaseline = 'alphabetic';
       });
     } else {
-      c.setLineDash([4, 4]); c.strokeStyle = 'rgba(233,228,245,.45)'; c.lineWidth = 1.5;
+      c.setLineDash([4, 4]); c.strokeStyle = BP.dim; c.lineWidth = 1.2;
       [-1, 1].forEach(function (s) { c.strokeRect(mx0, ay + (s > 0 ? 0.2 * R : -0.48 * R), mx1 - mx0, 0.28 * R); });
       c.setLineDash([]);
     }
@@ -433,52 +826,48 @@
     // ----- coil former, coil, cone, surround, dust cap (all move together by d) -----
     var cy0 = 0.145 * R, coilX0 = xL + 0.30 * sp + d, coilX1 = xL + 0.39 * sp + d, neck = xL + 0.45 * sp + d;
     var rimIn = xR - 0.05 * sp + d * 0.95;
-    // cone (paper)
-    c.fillStyle = '#E9D2B0'; c.strokeStyle = '#8D6E63'; c.lineWidth = 2;
+    // cone (paper), drawn cut through
     [-1, 1].forEach(function (s) {
-      c.beginPath(); c.moveTo(neck, ay + s * cy0); c.lineTo(rimIn, ay + s * 0.9 * R); c.lineTo(rimIn + 0.035 * sp, ay + s * 0.9 * R); c.lineTo(neck + 0.04 * sp, ay + s * cy0 * 0.9); c.closePath(); c.fill(); c.stroke();
+      c.beginPath(); c.moveTo(neck, ay + s * cy0); c.lineTo(rimIn, ay + s * 0.9 * R); c.lineTo(rimIn + 0.035 * sp, ay + s * 0.9 * R); c.lineTo(neck + 0.04 * sp, ay + s * cy0 * 0.9); c.closePath();
+      c.fillStyle = 'rgba(159,198,242,.22)'; c.fill(); c.strokeStyle = BP.line; c.lineWidth = 1.4; c.lineJoin = 'round'; c.stroke();
       // surround: soft rubber joining the moving cone to the fixed frame
-      c.strokeStyle = '#3A3F5C'; c.lineWidth = 4;
+      c.strokeStyle = BP.dim; c.lineWidth = 3.5;
       c.beginPath(); c.moveTo(rimIn + 0.02 * sp, ay + s * 0.92 * R); c.quadraticCurveTo((rimIn + xR) / 2 + 0.03 * sp, ay + s * 1.02 * R, xR, ay + s * 1.0 * R); c.stroke();
-      c.strokeStyle = '#8D6E63'; c.lineWidth = 2;
     });
     // former tube
-    c.strokeStyle = '#C9B48E'; c.lineWidth = 2;
-    [-1, 1].forEach(function (s) { c.beginPath(); c.moveTo(coilX0 - 0.02 * sp, ay + s * cy0); c.lineTo(neck + 0.01 * sp, ay + s * cy0); c.stroke(); });
+    [-1, 1].forEach(function (s) { bpLine(c, [coilX0 - 0.02 * sp, ay + s * cy0, neck + 0.01 * sp, ay + s * cy0], BP.dim, 2); });
     // dust cap
-    c.fillStyle = '#D9BE97'; c.beginPath(); c.ellipse(neck + 0.02 * sp, ay, 0.07 * sp + 3, cy0 * 1.15, 0, -Math.PI / 2, Math.PI / 2); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = BP.deep; c.strokeStyle = BP.line; c.lineWidth = 1.4;
+    c.beginPath(); c.ellipse(neck + 0.02 * sp, ay, 0.07 * sp + 3, cy0 * 1.15, 0, -Math.PI / 2, Math.PI / 2); c.closePath(); c.fill(); c.stroke();
     // coil turns (wire seen end-on), glowing with the current
     var Itot = I + Iind, mag = Math.min(1, Math.abs(Itot));
     var turns = 4, tw = (coilX1 - coilX0) / turns, tr = Math.max(2.2, Math.min(tw * 0.42, cy0 * 0.22));
     [-1, 1].forEach(function (s) {
       for (var i = 0; i < turns; i++) {
         var tx = coilX0 + tw * (i + 0.5), ty = ay + s * cy0;
-        c.fillStyle = mag > 0.05 ? (Itot * s > 0 ? 'rgba(255,140,66,' + (0.5 + 0.5 * mag) + ')' : 'rgba(90,160,255,' + (0.5 + 0.5 * mag) + ')') : '#B87333';
+        c.fillStyle = mag > 0.05 ? (Itot * s > 0 ? 'rgba(255,154,77,' + (0.5 + 0.5 * mag) + ')' : 'rgba(121,227,255,' + (0.5 + 0.5 * mag) + ')') : 'rgba(255,176,103,.45)';
         c.beginPath(); c.arc(tx, ty, tr, 0, 6.3); c.fill();
-        c.strokeStyle = '#2A1A10'; c.lineWidth = 1; c.stroke();
+        c.strokeStyle = BP.line; c.lineWidth = 0.8; c.stroke();
       }
     });
     // the coil's own north and south (they swap when the current flips)
     if (mag > 0.12) {
       var big = Itot > 0;
-      c.font = '800 ' + Math.max(10, Math.round(R * 0.11)) + 'px Nunito, sans-serif'; c.textAlign = 'center';
+      c.font = '700 ' + Math.max(10, Math.round(R * 0.11)) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center';
       c.globalAlpha = Math.min(1, mag * 1.4);
-      c.fillStyle = big ? '#FF8F7A' : '#8FB5FF'; c.fillText(big ? 'N' : 'S', coilX0 - tw * 0.2, ay - cy0 - tr - 6);
-      c.fillStyle = big ? '#8FB5FF' : '#FF8F7A'; c.fillText(big ? 'S' : 'N', coilX1 + tw * 0.2, ay - cy0 - tr - 6);
+      c.fillStyle = big ? BP.warn : BP.air; c.fillText(big ? 'N' : 'S', coilX0 - tw * 0.2, ay - cy0 - tr - 6);
+      c.fillStyle = big ? BP.air : BP.warn; c.fillText(big ? 'S' : 'N', coilX1 + tw * 0.2, ay - cy0 - tr - 6);
       c.globalAlpha = 1;
     }
     // push / pull arrow on the cone (only when there's a magnet to push against)
     if (magnet && Math.abs(I) > 0.08) {
       var al = R * 0.32 * Math.min(1, Math.abs(I)), sx = (coilX0 + coilX1) / 2, sgn = I > 0 ? 1 : -1;
-      arrow(c, sx, ay, sx + sgn * al, ay, '#FFC845', Math.max(2.5, R * 0.025));
+      arrow(c, sx, ay, sx + sgn * al, ay, BP.amber, Math.max(2.5, R * 0.025));
     }
 
     // ----- the wires and the electricity in them -----
     var wy = R * 0.66, wx = (coilX0 + coilX1) / 2;
-    c.strokeStyle = '#B87333'; c.lineWidth = 2;
-    [-1, 1].forEach(function (s) {
-      c.beginPath(); c.moveTo(0, ay + s * wy); c.lineTo(wx, ay + s * wy); c.lineTo(wx, ay + s * (cy0 + tr)); c.stroke();
-    });
+    [-1, 1].forEach(function (s) { bpLine(c, [0, ay + s * wy, wx, ay + s * wy, wx, ay + s * (cy0 + tr)], BP.copper, 1.6); });
     // dots slosh back and forth with the current
     dotT += Itot * dt * 1.8;
     var pathLen = wx + (wy - cy0), spacing = 16;
@@ -486,78 +875,89 @@
       [-1, 1].forEach(function (s) {
         var p = ((q * spacing + s * dotT * 60) % pathLen + pathLen) % pathLen, px, py;
         if (p < wx) { px = p; py = ay + s * wy; } else { px = wx; py = ay + s * (wy - (p - wx)); }
-        c.fillStyle = mag > 0.05 ? '#FFE08A' : 'rgba(255,224,138,.35)'; c.beginPath(); c.arc(px, py, 2.4, 0, 6.3); c.fill();
+        c.fillStyle = mag > 0.05 ? BP.amber : 'rgba(255,201,74,.35)'; c.beginPath(); c.arc(px, py, 2.4, 0, 6.3); c.fill();
       });
     }
 
     // ----- labels -----
-    c.font = mono(fs); c.textAlign = 'left'; c.fillStyle = '#9EA3C4';
-    c.fillText('ELECTRICITY IN', 6, ay - wy - 6);
-    c.fillStyle = magnet ? '#E9E4F5' : '#9EA3C4';
+    c.font = mono(fs); c.textAlign = 'left'; c.fillStyle = BP.dim;
+    c.fillText('ELECTRICITY IN', 8, ay - wy - 6);
+    c.fillStyle = magnet ? BP.line : BP.warn;
     c.fillText(magnet ? 'BIG MAGNET' : 'NO MAGNET!', xL, ay + 0.5 * R + fs + 6);
-    // COIL label sits just right of the coil, clear of the magnet, on a dark pill so it stays readable
+    // COIL label sits just right of the coil, clear of the magnet, on a dark tag so it stays readable
     var clx = coilX1 + 6, cly = ay + cy0 + tr + fs + 4, clw = c.measureText('COIL').width;
-    c.fillStyle = 'rgba(20,23,42,.85)'; rr(c, clx - 3, cly - fs, clw + 6, fs + 5, 3); c.fill();
-    c.fillStyle = '#E9E4F5'; c.fillText('COIL', clx, cly);
+    c.fillStyle = BP.deep; rr(c, clx - 3, cly - fs, clw + 6, fs + 5, 2); c.fill(); c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.stroke();
+    c.fillStyle = BP.line; c.fillText('COIL', clx, cly);
     c.textAlign = 'center'; c.fillText('CONE', (neck + rimIn) / 2 + 6, ay - 0.62 * R);
-    c.textAlign = 'left'; c.fillStyle = '#9EA3C4'; c.fillText('AIR', G.airL + 4, ay - R * 0.9 - 4);
+    c.textAlign = 'left'; c.fillStyle = BP.dim; c.fillText('AIR', G.airL + 4, ay - R * 0.9 - 4);
     // legend for the air
     if (!small) {
-      c.fillStyle = 'rgba(255,140,70,1)'; c.beginPath(); c.arc(G.airL + 8, H - 14, 3.2, 0, 6.3); c.fill();
-      c.fillStyle = '#E9E4F5'; c.fillText('squashed air', G.airL + 16, H - 10);
-      c.fillStyle = 'rgba(190,200,235,.6)'; c.beginPath(); c.arc(G.airL + 128, H - 14, 3.2, 0, 6.3); c.fill();
-      c.fillStyle = '#E9E4F5'; c.fillText('spread-out air', G.airL + 136, H - 10);
+      c.fillStyle = BP.amber; c.beginPath(); c.arc(G.airL + 8, H - 14, 3.2, 0, 6.3); c.fill();
+      c.fillStyle = BP.line; c.fillText('squashed air', G.airL + 16, H - 10);
+      c.fillStyle = 'rgba(159,198,242,.7)'; c.beginPath(); c.arc(G.airL + 128, H - 14, 3.2, 0, 6.3); c.fill();
+      c.fillStyle = BP.line; c.fillText('spread-out air', G.airL + 136, H - 10);
     }
     c.font = '700 ' + (small ? 11.5 : 13) + 'px Nunito, sans-serif'; c.textAlign = 'left';
-    if (!pushedOnce) { c.fillStyle = '#FFD678'; c.fillText('👆 Tap or push the cone', xL, H - 8); }
-    else if (!magnet && playing) { c.fillStyle = '#FF8F7A'; c.fillText('Current flows, but the cone stays still.', xL, H - 8); }
-    c.textAlign = 'right'; c.font = mono(fs); c.fillStyle = '#9EA3C4';
-    c.fillText('movement drawn bigger', W - 6, 14);
+    if (!pushedOnce) { c.fillStyle = BP.amber; c.fillText('👆 Tap or push the cone', xL, H - 10); }
+    else if (!magnet && playing) { c.fillStyle = BP.warn; c.fillText('Current flows, but the cone stays still.', xL, H - 10); }
+    c.textAlign = 'right'; c.font = mono(fs); c.fillStyle = BP.dim;
+    c.fillText('movement drawn bigger', W - 8, 18);
   }
 
   // ===================== The signal trace =====================
   function drawTrace() {
     var c = tctx, w = TW, h = TH, mid = h * 0.55;
-    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
-    c.strokeStyle = 'rgba(158,163,196,.25)'; c.lineWidth = 1; c.beginPath(); c.moveTo(0, mid); c.lineTo(w, mid); c.stroke();
-    c.font = mono(9.5); c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
-    c.fillText('one way ↑', 6, 12); c.fillText('other way ↓', 6, h - 5);
-    var span = 3.2, amp = h * 0.36;
-    c.lineWidth = 2.5; c.strokeStyle = '#FF8C42'; c.beginPath();
-    for (var x = 0; x <= w; x += 2) {
+    c.clearRect(0, 0, w, h); bpSheet(c, w, h);
+    bpLine(c, [6, mid, w - 6, mid], BP.faint, 0.8, DASHDOT);
+    c.font = mono(9.5); c.fillStyle = BP.dim; c.textAlign = 'left';
+    c.fillText('one way ↑', 10, 16); c.fillText('other way ↓', 10, h - 9);
+    var span = 3.2, amp = h * 0.34;
+    c.lineWidth = 2; c.strokeStyle = BP.orange; c.lineJoin = 'round'; c.beginPath();
+    for (var x = 5; x <= w - 5; x += 2) {
       var v = histAt(curH, (1 - x / w) * span);
       var y = mid - Math.max(-1.2, Math.min(1.2, v)) * amp;
-      if (x === 0) c.moveTo(x, y); else c.lineTo(x, y);
+      if (x === 5) c.moveTo(x, y); else c.lineTo(x, y);
     }
     c.stroke();
-    c.textAlign = 'right'; c.fillStyle = '#E9E4F5'; c.font = '700 12px Nunito, sans-serif';
+    c.textAlign = 'right'; c.fillStyle = BP.line; c.font = '700 12px Nunito, sans-serif';
     var msg = Math.abs(Iind) > 0.05 && magnet ? 'You made electricity by moving the coil!' : (playing ? (flipped ? 'Wires flipped: upside-down wiggle' : 'Electricity flips back and forth') : 'No signal');
-    c.fillText(msg, w - 8, 14);
+    c.fillText(msg, w - 10, 18);
   }
 
-  // ===================== Gauges =====================
+  // ===================== Gauges: engineering dial faces =====================
   function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
   function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
-  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark) {
-    var el = document.getElementById(id), d0 = -125, d1 = 125;
-    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
-    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
-    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
-    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
-    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="#6FD3A8" stroke-width="2.5" stroke-linecap="round"/>'; }
-    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+  // ticks: optional [[fraction, label], ...] for scales that aren't straight (the pitch dial is logarithmic)
+  function makeGauge(id, label, max, zone, zoneCol, needleCol, ticks) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125, nc = needleCol || BP.amber;
+    ticks = ticks || [[0, '0'], [0.5, String(max / 2)], [1, String(max)]];
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true">';
+    html += '<path d="' + arc(50, 52, 40, d0, d1) + '" fill="none" stroke="' + BP.line + '" stroke-width="1"/>';
+    html += '<path d="' + arc(50, 52, 33, d0, d1) + '" fill="none" stroke="' + BP.faint + '" stroke-width=".7"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 36.5, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + (zoneCol || BP.warn) + '" stroke-opacity=".45" stroke-width="6.5"/>';
+    html += '<path class="fill" d="" fill="none" stroke="' + nc + '" stroke-opacity=".6" stroke-width="3"/>';
+    for (var i = 0; i <= 20; i++) {
+      var dd = d0 + (d1 - d0) * i / 20, a1 = polar(50, 52, 40, dd), a2 = polar(50, 52, 36.5, dd);
+      html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="' + BP.dim + '" stroke-width=".7"/>';
+    }
+    ticks.forEach(function (tk) {
+      var dd = d0 + (d1 - d0) * tk[0], a1 = polar(50, 52, 40, dd), a2 = polar(50, 52, 33, dd), tp = polar(50, 52, 25, dd);
+      html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="' + BP.line + '" stroke-width="1.1"/>';
+      html += '<text x="' + tp[0].toFixed(1) + '" y="' + (tp[1] + 2.4).toFixed(1) + '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6.5" fill="' + BP.dim + '">' + tk[1] + '</text>';
+    });
+    html += '<g class="needle"><line x1="50" y1="60" x2="50" y2="14" stroke="' + nc + '" stroke-width="1.6" stroke-linecap="round"/></g><circle cx="50" cy="52" r="3.5" fill="' + BP.bg + '" stroke="' + BP.line + '" stroke-width="1.2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
     el.innerHTML = html;
     return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
   }
-  // pitch gauge runs on a log scale, so 20 Hz → 20,000 Hz fits; the green mark is 17,000 Hz
-  var gPitch = makeGauge('gPitch', 'PITCH · HZ', 1, [Math.log10(17000 / 20) / 3, 1], 'rgba(255,200,69,.55)', '#FF8C42');
-  var gTravel = makeGauge('gTravel', 'CONE TRAVEL', 3, null, null, '#6FD3A8');
-  var gLoud = makeGauge('gLoud', 'LOUDNESS', 100, null, null, '#FFC845');
+  // pitch gauge runs on a log scale, so 20 Hz → 20,000 Hz fits; the shaded zone is 17,000 Hz and up
+  var gPitch = makeGauge('gPitch', 'PITCH · HZ', 1, [Math.log10(17000 / 20) / 3, 1], BP.ok, BP.orange, [[0, '20'], [1 / 3, '200'], [2 / 3, '2k'], [1, '20k']]);
+  var gTravel = makeGauge('gTravel', 'CONE TRAVEL', 3, null, null, BP.ok);
+  var gLoud = makeGauge('gLoud', 'LOUDNESS', 100, null, null, BP.amber);
   function setGauge(g, v, text, dt) {
     g.shown += (v - g.shown) * Math.min(1, dt * 10);
     var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
     g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
-    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 36.5, g.d0, deg) : '');
     g.val.textContent = text;
   }
   function fmtHz(f) { var p = Math.pow(10, Math.max(0, Math.floor(Math.log10(f)) - 1)); return (Math.round(f / p) * p).toLocaleString('en-GB'); }
@@ -738,6 +1138,185 @@
     play: setPlaying, pitch: setPitch, hz: function (f) { setPitch(Math.round(1000 * Math.log10(f / 20) / 3)); }, volume: setVol,
     magnet: setMagnet, flip: setFlip, sound: setSound, G: function () { return G; }
   };
+})();
+</script>
+<script src="exploded.js"></script>
+<script>
+(function () {
+  'use strict';
+  // ===================== Fig 8.C: a 6.5-inch (165 mm) speaker, taken apart (sizes in mm, seen from the side, front at the top) =====================
+  // y is measured from the front face of the frame (0) back to the magnet (72). The coil sits in the 6 mm gap at y 43–49.
+  var K = AriExploded.kit, BP = K.BP, E = 0.14, COPPER = '#FFB067';
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'speaker' }); } catch (e) {} }
+  function ell(c, x, y, rx, ry, a0, a1, acw) { c.ellipse(x, y, Math.max(0.1, rx), Math.max(0.1, ry), 0, a0 == null ? 0 : a0, a1 == null ? 6.2832 : a1, !!acw); }
+  // a flat ring seen from slightly above, filled between two ellipses
+  function ring(c, u, cy, r0, r1, fill) {
+    c.beginPath(); ell(c, 0, cy * u, r1 * u, r1 * E * u); c.moveTo(r0 * u, cy * u); ell(c, 0, cy * u, r0 * u, r0 * E * u);
+    c.fillStyle = fill || BP.bg; c.fill('evenodd');
+  }
+  function strokeEll(c, u, cy, r, col, lw, dash, a0, a1) { c.setLineDash(dash || []); c.strokeStyle = col; c.lineWidth = lw || 1; c.beginPath(); ell(c, 0, cy * u, r * u, r * E * u, a0, a1); c.stroke(); c.setLineDash([]); }
+
+  var SPK = {
+    title: 'FIG 8.C · ARI 165 SPEAKER · SIDE VIEW', width: 165, reserve: [24, 6], stagger: 0.26, narrowBalloons: true,
+    height: function (W) { return Math.round(W < 560 ? clamp(W * 1.22, 420, 560) : clamp(W * 0.7, 440, 560)); },
+    span: { x0: -82.5, x1: 82.5, y: -32, label: 'Ø165 (6.5 IN)' },
+    parts: [
+      { id: 'cap', name: 'Dust cap', sub: 'keeps dirt out', y: 18, h: 8, x0: -20, x1: 20, dy: -180, z: 3,
+        note: 'A little dome glued over the middle of the cone. It stops dust and crumbs falling into the magnet\'s tiny gap, where they would scrape and buzz. It helps send out the highest notes too.',
+        draw: function (c, u, k) {
+          var B = 7 * u;
+          k.shape(c, function () { c.beginPath(); ell(c, 0, B, 20 * u, 7 * u, Math.PI, 2 * Math.PI); ell(c, 0, B, 20 * u, 2.8 * u, 0, Math.PI); c.closePath(); });
+          c.strokeStyle = BP.faint; c.lineWidth = 0.7; [0.4, 0.7, 0.88].forEach(function (f) { c.beginPath(); ell(c, 0, B, 20 * f * u, 7 * u, 1.5 * Math.PI, 2 * Math.PI); c.stroke(); });
+          strokeEll(c, u, 7, 20, BP.dim, 0.7, [2, 2], Math.PI, 2 * Math.PI);
+        } },
+      { id: 'surround', name: 'Surround', sub: 'soft rubber edge', y: -10, h: 20, x0: -68, x1: 68, dy: -137, z: 7,
+        note: 'A soft rubber ring that joins the moving cone to the still frame. It lets the cone slide in and out but stops it wobbling sideways. Old foam ones crumble after about 20 years.',
+        draw: function (c, u) {
+          var P = 10;
+          ring(c, u, P, 58, 68, BP.deep);
+          c.strokeStyle = BP.deep; c.lineWidth = 9 * u; c.beginPath(); ell(c, 0, (P - 3) * u, 63 * u, 63 * E * u); c.stroke();
+          strokeEll(c, u, P, 68, BP.dim, 0.9); strokeEll(c, u, P, 58, BP.line, 1);
+          strokeEll(c, u, P - 3.5, 60.5, BP.faint, 0.7); strokeEll(c, u, P - 3.5, 65.5, BP.faint, 0.7);
+          strokeEll(c, u, P - 5, 63, BP.line, 1.2);
+          [-1, 1].forEach(function (s) { c.strokeStyle = BP.line; c.lineWidth = 1.2; c.beginPath(); c.moveTo(s * 68 * u, P * u); c.quadraticCurveTo(s * 63 * u, (P - 10) * u, s * 58 * u, P * u); c.stroke(); });
+        } },
+      { id: 'cone', name: 'Cone', sub: 'stiff, light paper', y: -7, h: 38, x0: -58, x1: 58, dy: -111, z: 4, anchor: 0.4,
+        note: 'The part that actually shoves the air. Paper is light but stiff, so the cone moves all in one piece without bending. With the coil it weighs only about 12 g, so it can wiggle thousands of times a second.',
+        draw: function (c, u, k) { c.translate(0, 8 * u); k.frustum(c, u, 116, 27, 28, { rings: [9, 18], seams: [-0.62, 0.62] }); } },
+      { id: 'spider', name: 'Spider', sub: 'springy folded cloth', y: 26, h: 14, x0: -49, x1: 49, dy: -93, z: 1,
+        note: 'A wavy disc of stiffened cloth. Like a spring, it pulls the coil back to the middle after every wiggle. It also keeps the coil centred in a gap thinner than a pencil line on each side.',
+        draw: function (c, u, k) {
+          var P = 7;
+          ring(c, u, P, 13, 49, BP.bg); ring(c, u, P, 13, 49, 'rgba(255,201,74,.10)');
+          for (var i = 0, r = 17; r < 49; r += 4, i++) strokeEll(c, u, P + (i % 2 ? -0.8 : 0.8), r, i % 2 ? BP.faint : 'rgba(255,201,74,.45)', 0.7);
+          strokeEll(c, u, P, 49, BP.line, 1.1); strokeEll(c, u, P, 13, BP.line, 1);
+          [-1, 1].forEach(function (s) { var pts = []; for (var x = 13, j = 0; x <= 49; x += 4, j++) pts.push(s * x * u, (P + (j % 2 ? -1.2 : 1.2)) * u); k.line(c, pts, BP.amber, 1); });
+        } },
+      { id: 'coil', name: 'Voice coil', sub: 'copper wire, Ø25 mm', y: 22, h: 30, x0: -13, x1: 13, dy: -70, z: 2, anchor: 0.7,
+        note: 'Thin copper wire wound round a light tube called the former. When electricity flows, the coil becomes a magnet, and the big magnet pushes and pulls it. It carries the music, so it\'s called the voice coil.',
+        draw: function (c, u, k) {
+          c.translate(0, 2 * u);
+          var rings = []; for (var y = 17.2; y < 28; y += 1.2) rings.push(y);
+          k.cyl(c, u, 25, 28, { tint: [16, 28, 'rgba(255,154,77,.38)'], rings: rings });
+          [-1, 1].forEach(function (s) { k.line(c, [s * 9 * u, 16 * u, s * 9 * u, 4 * u, s * 15 * u, -1 * u], COPPER, 1.1); });
+        } },
+      { id: 'basket', name: 'Frame', sub: 'also called the basket', y: -12, h: 62, x0: -82.5, x1: 82.5, dy: 0, z: 6, anchor: 0.3,
+        note: 'The strong metal skeleton. The magnet is fixed to the back, the soft parts are glued to the front, and four screws through the edge hold it in the box. The big windows let air move freely behind the cone.',
+        draw: function (c, u, k) {
+          var Y = function (w) { return (w + 12) * u; };
+          function leg(phi, front) {
+            var cs = Math.cos(phi), sn = Math.sin(phi), w1 = 7 * Math.abs(sn) + 1.5, w2 = 5 * Math.abs(sn) + 1.2;
+            var x1 = 66 * cs, y1 = 4 + 66 * sn * E, x2 = 46 * cs, y2 = 39 + 46 * sn * E;
+            var f = function () { c.beginPath(); c.moveTo((x1 - w1) * u, Y(y1)); c.lineTo((x1 + w1) * u, Y(y1)); c.lineTo((x2 + w2) * u, Y(y2)); c.lineTo((x2 - w2) * u, Y(y2)); c.closePath(); };
+            if (front) { k.shape(c, f, { lw: 1.1 }); k.line(c, [x1 * u, Y(y1) + 2, x2 * u, Y(y2) - 2], BP.faint, 0.7); }
+            else k.hidden(c, f);
+          }
+          [225, 315].forEach(function (a) { leg(a * Math.PI / 180, false); });
+          // bottom ring that sits on the magnet's top plate
+          k.shape(c, function () { c.beginPath(); ell(c, 0, Y(43), 46 * u, 46 * E * u, 0, Math.PI); c.lineTo(-46 * u, Y(39)); ell(c, 0, Y(39), 46 * u, 46 * E * u, Math.PI, 0, true); c.closePath(); }, { lw: 1.1 });
+          c.strokeStyle = BP.dim; c.lineWidth = 0.8; c.beginPath(); ell(c, 0, Y(39), 46 * u, 46 * E * u, Math.PI, 2 * Math.PI); c.stroke();
+          [45, 135].forEach(function (a) { leg(a * Math.PI / 180, true); });
+          // the flange round the front, with its screw holes
+          k.shape(c, function () { c.beginPath(); ell(c, 0, Y(4), 82.5 * u, 82.5 * E * u, 0, Math.PI); c.lineTo(-82.5 * u, Y(0)); ell(c, 0, Y(0), 82.5 * u, 82.5 * E * u, Math.PI, 0, true); c.closePath(); }, { lw: 1.2 });
+          ring(c, u, 12, 66, 82.5, BP.bg); strokeEll(c, u, 12, 82.5, BP.line, 1.2); strokeEll(c, u, 12, 66, BP.line, 1);
+          strokeEll(c, u, 12, 77.5, BP.faint, 0.6, [10, 3, 2, 3]);
+          [[1, 1], [-1, 1], [1, -1], [-1, -1]].forEach(function (q) { c.beginPath(); ell(c, q[0] * 54.8 * u, Y(q[1] * 7.67), 2.25 * u, 1 * u); c.fillStyle = BP.deep; c.fill(); c.strokeStyle = BP.dim; c.lineWidth = 0.8; c.stroke(); });
+        } },
+      { id: 'terms', name: 'Terminals', sub: '+ and −, where wires clip on', y: 18, h: 8, x0: 56, x1: 76, dx: 26, dy: 0, z: 7.5, anchor: 0.5,
+        note: 'Two metal tabs where the wires from the amplifier clip on. One is marked + with a red dot. Swap the wires round and the cone moves in when it should move out, just like the Flip the wires button.',
+        draw: function (c, u, k) {
+          k.rect(c, 56 * u, 1 * u, 12 * u, 6 * u, { fill: BP.deep, lw: 1 });
+          k.rect(c, 68 * u, 1.2 * u, 8 * u, 2 * u, { fill: 'rgba(255,138,122,.45)', stroke: BP.warn, lw: 0.8 });
+          k.rect(c, 68 * u, 4.8 * u, 8 * u, 2 * u, { fill: BP.bg, lw: 0.8 });
+          c.fillStyle = BP.warn; c.beginPath(); c.arc(62 * u, 4 * u, Math.max(1.5, 1.4 * u), 0, 6.3); c.fill();
+        } },
+      { id: 'motor', name: 'Magnet and plates', sub: 'ferrite ring + steel', y: 37, h: 42, x0: -45, x1: 45, dy: 19, z: 8, anchor: 0.45,
+        note: 'A ring of ferrite, a magnet baked like pottery from iron oxide, sandwiched between steel plates. The steel funnels the magnet\'s pull into a thin ring-shaped gap, right where the coil sits. Take it away and the speaker goes silent.',
+        draw: function (c, u, k) {
+          var b = 6;
+          function slab(top, h, o) { c.save(); c.translate(0, (b + top) * u); k.cyl(c, u, 90, h, o || {}); c.restore(); }
+          slab(23, 6);                                                        // back plate (with the pole in the middle)
+          slab(14.5, 8.5, { tint: [0, 8.5, 'rgba(121,227,255,.24)'] });      // ferrite: south half
+          slab(6, 8.5, { tint: [0, 8.5, 'rgba(255,138,122,.30)'] });         // ferrite: north half
+          slab(0, 6);                                                         // top plate
+          // looking into the gap from the front: the pole face inside a thin dark ring
+          c.beginPath(); ell(c, 0, b * u, 14 * u, 14 * E * u); c.fillStyle = '#041A33'; c.fill(); c.strokeStyle = BP.dim; c.lineWidth = 0.8; c.stroke();
+          c.beginPath(); ell(c, 0, b * u, 12 * u, 12 * E * u); c.fillStyle = BP.bg; c.fill(); c.strokeStyle = BP.line; c.lineWidth = 0.9; c.stroke();
+          c.beginPath(); ell(c, 0, b * u, 3.5 * u, 3.5 * E * u); c.fillStyle = BP.deep; c.fill();
+          // hidden lines: the pole, its air vent, and the hole through the ring magnet
+          k.hidden(c, function () { c.beginPath(); [-12, 12].forEach(function (x) { c.moveTo(x * u, b * u); c.lineTo(x * u, (b + 23) * u); }); [-3.5, 3.5].forEach(function (x) { c.moveTo(x * u, b * u); c.lineTo(x * u, (b + 29) * u); }); [-23, 23].forEach(function (x) { c.moveTo(x * u, (b + 6) * u); c.lineTo(x * u, (b + 23) * u); }); c.moveTo(-23 * u, (b + 23) * u); c.lineTo(-12 * u, (b + 23) * u); c.moveTo(12 * u, (b + 23) * u); c.lineTo(23 * u, (b + 23) * u); });
+          var fsz = clamp(u * 5, 8, 12);
+          k.text(c, 'N', -36 * u, (b + 11.5) * u + fsz * 0.35, { col: BP.warn, size: fsz, weight: 700, align: 'center' });
+          k.text(c, 'S', -36 * u, (b + 20) * u + fsz * 0.35, { col: BP.air, size: fsz, weight: 700, align: 'center' });
+        } },
+      { id: 'dims', label: false, y: 72, h: 0.1, x0: -104, x1: 104, dy: 0, z: -10,
+        draw: function (c, u, k, s) {     // overall depth and extension lines, shown only while assembled
+          var a = clamp(1 - s.t / 0.3, 0, 1); if (a <= 0) return;
+          var Y = function (w) { return (w - 72) * u; }, x = -94 * u;
+          c.globalAlpha = a;
+          k.line(c, [-84 * u, Y(0), x - 4, Y(0)], BP.faint, 0.7, [2, 3]); k.line(c, [-47 * u, Y(72), x - 4, Y(72)], BP.faint, 0.7, [2, 3]);
+          k.line(c, [x, Y(0), x, Y(72)], BP.dim, 0.9); k.head(c, x, Y(0), 0, -1, BP.dim, 5); k.head(c, x, Y(72), 0, 1, BP.dim, 5);
+          c.save(); c.translate(x, Y(36)); c.rotate(-Math.PI / 2); c.font = '600 9.5px ' + k.MONO; var tw = c.measureText('72 DEEP').width;
+          c.fillStyle = BP.bg; c.fillRect(-tw / 2 - 3, -7, tw + 6, 12); k.text(c, '72 DEEP', 0, 3, { align: 'center', size: 9.5, col: BP.line }); c.restore();
+          [-82.5, 82.5].forEach(function (ex) { k.line(c, [ex * u, Y(-14), ex * u, Y(-35)], BP.faint, 0.7, [2, 3]); });
+          c.globalAlpha = 1;
+        } }
+    ],
+    overlay: function (c, info) {   // the springy tinsel wires from the terminals to the coil, while it's put together
+      var a = clamp(1 - info.t / 0.3, 0, 1); if (a <= 0) return;
+      var u = info.u, oc = info.off('coil'), ot = info.off('terms');
+      c.globalAlpha = a * 0.9; c.strokeStyle = COPPER; c.lineWidth = 1;
+      [0, 2.2].forEach(function (d) {
+        var x0 = info.cx + (15 + oc[0]) * u, y0 = info.cy + (21 + oc[1] + d) * u, x1 = info.cx + (57 + ot[0]) * u, y1 = info.cy + (21.5 + ot[1] + d) * u;
+        c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2, y0 + 9 * u, x1, y1); c.stroke();
+      });
+      c.globalAlpha = 1;
+    }
+  };
+
+  var cv = document.getElementById('xvSpk'); if (!cv || !window.AriExploded) return;
+  var view = AriExploded.create(cv, SPK);
+  var xs = document.getElementById('xs'), xsVal = document.getElementById('xsVal'), btn = document.getElementById('xsBtn');
+  var K1 = document.getElementById('xsK'), N1 = document.getElementById('xsName'), T1 = document.getElementById('xsNote'), list = document.getElementById('xsList');
+  var named = SPK.parts.filter(function (p) { return p.label !== false; });
+  function show(p) {
+    if (p && p.label === false) { view.select(null); p = null; }
+    Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) { tr.classList.toggle('on', !!p && tr.dataset.id === p.id); });
+    if (!p) { K1.textContent = 'TAP A PART'; N1.textContent = 'Tap any part of the drawing'; T1.textContent = 'Take the speaker apart first, then tap a part or its number to find out what it does.'; return; }
+    K1.textContent = 'PART ' + p.no + ' · ' + p.sub.toUpperCase(); N1.textContent = p.name; T1.textContent = p.note; track('spart_' + p.id);
+  }
+  list.innerHTML = '<thead><tr><th>No.</th><th>Part</th></tr></thead><tbody>' + named.map(function (p) { return '<tr data-id="' + p.id + '"><td>' + p.no + '</td><td>' + p.name + '<small>' + p.sub + '</small></td></tr>'; }).join('') + '</tbody>';
+  Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) {
+    tr.addEventListener('click', function () { var p = named.filter(function (q) { return q.id === tr.dataset.id; })[0]; view.select(p.id); show(p); if (view.t() < 0.9) view.animateTo(1, 1.4); });
+  });
+  view.onPick(show);
+  xs.addEventListener('input', function () { view.set(xs.value / 100); });
+  btn.addEventListener('click', function () { view.animateTo(view.t() > 0.5 ? 0 : 1, 1.6); track('sexplode'); });
+
+  // ===================== Section A and the front view (SVG, built here so the geometry stays exact) =====================
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; }
+  var st = document.getElementById('secTurns');
+  if (st) for (var i = 0; i < 6; i++) { var cy = 125.1 + 7.4 * i; el(st, 'circle', { 'class': 'lnf', cx: 182.05, cy: cy.toFixed(1), r: 3.1, style: 'stroke:#FFB067;stroke-width:.9' }); el(st, 'circle', { 'class': 'cuf', cx: 182.05, cy: cy.toFixed(1), r: 1 }); }
+  var fh = document.getElementById('fvHoles');   // 4 × Ø4.5 holes on a Ø155 circle, drawn at 1.5 px per mm
+  if (fh) [45, 135, 225, 315].forEach(function (a) { var r = 77.5 * 1.5, x = 150 + r * Math.cos(a * Math.PI / 180), y = 162 - r * Math.sin(a * Math.PI / 180);
+    el(fh, 'circle', { 'class': 'lnf', cx: x.toFixed(1), cy: y.toFixed(1), r: 3.4, style: 'fill:#041A33' });
+    el(fh, 'path', { 'class': 'cl', d: 'M' + (x - 7).toFixed(1) + ' ' + y.toFixed(1) + ' H' + (x + 7).toFixed(1) + ' M' + x.toFixed(1) + ' ' + (y - 7).toFixed(1) + ' V' + (y + 7).toFixed(1) }); });
+
+  // the drawing animates while it's on screen
+  var on = false, last = 0;
+  function frame(ts) {
+    var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts;
+    view.tick(dt);
+    xsVal.textContent = Math.round(view.t() * 100) + '%'; if (view.busy()) xs.value = Math.round(view.t() * 100);
+    btn.textContent = view.t() > 0.5 ? 'Put it back together' : 'Take it apart';
+    if (on) requestAnimationFrame(frame); else last = 0;
+  }
+  var io = new IntersectionObserver(function (e) { var vis = e.some(function (x) { return x.isIntersecting; }); if (vis && !on) { on = true; requestAnimationFrame(frame); } else if (!vis) on = false; }, { rootMargin: '100px' });
+  io.observe(document.getElementById('takeApart'));
+  window.addEventListener('resize', function () { view.resize(); });
+  window.__ariX = { view: view };
 })();
 </script>
 <script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
