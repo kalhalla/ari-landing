@@ -4,8 +4,8 @@
 
    AriExploded.create(canvas, spec) -> view
      spec.title, spec.width (units), spec.height(W) -> canvas px height, spec.reserve [top, bottom] units,
-     spec.stagger (0..0.6), spec.dim { label } overall dimension shown when assembled,
-     spec.parts [{ id, name, note, y, h, x0, x1, dx, dy, label (default true), draw(c, u, k) }]
+     spec.stagger (0..0.6), spec.narrowBalloons (numbers only on phones, for wide machines), spec.dim { label } overall dimension shown when assembled,
+     spec.parts [{ id, name, sub (optional second callout line), note, y, h, x0, x1, dx, dy, label (default true), draw(c, u, k) }]
        y/h: top and height in units when assembled; x0/x1: left/right extent in units (centre is x = 0)
        dx/dy: how far it moves when fully exploded (units); draw(c, u, kit): draw in px, origin = part's top-centre
      spec.overlay(c, info): optional extra drawing (flows, flames) after the parts
@@ -97,12 +97,12 @@
       var b0 = bounds(0), b1 = bounds(1), narrow = W < 560, zy0 = 46, zy1 = H - 22;
       var ux = { y0: Math.min(b0.y0, b1.y0), y1: Math.max(b0.y1, b1.y1), x0: Math.min(b0.x0, b1.x0), x1: Math.max(b0.x1, b1.x1) };
       function fit(b, zx0, zx1) { var u = Math.min((zx1 - zx0) / (b.x1 - b.x0), (zy1 - zy0) / (b.y1 - b.y0)); return { u: u, cx: (zx0 + zx1) / 2 - (b.x0 + b.x1) / 2 * u }; }
-      var A = fit(b0, 16, W - 16), E = fit(ux, 16, W * (narrow ? 0.54 : 0.5)), k = ease(clamp(t / 0.6, 0, 1));
+      var bo = narrow && spec.narrowBalloons, A = fit(b0, 16, W - 16), E = fit(ux, 16, bo ? W - 48 : W * (narrow ? 0.54 : 0.5)), k = ease(clamp(t / 0.6, 0, 1));
       A.u = Math.min(A.u, E.u * 1.35);
       var u = A.u + (E.u - A.u) * k, cx = A.cx + (E.cx - A.cx) * k;
       if (k < 1) cx = W / 2 - ((b0.x0 + b0.x1) / 2) * u + (E.cx - (W / 2 - ((ux.x0 + ux.x1) / 2) * E.u)) * k;
       var bt = bounds(t), cy = (zy0 + zy1) / 2 - ((bt.y0 + bt.y1) / 2) * u;
-      return { u: u, cx: cx, cy: cy, labelX: W * (narrow ? 0.6 : 0.56) };
+      return { u: u, cx: cx, cy: cy, labelX: bo ? W - 24 : W * (narrow ? 0.6 : 0.56), bo: bo };
     }
     function render() {
       var L = layout(), u = L.u;
@@ -161,7 +161,7 @@
           var o = off(p, t), hw = (spec.width || 10) / 2, ax = L.cx + ((p.x1 != null ? p.x1 : hw) + o[0]) * u, ay = L.cy + (p.y + o[1] + p.h * (p.anchor == null ? 0.5 : p.anchor)) * u;
           return { p: p, ax: ax, ay: ay, ly: ay };
         }).sort(function (a, b) { return a.ay - b.ay; });
-        var gap = W < 420 ? 30 : 34, top = 44, bot = H - 16;
+        var subs = !L.bo && labelled.some(function (p) { return p.sub; }), gap = (L.bo ? 25 : W < 420 ? 30 : 34) + (subs ? 10 : 0), top = 44, bot = H - (subs ? 24 : 16);
         for (var i = 1; i < items.length; i++) items[i].ly = Math.max(items[i].ly, items[i - 1].ly + gap);
         if (items.length && items[items.length - 1].ly > bot) {
           items[items.length - 1].ly = bot;
@@ -171,12 +171,13 @@
         c.globalAlpha = la;
         items.forEach(function (it) {
           var bx = L.labelX, on = sel === it.p.id, col = on ? BP.amber : BP.line;
-          kit.line(c, [it.ax + 3, it.ay, bx - 22, it.ay, bx - 12, it.ly], on ? BP.amber : BP.faint, on ? 1.2 : 0.9);
+          kit.line(c, [it.ax + 3, it.ay, bx - (L.bo ? 16 : 22), it.ay, bx - (L.bo ? 10 : 12), it.ly], on ? BP.amber : BP.faint, on ? 1.2 : 0.9);
           c.fillStyle = BP.line; c.beginPath(); c.arc(it.ax + 2, it.ay, 2, 0, 6.3); c.fill();
-          c.fillStyle = BP.deep; c.strokeStyle = col; c.lineWidth = 1.2; c.beginPath(); c.arc(bx, it.ly, 10, 0, 6.3); c.fill(); c.stroke();
+          c.fillStyle = BP.deep; c.strokeStyle = col; c.lineWidth = 1.2; c.beginPath(); c.arc(bx, it.ly, L.bo ? 9 : 10, 0, 6.3); c.fill(); c.stroke();
           kit.text(c, String(it.p.no), bx, it.ly + 3.5, { align: 'center', size: 10, col: col, weight: 700 });
-          kit.text(c, it.p.name.toUpperCase(), bx + 15, it.ly + 3.5, { size: W < 420 ? 9.5 : 10.5, col: col });
-          hits.push({ p: it.p, x0: bx - 12, x1: W, y0: it.ly - 13, y1: it.ly + 13, label: true });
+          if (!L.bo) kit.text(c, it.p.name.toUpperCase(), bx + 15, it.ly + 3.5, { size: W < 420 ? 9.5 : 10.5, col: col });
+          if (it.p.sub && !L.bo) kit.text(c, '(' + it.p.sub.toUpperCase() + ')', bx + 15, it.ly + 16, { size: W < 420 ? 8 : 9, col: on ? BP.amber : BP.dim, weight: 500 });
+          hits.push({ p: it.p, x0: bx - 12, x1: L.bo ? bx + 12 : W, y0: it.ly - 13, y1: it.ly + (it.p.sub ? 20 : 13), label: true });
         });
         c.globalAlpha = 1;
       }

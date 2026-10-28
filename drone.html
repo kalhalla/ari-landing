@@ -285,7 +285,78 @@
     .big-idea b { color: var(--gp-ink); }
     @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
     @media (prefers-reduced-motion: reduce) { .dwg .blu, .dwg .spin { animation: none; } }
-  </style>
+  
+    /* ===== Fig 4.C: take it apart + drawing sheet ===== */
+    .xsec { margin: 40px 0 6px; }
+    .xhead { max-width: 760px; margin-bottom: 14px; }
+    .xhead h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin: 4px 0 6px; }
+    .xhead p { color: var(--brown-mid); font-size: 16px; }
+    .xrig .screen { overflow: hidden; }
+    #xvDrone { display: block; width: 100%; cursor: pointer; touch-action: manipulation; }
+    .xctl { display: grid; gap: 8px; padding: 10px 12px 12px; background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .xctl .box-head { margin: 0; }
+    .xctl .btns { display: flex; gap: 8px; }
+    .xctl .btn { flex: 1; min-height: 48px; border: none; border-radius: 4px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; cursor: pointer; background: var(--bp-amber); color: #2A1E02; box-shadow: 0 4px 0 #B88A1A, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .xctl .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B88A1A; }
+    .part-card { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; padding: 12px 14px; min-height: 118px; }
+    .pc-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--bp-amber); }
+    .part-card h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--bp-line); margin: 3px 0 4px; }
+    .part-card p { font-size: 14.5px; line-height: 1.45; color: #C6DCF5; }
+    .plist-wrap { overflow-x: auto; }
+    .plist { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; color: var(--bp-line); }
+    .plist th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; color: var(--bp-dim); padding: 0 8px 6px 0; border-bottom: 1px solid var(--bp-line); }
+    .plist td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--bp-faint); cursor: pointer; vertical-align: top; }
+    .plist td:first-child { width: 2.4em; font-weight: 600; color: var(--bp-amber); }
+    .plist td small { display: block; color: var(--bp-dim); font-size: 10.5px; letter-spacing: .02em; }
+    .plist tr.on td { color: var(--bp-amber); }
+    .plist tr:hover td { background: rgba(255,255,255,.04); }
+
+    .sheet { display: grid; gap: 10px; margin-top: 10px; }
+    .sheet-card { margin: 0; background-color: var(--bp); border: 1px solid var(--bp-faint); border-radius: 4px; padding: 12px; color: var(--bp-line);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -6px; }
+    .sheet-card svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+    .sheet-card figcaption { margin-top: 8px; border-top: 1px solid var(--bp-line); padding-top: 8px; font-size: 14px; line-height: 1.45; color: #C6DCF5; }
+    .sheet-card figcaption b { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--bp-line); margin-bottom: 2px; }
+    .sheet-card figcaption span { display: block; }
+    .bpg text { font-family: var(--mono); font-size: 9px; font-weight: 600; fill: var(--bp-line); letter-spacing: .04em; }
+    .bpg text.dimt { fill: var(--bp-dim); font-weight: 500; font-size: 8.5px; }
+    .bpg text.amber { fill: var(--bp-amber); }
+    .bpg .ln { fill: none; stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .ln.dim { stroke: var(--bp-dim); stroke-width: .8; }
+    .bpg .lnf { fill: var(--bp-deep); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .hubf { fill: var(--bp-line); }
+    .bpg .disc { fill: rgba(159,198,242,.06); stroke: var(--bp-faint); stroke-width: .8; stroke-dasharray: 4 3; }
+    .bpg .cl { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 10 3 2 3; fill: none; }
+    .bpg .dl { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .ext { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 2 3; fill: none; }
+    .bpg .dh { fill: var(--bp-dim); }
+    .bpg .lead { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .cw { stroke: var(--bp-amber); stroke-width: 1.6; fill: none; }
+    .bpg .ccw { stroke: var(--bp-air); stroke-width: 1.6; fill: none; }
+    .bpg .cwf { fill: var(--bp-amber); } .bpg .ccwf { fill: var(--bp-air); }
+    .bpg .amberl { stroke: var(--bp-amber); stroke-width: 1; fill: none; } .bpg .amberf { fill: var(--bp-amber); }
+    .bpg .blade { fill: var(--bp-deep); stroke: var(--bp-line); stroke-width: 1.1; }
+    .bpg .coil { fill: rgba(255,154,77,.28); stroke: #FFB067; stroke-width: .8; }
+    .bpg .tooth { fill: var(--bp-deep); stroke: var(--bp-line); stroke-width: 1; }
+    .bpg .magN { fill: rgba(255,138,122,.45); stroke: var(--bp-warn); stroke-width: .8; }
+    .bpg .magS { fill: rgba(121,227,255,.3); stroke: var(--bp-air); stroke-width: .8; }
+    .spec, .tblock { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; color: var(--bp-line); }
+    .spec th { text-align: left; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 0 7px; border-bottom: 1px solid var(--bp-line); }
+    .spec td { padding: 6px 0; border-bottom: 1px solid var(--bp-faint); }
+    .spec td:first-child { color: var(--bp-dim); padding-right: 10px; }
+    .spec td:last-child { text-align: right; font-weight: 600; }
+    .tblock { margin-top: 14px; border: 1.5px solid var(--bp-line); }
+    .tblock td { border: 1px solid var(--bp-faint); padding: 6px 7px; font-size: 11.5px; }
+    .tblock td:nth-child(odd) { color: var(--bp-dim); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; width: 1%; white-space: nowrap; }
+    .tblock td[colspan] { font-weight: 600; letter-spacing: .05em; }
+    .nts { margin-top: 8px; font-size: 12.5px; color: var(--bp-dim); line-height: 1.4; }
+    @media (min-width: 900px) {
+      .xrig { grid-template-columns: 1.75fr 1fr; }
+      .sheet { grid-template-columns: 1fr 1fr 1fr; }
+    }
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -366,6 +437,82 @@
           <button class="chip" id="sameBtn" aria-pressed="false">Spin all props the same way</button>
           <button class="chip" id="cutBtn" aria-pressed="false">Cut one motor</button>
           <button class="chip reset" id="resetBtn">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="xsec" id="takeApart">
+      <div class="xhead">
+        <div class="eyebrow">Fig. 4.C · General arrangement</div>
+        <h2>Take the drone apart</h2>
+        <p>Eight parts, and every one has a job. Pull it apart, then tap a part to find out what it does.</p>
+      </div>
+      <div class="rig xrig" aria-label="An exploded drawing of the drone">
+        <div class="screen">
+          <canvas id="xvDrone" aria-label="The drone drawn from the side as a blueprint. Explode it to see its eight parts: propellers, motors, top shell, flight controller, frame and arms, battery, landing legs and camera."></canvas>
+          <div class="xctl">
+            <div class="box-head"><span>ASSEMBLED</span><b id="xdVal">0%</b><span>EXPLODED</span></div>
+            <input type="range" id="xd" min="0" max="100" value="0" aria-label="How far apart the parts are">
+            <div class="btns"><button class="btn go" id="xdBtn">Take it apart</button></div>
+          </div>
+        </div>
+        <div class="cockpit">
+          <div class="part-card">
+            <div class="pc-k" id="xdK">TAP A PART</div>
+            <h3 id="xdName">Tap any part of the drawing</h3>
+            <p id="xdNote">Take the drone apart first, then tap a part or its number to find out what it does.</p>
+          </div>
+          <div class="plist-wrap"><table class="plist" id="xdList"></table></div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 320" role="img" aria-label="Top view of the drone. The motors sit at the corners of a square 248 millimetres across, 350 millimetres apart corner to corner. With the propellers it is 488 millimetres across. Two propellers spin clockwise and two anticlockwise."><g class="bpg" id="tvG"></g></svg>
+          <figcaption><b>Top view</b><span>Sizes in mm. The motors are 350 mm apart corner to corner (amber). Two propellers spin clockwise and two anticlockwise.</span></figcaption>
+        </figure>
+
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 300" role="img" aria-label="Detail A: one motor cut through. Twelve copper coils sit still in the middle. Fourteen magnets line the outside bell, which spins with the propeller.">
+            <g class="bpg">
+              <circle class="ln" cx="150" cy="150" r="112"/>
+              <circle class="ln dim" cx="150" cy="150" r="104"/>
+              <g id="magnets"></g>
+              <g id="coils"></g>
+              <circle class="lnf" cx="150" cy="150" r="30"/>
+              <circle class="ln" cx="150" cy="150" r="8"/><circle class="hubf" cx="150" cy="150" r="3"/>
+              <path class="lead" d="M222 66 L250 44 H290"/><text x="290" y="26" text-anchor="end">MAGNETS ×14</text><text class="dimt" x="290" y="39" text-anchor="end">(SPIN)</text>
+              <path class="lead" d="M112 112 L80 56 H10"/><text x="10" y="38">COILS ×12</text><text class="dimt" x="10" y="51">(STAY STILL)</text>
+              <path class="lead" d="M150 150 L232 262 H290"/><text x="290" y="257" text-anchor="end">SHAFT</text><text class="dimt" x="290" y="274" text-anchor="end">(TURNS THE PROP)</text>
+              <path class="cw" d="M60 236 A124 124 0 0 0 112 268"/><path class="cwf" d="M112 268 l-9 1 l5 -8z"/>
+              <text class="amber" x="14" y="292">SPINS THIS WAY</text>
+            </g>
+          </svg>
+          <figcaption><b>Detail A · one motor, cut through</b><span>Electricity runs through the coils in turn, so they keep pulling the next magnet round. No brushes, so nothing rubs and wears out.</span></figcaption>
+        </figure>
+
+        <div class="sheet-card tb">
+          <table class="spec">
+            <thead><tr><th colspan="2">Specifications</th></tr></thead>
+            <tbody>
+              <tr><td>Weight</td><td>1.2 kg</td></tr>
+              <tr><td>Motor to motor</td><td>350 mm</td></tr>
+              <tr><td>Height</td><td>190 mm</td></tr>
+              <tr><td>Propellers</td><td>4 × 9.4 in (240 mm)</td></tr>
+              <tr><td>Push, each motor</td><td>up to ≈ 600 g</td></tr>
+              <tr><td>Can lift</td><td>about 2× its weight</td></tr>
+              <tr><td>Battery</td><td>15.2 V, rechargeable</td></tr>
+              <tr><td>Flight time</td><td>about 25 min</td></tr>
+              <tr><td>Checks its balance</td><td>hundreds of times a second</td></tr>
+            </tbody>
+          </table>
+          <table class="tblock">
+            <tr><td>Model</td><td colspan="3">ARI QUAD · CAMERA DRONE</td></tr>
+            <tr><td>Drawn by</td><td>Ari 🦉</td><td>Fig.</td><td>4.C</td></tr>
+            <tr><td>Units</td><td>mm</td><td>Scale</td><td>NTS</td></tr>
+            <tr><td>Sheet</td><td>1 of 1</td><td>Rev.</td><td>A</td></tr>
+          </table>
+          <p class="nts">NTS: not to scale. A real camera drone of this size, rounded so the numbers are easy to remember.</p>
         </div>
       </div>
     </section>
@@ -1350,6 +1497,176 @@
   requestAnimationFrame(frame);
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) Array.prototype.forEach.call(document.querySelectorAll('svg.dwg'), function (sv) { if (sv.pauseAnimations) sv.pauseAnimations(); });
   window.__ari = { D: function () { return D; }, input: input, flags: flags, M: M, lab: lab, push: labPush, reset: function () { resetBtn.click(); } };
+})();
+</script>
+<script src="exploded.js"></script>
+<script>
+(function () {
+  'use strict';
+  // ===================== Fig 4.C: the drone, taken apart (sizes in mm, seen from the side) =====================
+  var K = AriExploded.kit, BP = K.BP, M = 124;   // motors sit 124 mm either side of the middle (350 mm corner to corner)
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'drone' }); } catch (e) {} }
+  var sides = [-1, 1];
+
+  function prop(c, u, x, spin) {   // a two-blade propeller seen edge-on: the blades look shorter as they turn
+    var L = 96;   // blades turned partly towards us, so the front and back props don't merge into one bar
+    K.shape(c, function () { c.beginPath(); c.moveTo((x - L) * u, 3.5 * u); c.quadraticCurveTo((x - L * 0.5) * u, -0.5 * u, (x - 7) * u, 0.8 * u); c.lineTo((x + 7) * u, 0.8 * u); c.quadraticCurveTo((x + L * 0.5) * u, -0.5 * u, (x + L) * u, 3.5 * u); c.quadraticCurveTo((x + L * 0.5) * u, 6.5 * u, (x + 7) * u, 6 * u); c.lineTo((x - 7) * u, 6 * u); c.quadraticCurveTo((x - L * 0.5) * u, 6.5 * u, (x - L) * u, 3.5 * u); c.closePath(); }, { lw: 1.1 });
+    K.rect(c, (x - 7) * u, -1.5 * u, 14 * u, 8 * u, { fill: BP.deep, lw: 1 });
+    K.line(c, [(x - 4) * u, -1.5 * u, (x - 4) * u, 6.5 * u], BP.faint, 0.6); K.line(c, [(x + 4) * u, -1.5 * u, (x + 4) * u, 6.5 * u], BP.faint, 0.6);
+  }
+  var DRONE = {
+    title: 'FIG 4.C · ARI QUAD · SIDE VIEW', width: 488, reserve: [8, 12], stagger: 0.28, narrowBalloons: true,
+    height: function (W) { return Math.round(W < 560 ? clamp(W * 1.05, 360, 540) : clamp(W * 0.66, 400, 540)); },
+    span: { x0: -M, x1: M, y: 204, label: '248 MOTOR TO MOTOR (SIDE)' },
+    parts: [
+      { id: 'props', name: 'Propellers', sub: '4 · two spin each way', y: 0, h: 7, x0: -244, x1: 244, dy: -125, z: 9,
+        note: 'Each blade is tilted, like a tiny wing. Spinning, it throws air down and gets pushed up. Two spin clockwise and two anticlockwise, so their twists cancel out and the drone doesn\'t spin round.',
+        draw: function (c, u, k, s) { var a = s.clock * (s.t > 0.5 ? 1.2 : 0.6); sides.forEach(function (sd) { prop(c, u, sd * M, a * sd + 0.5); }); } },
+      { id: 'motors', name: 'Motors', sub: 'brushless · ×4', y: 7, h: 27, x0: -M - 17, x1: M + 17, dy: -82, z: 8,
+        note: 'Four electric motors, one under each propeller. They can change speed in a split second, and changing their speeds is the only way the drone steers. See Detail A below to look inside one.',
+        draw: function (c, u) { sides.forEach(function (sd) { c.save(); c.translate(sd * M * u, 0); K.rect(c, -2 * u, 0, 4 * u, 6 * u, { lw: 0.9 }); c.translate(0, 6 * u); K.cyl(c, u, 30, 20, { rings: [5], bands: [[9, 15, 'stringers']] }); c.restore(); }); } },
+      { id: 'shell', name: 'Top shell', sub: 'keeps out rain and dust', y: 24, h: 38, x0: -84, x1: 84, dy: -50, z: 7,
+        note: 'A light plastic cover. Under the dome is a GPS antenna that listens to satellites, so the drone knows exactly where it is on Earth.',
+        draw: function (c, u) {
+          K.shape(c, function () { c.beginPath(); c.moveTo(-84 * u, 38 * u); c.bezierCurveTo(-82 * u, 8 * u, -44 * u, 0, 0, 0); c.bezierCurveTo(44 * u, 0, 82 * u, 8 * u, 84 * u, 38 * u); c.quadraticCurveTo(0, 41 * u, -84 * u, 38 * u); c.closePath(); });
+          K.hidden(c, function () { c.beginPath(); c.ellipse(0, 9 * u, 20 * u, 4 * u, 0, 0, 6.3); });
+          c.strokeStyle = 'rgba(159,198,242,.3)'; c.lineWidth = 0.7; [0.55, 0.7, 0.85].forEach(function (f) { c.beginPath(); c.moveTo(84 * f * u, 38 * u); c.bezierCurveTo(82 * f * u, 10 * u, 44 * f * u, 2 * u, 20 * f * u, 1.5 * u); c.stroke(); });
+          c.fillStyle = BP.ok; c.beginPath(); c.arc(78 * u, 31 * u, 2.2 * u, 0, 6.3); c.fill();
+        } },
+      { id: 'fc', name: 'Flight controller', sub: 'the tiny pilot', y: 50, h: 8, x0: -40, x1: 40, dy: -22, z: 1, anchor: 0.3,
+        note: 'A small computer with a motion sensor on it. Hundreds of times a second it feels which way the drone is tipping and changes the speed of each motor to level it out.',
+        draw: function (c, u) {
+          K.rect(c, -40 * u, 2 * u, 80 * u, 4 * u, { fill: 'rgba(124,240,188,.16)', stroke: BP.ok, lw: 1 });
+          [[-30, 10], [-12, 16], [10, 9], [24, 12]].forEach(function (q) { K.rect(c, q[0] * u, -1 * u, q[1] * u, 3 * u, { fill: BP.deep, stroke: BP.ok, lw: 0.8 }); });
+          for (var i = -36; i <= 36; i += 6) K.line(c, [i * u, 6 * u, i * u, 8 * u], BP.ok, 0.7);
+        } },
+      { id: 'frame', name: 'Frame and arms', sub: 'holds it all together', y: 34, h: 42, x0: -M - 18, x1: M + 18, dy: 0, z: 2,
+        note: 'The skeleton. Four arms hold the motors out at the corners, 350 mm apart. Longer arms would be steadier but heavier, so it\'s a balance.',
+        draw: function (c, u) {
+          sides.forEach(function (sd) {
+            K.shape(c, function () { c.beginPath(); c.moveTo(sd * 66 * u, 22 * u); c.lineTo(sd * (M - 4) * u, 3 * u); c.lineTo(sd * (M - 4) * u, 9 * u); c.lineTo(sd * 70 * u, 30 * u); c.closePath(); }, { lw: 1.1 });
+            K.rect(c, sd * M * u - 18 * u, 0, 36 * u, 4 * u, { fill: BP.deep, lw: 1 });
+            K.line(c, [sd * 74 * u, 23 * u, sd * (M - 8) * u, 7 * u], BP.faint, 0.6);
+          });
+          K.shape(c, function () { c.beginPath(); c.moveTo(-82 * u, 18 * u); c.lineTo(82 * u, 18 * u); c.quadraticCurveTo(82 * u, 42 * u, 50 * u, 42 * u); c.lineTo(-50 * u, 42 * u); c.quadraticCurveTo(-82 * u, 42 * u, -82 * u, 18 * u); c.closePath(); }, { hatch: 5 });
+        } },
+      { id: 'batt', name: 'Battery', sub: '15.2 V · about 25 min', y: 70, h: 26, x0: -56, x1: 56, dy: 46, z: 3,
+        note: 'The heaviest single part, a bit like a big phone battery. It powers all four motors, and when it runs low the drone flies itself home and lands.',
+        draw: function (c, u) {
+          K.rect(c, -56 * u, 0, 112 * u, 26 * u, { fill: BP.deep, lw: 1.2 });
+          [-40, -22, -4, 14].forEach(function (x, i) { K.rect(c, x * u, 8 * u, 14 * u, 10 * u, { fill: i < 3 ? 'rgba(124,240,188,.5)' : 'rgba(124,240,188,.12)', stroke: BP.ok, lw: 0.8 }); });
+          K.text(c, '15.2 V', 42 * u, 16 * u, { align: 'center', size: clamp(u * 6.5, 6, 10), col: BP.line, weight: 700 });
+          K.rect(c, -64 * u, 9 * u, 8 * u, 8 * u, { fill: BP.bg, lw: 0.9 });
+        } },
+      { id: 'legs', name: 'Landing legs', sub: 'soak up bumpy landings', y: 66, h: 124, x0: -136, x1: 136, dy: 80, z: 0, anchor: 0.75,
+        note: 'Two springy legs that keep the camera off the ground. Hidden inside them are the radio aerials that talk to the controller in your hands.',
+        draw: function (c, u) {
+          sides.forEach(function (sd) {
+            K.shape(c, function () { c.beginPath(); c.moveTo(sd * 74 * u, 0); c.bezierCurveTo(sd * 80 * u, 50 * u, sd * 104 * u, 90 * u, sd * 110 * u, 116 * u); c.lineTo(sd * 102 * u, 116 * u); c.bezierCurveTo(sd * 96 * u, 92 * u, sd * 72 * u, 52 * u, sd * 66 * u, 0); c.closePath(); }, { lw: 1.1 });
+            K.hidden(c, function () { c.beginPath(); c.moveTo(sd * 71 * u, 8 * u); c.bezierCurveTo(sd * 76 * u, 50 * u, sd * 98 * u, 88 * u, sd * 104 * u, 108 * u); });
+          });
+          K.shape(c, function () { c.beginPath(); c.moveTo(-136 * u, 116 * u); c.lineTo(-74 * u, 116 * u); c.quadraticCurveTo(-70 * u, 124 * u, -78 * u, 124 * u); c.lineTo(-132 * u, 124 * u); c.quadraticCurveTo(-140 * u, 124 * u, -136 * u, 116 * u); c.closePath(); }, { lw: 1 });
+          K.shape(c, function () { c.beginPath(); c.moveTo(136 * u, 116 * u); c.lineTo(74 * u, 116 * u); c.quadraticCurveTo(70 * u, 124 * u, 78 * u, 124 * u); c.lineTo(132 * u, 124 * u); c.quadraticCurveTo(140 * u, 124 * u, 136 * u, 116 * u); c.closePath(); }, { lw: 1 });
+        } },
+      { id: 'cam', name: 'Camera and gimbal', sub: 'steadied by 3 motors', y: 96, h: 52, x0: -30, x1: 40, dy: 160, z: 4,
+        note: 'The gimbal has three small motors of its own. They tilt the camera the opposite way to every wobble, so the video stays smooth even when the drone tips.',
+        draw: function (c, u) {
+          K.rect(c, -10 * u, 0, 20 * u, 7 * u, { fill: BP.deep, lw: 1 });
+          K.shape(c, function () { c.beginPath(); c.moveTo(-4 * u, 7 * u); c.lineTo(4 * u, 7 * u); c.lineTo(4 * u, 12 * u); c.lineTo(-22 * u, 12 * u); c.lineTo(-22 * u, 30 * u); c.lineTo(-28 * u, 30 * u); c.lineTo(-28 * u, 6 * u); c.lineTo(-4 * u, 6 * u); c.closePath(); }, { lw: 1 });
+          K.shape(c, function () { c.beginPath(); c.arc(-25 * u, 31 * u, 6 * u, 0, 6.3); }, { fill: BP.deep, stroke: BP.amber, lw: 1 });
+          K.shape(c, function () { c.beginPath(); c.arc(0, 4 * u, 4 * u, 0, 6.3); }, { fill: BP.deep, stroke: BP.amber, lw: 1 });
+          K.shape(c, function () { c.beginPath(); if (c.roundRect) c.roundRect(-18 * u, 18 * u, 40 * u, 30 * u, 5 * u); else c.rect(-18 * u, 18 * u, 40 * u, 30 * u); }, { lw: 1.2 });
+          K.rect(c, 22 * u, 23 * u, 12 * u, 20 * u, { fill: BP.deep, lw: 1.1 });
+          K.shape(c, function () { c.beginPath(); c.ellipse(34 * u, 33 * u, 3 * u, 9 * u, 0, 0, 6.3); }, { fill: 'rgba(121,227,255,.35)', stroke: BP.air, lw: 1 });
+          K.shape(c, function () { c.beginPath(); c.arc(-25 * u, 31 * u, 2 * u, 0, 6.3); }, { fill: BP.amber, stroke: BP.amber, lw: 0.5 });
+        } }
+    ]
+  };
+
+  var cv = document.getElementById('xvDrone'); if (!cv || !window.AriExploded) return;
+  var view = AriExploded.create(cv, DRONE);
+  var xd = document.getElementById('xd'), xdVal = document.getElementById('xdVal'), btn = document.getElementById('xdBtn');
+  var K1 = document.getElementById('xdK'), N1 = document.getElementById('xdName'), T1 = document.getElementById('xdNote'), list = document.getElementById('xdList');
+  function show(p) {
+    Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) { tr.classList.toggle('on', !!p && tr.dataset.id === p.id); });
+    if (!p) { K1.textContent = 'TAP A PART'; N1.textContent = 'Tap any part of the drawing'; T1.textContent = 'Take the drone apart first, then tap a part or its number to find out what it does.'; return; }
+    K1.textContent = 'PART ' + p.no + ' · ' + p.sub.toUpperCase(); N1.textContent = p.name; T1.textContent = p.note; track('dpart_' + p.id);
+  }
+  list.innerHTML = '<thead><tr><th>No.</th><th>Part</th></tr></thead><tbody>' + DRONE.parts.map(function (p) { return '<tr data-id="' + p.id + '"><td>' + p.no + '</td><td>' + p.name + '<small>' + p.sub + '</small></td></tr>'; }).join('') + '</tbody>';
+  Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) {
+    tr.addEventListener('click', function () { var p = DRONE.parts.filter(function (q) { return q.id === tr.dataset.id; })[0]; view.select(p.id); show(p); if (view.t() < 0.9) view.animateTo(1, 1.4); });
+  });
+  view.onPick(show);
+  xd.addEventListener('input', function () { view.set(xd.value / 100); });
+  btn.addEventListener('click', function () { view.animateTo(view.t() > 0.5 ? 0 : 1, 1.6); track('dexplode'); });
+
+  // ===================== Top view and Detail A (SVG, built here so the geometry stays exact) =====================
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent.appendChild(e); return e; }
+  var tv = document.getElementById('tvG'), S = 0.548, CX = 150, CY = 168, m = M * S, R = 120 * S, blades = [];
+  if (tv) {
+    var corners = [[-1, -1, 1], [1, -1, -1], [-1, 1, -1], [1, 1, 1]];   // [x, y, +1 clockwise / -1 anticlockwise]
+    el(tv, 'path', { 'class': 'cl', d: 'M' + CX + ' 30 V310 M12 ' + CY + ' H288' });
+    corners.forEach(function (q) { el(tv, 'circle', { 'class': 'disc', cx: CX + q[0] * m, cy: CY + q[1] * m, r: R.toFixed(1) }); });
+    corners.forEach(function (q) { el(tv, 'path', { 'class': 'arm2 ln', d: 'M' + (CX + q[0] * 28) + ' ' + (CY + q[1] * 28) + ' L' + (CX + q[0] * m) + ' ' + (CY + q[1] * m), style: 'stroke-width:7;stroke:#0D3B6E' }); el(tv, 'path', { 'class': 'ln', d: 'M' + (CX + q[0] * 30 + q[1] * 4) + ' ' + (CY + q[1] * 30 - q[0] * 4) + ' L' + (CX + q[0] * (m - 6) + q[1] * 4) + ' ' + (CY + q[1] * (m - 6) - q[0] * 4) + ' M' + (CX + q[0] * 30 - q[1] * 4) + ' ' + (CY + q[1] * 30 + q[0] * 4) + ' L' + (CX + q[0] * (m - 6) - q[1] * 4) + ' ' + (CY + q[1] * (m - 6) + q[0] * 4) }); });
+    corners.forEach(function (q) {   // spin arrows
+      var x = CX + q[0] * m, y = CY + q[1] * m, r = R - 7, cls = q[2] > 0 ? 'cw' : 'ccw', a0 = -2.3, a1 = -0.9;
+      if (q[2] < 0) { a0 = -0.9; a1 = -2.3; }
+      var p0 = [x + r * Math.cos(a0), y + r * Math.sin(a0)], p1 = [x + r * Math.cos(a1), y + r * Math.sin(a1)];
+      el(tv, 'path', { 'class': cls, d: 'M' + p0[0].toFixed(1) + ' ' + p0[1].toFixed(1) + ' A' + r.toFixed(1) + ' ' + r.toFixed(1) + ' 0 0 ' + (q[2] > 0 ? 1 : 0) + ' ' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) });
+      var tx = -Math.sin(a1) * q[2], ty = Math.cos(a1) * q[2], nx = Math.cos(a1), ny = Math.sin(a1);
+      el(tv, 'path', { 'class': cls + 'f', d: 'M' + (p1[0] + tx * 6).toFixed(1) + ' ' + (p1[1] + ty * 6).toFixed(1) + ' L' + (p1[0] + nx * 4).toFixed(1) + ' ' + (p1[1] + ny * 4).toFixed(1) + ' L' + (p1[0] - nx * 4).toFixed(1) + ' ' + (p1[1] - ny * 4).toFixed(1) + 'Z' });
+    });
+    corners.forEach(function (q) { var g = el(tv, 'g', {}); g.dataset.dir = q[2]; g.dataset.x = CX + q[0] * m; g.dataset.y = CY + q[1] * m; el(g, 'path', { 'class': 'blade', d: 'M' + (-R + 2) + ' -2.5 Q' + (-R / 2) + ' -6 -6 -4 L6 4 Q' + (R / 2) + ' 6 ' + (R - 2) + ' 2.5 Q' + (R / 2) + ' 1 6 -1 L-6 1 Q' + (-R / 2) + ' -1 ' + (-R + 2) + ' -2.5Z' }); el(g, 'circle', { 'class': 'lnf', r: 6 }); el(g, 'circle', { 'class': 'hubf', r: 2 }); blades.push(g); });
+    el(tv, 'rect', { 'class': 'lnf', x: CX - 32, y: CY - 40, width: 64, height: 80, rx: 22 });
+    el(tv, 'rect', { 'class': 'ln dim', x: CX - 18, y: CY - 22, width: 36, height: 44, rx: 5 });
+    el(tv, 'circle', { 'class': 'ln dim', cx: CX, cy: CY, r: 9 });
+    el(tv, 'path', { 'class': 'cwf', d: 'M' + CX + ' ' + (CY - 50) + ' l6 8 h-12z', style: 'fill:#EEF5FF' });
+    el(tv, 'text', { x: CX, y: CY - 56, 'text-anchor': 'middle', 'class': 'dimt' }, 'FRONT');
+    // dimensions: overall with props (top), motor spacing (bottom), corner to corner (diagonal)
+    var L0 = CX - m - R, L1 = CX + m + R;
+    el(tv, 'path', { 'class': 'ext', d: 'M' + L0 + ' ' + (CY - m) + ' V12 M' + L1 + ' ' + (CY - m) + ' V12' });
+    el(tv, 'path', { 'class': 'dl', d: 'M' + L0 + ' 16 H' + L1 });
+    el(tv, 'path', { 'class': 'dh', d: 'M' + L0 + ' 16 l6 -3 v6z M' + L1 + ' 16 l-6 -3 v6z' });
+    el(tv, 'rect', { x: CX - 48, y: 9, width: 96, height: 13, fill: '#0D3B6E' }); el(tv, 'text', { x: CX, y: 19, 'text-anchor': 'middle' }, '488 WITH PROPS');
+    var yb = CY + m + R + 10;
+    el(tv, 'path', { 'class': 'ext', d: 'M' + (CX - m) + ' ' + (CY + m + 8) + ' V' + (yb + 4) + ' M' + (CX + m) + ' ' + (CY + m + 8) + ' V' + (yb + 4) });
+    el(tv, 'path', { 'class': 'dl', d: 'M' + (CX - m) + ' ' + yb + ' H' + (CX + m) });
+    el(tv, 'path', { 'class': 'dh', d: 'M' + (CX - m) + ' ' + yb + ' l6 -3 v6z M' + (CX + m) + ' ' + yb + ' l-6 -3 v6z' });
+    el(tv, 'rect', { x: CX - 14, y: yb - 6, width: 28, height: 12, fill: '#0D3B6E' }); el(tv, 'text', { x: CX, y: yb + 3.5, 'text-anchor': 'middle' }, '248');
+    el(tv, 'path', { 'class': 'amberl', d: 'M' + (CX - m + 6) + ' ' + (CY + m - 6) + ' L' + (CX + m - 6) + ' ' + (CY - m + 6) });
+    el(tv, 'path', { 'class': 'amberf', d: 'M' + (CX - m + 6) + ' ' + (CY + m - 6) + ' l1 -8 l7 7z M' + (CX + m - 6) + ' ' + (CY - m + 6) + ' l-1 8 l-7 -7z' });
+    el(tv, 'rect', { x: CX + 40, y: CY - 51, width: 26, height: 12, fill: '#0D3B6E', transform: 'rotate(-45 ' + (CX + 53) + ' ' + (CY - 45) + ')' }); el(tv, 'text', { x: CX + 53, y: CY - 42, 'text-anchor': 'middle', 'class': 'amber', transform: 'rotate(-45 ' + (CX + 53) + ' ' + (CY - 45) + ')' }, '350');
+  }
+  // Detail A: magnets on the spinning bell, coils on the still stator
+  var mg = document.getElementById('magnets'), co = document.getElementById('coils');
+  if (mg && co) {
+    for (var i = 0; i < 14; i++) { var a0 = i / 14 * 6.2832 + 0.03, a1 = (i + 1) / 14 * 6.2832 - 0.03, r0 = 94, r1 = 104; var P = function (r, a) { return (150 + r * Math.cos(a)).toFixed(1) + ' ' + (150 + r * Math.sin(a)).toFixed(1); };
+      el(mg, 'path', { 'class': i % 2 ? 'magS' : 'magN', d: 'M' + P(r0, a0) + ' L' + P(r1, a0) + ' A' + r1 + ' ' + r1 + ' 0 0 1 ' + P(r1, a1) + ' L' + P(r0, a1) + ' A' + r0 + ' ' + r0 + ' 0 0 0 ' + P(r0, a0) + 'Z' }); }
+    for (i = 0; i < 12; i++) { var g = el(co, 'g', { transform: 'rotate(' + (i * 30) + ' 150 150)' });
+      el(g, 'path', { 'class': 'tooth', d: 'M146 120 L146 70 L138 66 L138 59 L162 59 L162 66 L154 70 L154 120Z' });
+      el(g, 'rect', { 'class': 'coil', x: 140.5, y: 74, width: 19, height: 40, rx: 3 });
+      for (var j = 0; j < 6; j++) el(g, 'path', { d: 'M141 ' + (78 + j * 6) + ' H159', stroke: '#FFB067', 'stroke-width': .6 }); }
+  }
+  // motion: blades and magnets turn while the sheet is on screen
+  var on = false, last = 0, ang = 0;
+  function frame(ts) {
+    var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts;
+    view.tick(dt);
+    ang += dt * 140;
+    blades.forEach(function (g) { g.setAttribute('transform', 'translate(' + g.dataset.x + ' ' + g.dataset.y + ') rotate(' + (ang * g.dataset.dir * 3).toFixed(1) + ')'); });
+    if (mg) mg.setAttribute('transform', 'rotate(' + (ang * 0.35).toFixed(1) + ' 150 150)');
+    xdVal.textContent = Math.round(view.t() * 100) + '%'; if (view.busy()) xd.value = Math.round(view.t() * 100);
+    btn.textContent = view.t() > 0.5 ? 'Put it back together' : 'Take it apart';
+    if (on) requestAnimationFrame(frame); else last = 0;
+  }
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { blades.forEach(function (g) { g.setAttribute('transform', 'translate(' + g.dataset.x + ' ' + g.dataset.y + ') rotate(' + (g.dataset.dir * 20) + ')'); }); }
+  var io = new IntersectionObserver(function (e) { var vis = e.some(function (x) { return x.isIntersecting; }); if (vis && !on) { on = true; requestAnimationFrame(frame); } else if (!vis) on = false; }, { rootMargin: '100px' });
+  io.observe(document.getElementById('takeApart'));
+  window.addEventListener('resize', function () { view.resize(); });
+  window.__ariX = { view: view };
 })();
 </script>
 <script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
