@@ -269,6 +269,81 @@
     .box-head b { color: var(--bp-amber); }
     .readout b { color: var(--bp-amber); }
     .wing-box.nudge { animation: none; box-shadow: inset 0 0 0 2px var(--bp-amber); }
+
+    /* ===== Fig 6.C: take it apart + drawing sheet (same look as the drone's Fig 4.C) ===== */
+    .xsec { margin: 40px 0 6px; }
+    .xhead { max-width: 760px; margin-bottom: 14px; }
+    .xhead h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin: 4px 0 6px; }
+    .xhead p { color: var(--brown-mid); font-size: 16px; }
+    .xrig .screen { overflow: hidden; }
+    #xvF1 { display: block; width: 100%; cursor: pointer; touch-action: manipulation; }
+    .xctl { display: grid; gap: 8px; padding: 10px 12px 12px; background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .xctl .box-head { margin: 0; }
+    .xctl .btns { display: flex; gap: 8px; }
+    .xctl .btn { flex: 1; min-height: 48px; border: none; border-radius: 4px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; cursor: pointer; background: var(--bp-amber); color: #2A1E02; box-shadow: 0 4px 0 #B88A1A, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .xctl .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B88A1A; }
+    .part-card { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; padding: 12px 14px; min-height: 118px; }
+    .pc-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--bp-amber); }
+    .part-card h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--bp-line); margin: 3px 0 4px; }
+    .part-card p { font-size: 14.5px; line-height: 1.45; color: #C6DCF5; }
+    .plist-wrap { overflow-x: auto; }
+    .plist { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; color: var(--bp-line); }
+    .plist th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; color: var(--bp-dim); padding: 0 8px 6px 0; border-bottom: 1px solid var(--bp-line); }
+    .plist td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--bp-faint); cursor: pointer; vertical-align: top; }
+    .plist td:first-child { width: 2.4em; font-weight: 600; color: var(--bp-amber); }
+    .plist td small { display: block; color: var(--bp-dim); font-size: 10.5px; letter-spacing: .02em; }
+    .plist tr.on td { color: var(--bp-amber); }
+    .plist tr:hover td { background: rgba(255,255,255,.04); }
+
+    .sheet { display: grid; gap: 10px; margin-top: 10px; }
+    .sheet-card { margin: 0; background-color: var(--bp); border: 1px solid var(--bp-faint); border-radius: 4px; padding: 12px; color: var(--bp-line);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -6px; }
+    .sheet-card svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+    .sheet-card figcaption { margin-top: 8px; border-top: 1px solid var(--bp-line); padding-top: 8px; font-size: 14px; line-height: 1.45; color: #C6DCF5; }
+    .sheet-card figcaption b { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--bp-line); margin-bottom: 2px; }
+    .sheet-card figcaption span { display: block; }
+    .bpg text { font-family: var(--mono); font-size: 9px; font-weight: 600; fill: var(--bp-line); letter-spacing: .04em; }
+    .bpg text.dimt { fill: var(--bp-dim); font-weight: 500; font-size: 8.5px; }
+    .bpg text.amber { fill: var(--bp-amber); } .bpg text.grn { fill: var(--bp-ok); } .bpg text.airt { fill: var(--bp-air); }
+    .bpg .ln { fill: none; stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .ln.dim { stroke: var(--bp-dim); stroke-width: .8; }
+    .bpg .lnf { fill: var(--bp-deep); stroke: var(--bp-line); stroke-width: 1.2; stroke-linejoin: round; }
+    .bpg .hid { fill: none; stroke: var(--bp-dim); stroke-width: .8; stroke-dasharray: 3 3; }
+    .bpg .cl { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 10 3 2 3; fill: none; }
+    .bpg .dl { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .ext { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 2 3; fill: none; }
+    .bpg .dh { fill: var(--bp-dim); }
+    .bpg .lead { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .amberl { stroke: var(--bp-amber); stroke-width: 1; fill: none; } .bpg .amberf { fill: var(--bp-amber); }
+    .bpg .wingr { fill: #E5231B; stroke: var(--bp-line); stroke-width: 1.1; stroke-linejoin: round; }
+    .bpg .wingo { fill: none; stroke: var(--bp-line); stroke-width: .9; stroke-dasharray: 3 2.5; }
+    .bpg .helm { fill: var(--bp-amber); stroke: var(--bp-line); stroke-width: .8; }
+    .bpg .halo { fill: none; stroke: var(--bp-line); stroke-width: 2.4; stroke-linecap: round; }
+    .bpg .inlet { fill: #061F3B; stroke: var(--bp-dim); stroke-width: .8; }
+    .bpg .redl { fill: #FF4D3D; }
+    .bpg .airl { stroke: var(--bp-air); stroke-width: 1.3; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .bpg .airf { fill: var(--bp-air); }
+    .bpg .grnl { stroke: var(--bp-ok); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+    .bpg .grnf { fill: var(--bp-ok); }
+    .spec, .tblock { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; color: var(--bp-line); }
+    .spec th { text-align: left; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 0 7px; border-bottom: 1px solid var(--bp-line); }
+    .spec td { padding: 6px 0; border-bottom: 1px solid var(--bp-faint); }
+    .spec td:first-child { color: var(--bp-dim); padding-right: 10px; }
+    .spec td:last-child { text-align: right; font-weight: 600; }
+    .tblock { margin-top: 14px; border: 1.5px solid var(--bp-line); }
+    .tblock td { border: 1px solid var(--bp-faint); padding: 6px 7px; font-size: 11.5px; }
+    .tblock td:nth-child(odd) { color: var(--bp-dim); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; width: 1%; white-space: nowrap; }
+    .tblock td[colspan] { font-weight: 600; letter-spacing: .05em; }
+    .nts { margin-top: 8px; font-size: 12.5px; color: var(--bp-dim); line-height: 1.4; }
+    @media (prefers-reduced-motion: reduce) { .bpg .airl { animation: none; } }
+    @media (min-width: 900px) {
+      /* the car is long and low, so its drawing gets the full width and the parts list sits underneath */
+      .rig.xrig { grid-template-columns: 1fr; }
+      .xrig .cockpit { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); align-items: start; }
+      .sheet { grid-template-columns: 1fr 1fr 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -335,6 +410,70 @@
           <button class="chip" id="wingsOffBtn" aria-pressed="false">Take the wings off</button>
           <button class="chip fix hidden" id="resetBtn">Back on track</button>
           <button class="tool" id="soundBtn" aria-pressed="false" style="margin-left:auto">Sound off</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="xsec" id="takeApart">
+      <div class="xhead">
+        <div class="eyebrow">Fig. 6.C · General arrangement</div>
+        <h2>Take the F1 car apart</h2>
+        <p>Nine parts, and every one has a job. Pull it apart, then tap a part to find out what it does.</p>
+      </div>
+      <div class="rig xrig" aria-label="An exploded drawing of the F1 car">
+        <div class="screen">
+          <canvas id="xvF1" aria-label="The F1 car drawn from the side as a blueprint. Take it apart to see its nine parts: front wing, nose, survival cell and halo, sidepods, power unit, gearbox, rear wing, floor, and wheels and tyres."></canvas>
+          <div class="xctl">
+            <div class="box-head"><span>ASSEMBLED</span><b id="xfVal">0%</b><span>EXPLODED</span></div>
+            <input type="range" id="xf" min="0" max="100" value="0" aria-label="How far apart the parts are">
+            <div class="btns"><button class="btn go" id="xfBtn">Take it apart</button></div>
+          </div>
+        </div>
+        <div class="cockpit">
+          <div class="part-card">
+            <div class="pc-k" id="xfK">TAP A PART</div>
+            <h3 id="xfName">Tap any part of the drawing</h3>
+            <p id="xfNote">Take the car apart first, then tap a part or its number to find out what it does.</p>
+          </div>
+          <div class="plist-wrap"><table class="plist" id="xfList"></table></div>
+        </div>
+      </div>
+
+      <div class="sheet">
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 342" role="img" aria-label="Top view of the F1 car, nose at the top. It is about 5,600 millimetres long. The rules allow it to be up to 2,000 millimetres wide, with the front and back wheels up to 3,600 millimetres apart."><g class="bpg" id="xfTop"></g></svg>
+          <figcaption><b>Top view</b><span>Sizes in mm. The rules let the car be up to 2,000 mm wide, with the wheels up to 3,600 mm apart. Line A–A cuts through the rear wing.</span></figcaption>
+        </figure>
+
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 300" role="img" aria-label="Section A–A: the rear wing cut through. It is an aeroplane wing upside down: air is thrown upwards, so the car is pushed down. The top flap, called DRS, can tilt open by up to 85 millimetres on a straight."><g class="bpg" id="xfSec"></g></svg>
+          <figcaption><b>Section A–A · the rear wing, cut through</b><span>An aeroplane wing upside down: it throws air up, so the car is pushed down. On a straight, DRS tips the flap open (dashed) by up to 85 mm, so the car slips through the air faster.</span></figcaption>
+        </figure>
+
+        <div class="sheet-card tb">
+          <table class="spec">
+            <thead><tr><th colspan="2">Specifications</th></tr></thead>
+            <tbody>
+              <tr><td>Weight, with driver</td><td>800 kg (at least)</td></tr>
+              <tr><td>Length</td><td>about 5,600 mm</td></tr>
+              <tr><td>Width</td><td>2,000 mm max</td></tr>
+              <tr><td>Wheelbase</td><td>3,600 mm max</td></tr>
+              <tr><td>Height</td><td>950 mm max</td></tr>
+              <tr><td>Engine</td><td>1.6 litre V6 turbo + hybrid</td></tr>
+              <tr><td>Power</td><td>about 1,000 hp</td></tr>
+              <tr><td>Top speed</td><td>about 350 km/h</td></tr>
+              <tr><td>Downforce = its weight</td><td>at about 200 km/h</td></tr>
+              <tr><td>Wheels</td><td>18 in, tyres 720 mm tall</td></tr>
+              <tr><td>Gears</td><td>8 forward + reverse</td></tr>
+            </tbody>
+          </table>
+          <table class="tblock">
+            <tr><td>Model</td><td colspan="3">ARI F1 · GROUND-EFFECT RACING CAR</td></tr>
+            <tr><td>Drawn by</td><td>Ari 🦉</td><td>Fig.</td><td>6.C</td></tr>
+            <tr><td>Units</td><td>mm</td><td>Scale</td><td>NTS</td></tr>
+            <tr><td>Sheet</td><td>1 of 1</td><td>Rev.</td><td>A</td></tr>
+          </table>
+          <p class="nts">NTS: not to scale. Sizes follow the F1 rules used from 2022 to 2025, rounded so they're easy to remember. In 2026 the cars got a little smaller and lighter, and moving wings took over from DRS.</p>
         </div>
       </div>
     </section>
@@ -1240,6 +1379,356 @@
     run: function (sec) { for (var i = 0; i < Math.round(sec * 60); i++) step(1 / 60); render(1 / 60); },
     wingsOff: function () { wingsOffBtn.click(); }
   };
+})();
+</script>
+<script src="exploded.js"></script>
+<script>
+(function () {
+  'use strict';
+  // ===================== Fig 6.C: the F1 car, taken apart (sizes in mm, side view, nose to the right) =====================
+  // x = 0 is the middle of the car (5,600 mm long), y = 0 is the top of the rear wing, the ground is at y = 950.
+  // Front axle at x = 1,700 and rear axle at x = -1,900: a 3,600 mm wheelbase. Tyres 720 mm tall on 18-inch (457 mm) rims.
+  if (!window.AriExploded) return;
+  var K = AriExploded.kit, BP = K.BP, RED = 'rgba(229,35,27,.88)', GND = 950, FX = 1700, RX = -1900;
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'f1' }); } catch (e) {} }
+  var D2R = Math.PI / 180;
+
+  // a tiny path language in mm: "M x y L x y Q cx cy x y C c1x c1y c2x c2y x y Z", drawn with the part's top (y0) as y = 0
+  function pth(c, u, y0, d) {
+    var t = d.replace(/([MLQCZ])/g, ' $1 ').trim().split(/[\s,]+/), i = 0, cmd = 'M';
+    function X() { return parseFloat(t[i++]) * u; } function Y() { return (parseFloat(t[i++]) - y0) * u; }
+    c.beginPath();
+    while (i < t.length) {
+      if (/^[MLQCZ]$/.test(t[i])) { cmd = t[i++]; if (cmd === 'Z') { c.closePath(); continue; } }
+      if (cmd === 'M') c.moveTo(X(), Y());
+      else if (cmd === 'L') c.lineTo(X(), Y());
+      else if (cmd === 'Q') { var a = X(), b = Y(), e = X(), f = Y(); c.quadraticCurveTo(a, b, e, f); }
+      else if (cmd === 'C') { var a1 = X(), b1 = Y(), a2 = X(), b2 = Y(), e1 = X(), f1 = Y(); c.bezierCurveTo(a1, b1, a2, b2, e1, f1); }
+      else i++;
+    }
+  }
+  function S(c, u, y0, d, o) { K.shape(c, function () { pth(c, u, y0, d); }, o); }
+  function Hd(c, u, y0, d) { K.hidden(c, function () { pth(c, u, y0, d); }); }
+  function F(c, u, y0, d, col, w) { pth(c, u, y0, d); c.strokeStyle = col || 'rgba(159,198,242,.38)'; c.lineWidth = w || 0.7; c.stroke(); }
+  function circ(c, u, y0, x, y, r, o) { K.shape(c, function () { c.beginPath(); c.arc(x * u, (y - y0) * u, Math.max(0.5, r * u), 0, 6.2832); }, o); }
+
+  // an upside-down wing section: leading edge (x, y) on the right, chord running back (left) and up at deg; the bulge is underneath
+  function foil(x, y, ch, deg, th) {
+    var a = deg * D2R, dx = -Math.cos(a), dy = -Math.sin(a), nx = -Math.sin(a), ny = Math.cos(a), up = [], lo = [];
+    for (var i = 0; i <= 16; i++) {
+      var s = i / 16, tk = th * 2.7 * Math.sqrt(s) * (1 - s), px = x + dx * ch * s, py = y + dy * ch * s;
+      up.push([px - nx * tk * 0.18, py - ny * tk * 0.18]); lo.push([px + nx * tk * 0.82, py + ny * tk * 0.82]);
+    }
+    return up.concat(lo.reverse());
+  }
+  function foilPath(c, u, y0, pts) { c.beginPath(); pts.forEach(function (p, i) { if (i) c.lineTo(p[0] * u, (p[1] - y0) * u); else c.moveTo(p[0] * u, (p[1] - y0) * u); }); c.closePath(); }
+  function drawFoil(c, u, y0, pts, o) { o = o || {}; K.shape(c, function () { foilPath(c, u, y0, pts); }, { fill: o.fill || RED, stroke: o.stroke || BP.line, lw: o.lw || 1, dash: o.dash }); }
+  function lerp(a, b, k) { return a + (b - a) * k; }
+
+  // the rear wing: main plane + DRS flap. The flap pivots about its back edge; open, the slot is 85 mm (the 2022-2025 limit)
+  var RW_MAIN = { x: -2280, y: 200, ch: 340, deg: 12, th: 40 }, FLAP = { tx: -2753, ty: 12, ch: 200, closed: 30 };
+  function mainUpperY(x, M) {   // height of the main plane's top surface at x (mm), for measuring the DRS slot
+    var s = (M.x - x) / (M.ch * Math.cos(M.deg * D2R)), tk = M.th * 2.7 * Math.sqrt(clamp(s, 0, 1)) * (1 - s);
+    return M.y - Math.sin(M.deg * D2R) * M.ch * s - Math.cos(M.deg * D2R) * tk * 0.18;
+  }
+  function flapLE(deg, F0) { return [F0.tx + F0.ch * Math.cos(deg * D2R), F0.ty + F0.ch * Math.sin(deg * D2R)]; }
+  var DRS_OPEN = FLAP.closed;
+  for (var dg = FLAP.closed; dg > 0; dg -= 0.1) { var le = flapLE(dg, FLAP); if (mainUpperY(le[0], RW_MAIN) - le[1] >= 85) { DRS_OPEN = dg; break; } }
+
+  function wheel(c, u, y0, x, s) {
+    var y = GND - 360;
+    circ(c, u, y0, x, y, 360, { fill: '#061F3B', lw: 1.4 });
+    c.save(); c.translate(x * u, (y - y0) * u);
+    for (var k = 4; k <= 9; k++) { c.strokeStyle = 'rgba(159,198,242,' + (0.08 + 0.05 * (k - 4)) + ')'; c.lineWidth = 0.7; c.beginPath(); c.arc(0, 0, (360 - k * 4) * u, -0.9, 0.9); c.stroke(); }
+    c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.beginPath(); c.arc(0, 0, 326 * u, 0, 6.2832); c.stroke();
+    c.strokeStyle = BP.amber; c.lineWidth = Math.max(0.8, 12 * u); c.beginPath(); c.arc(0, 0, 296 * u, 0, 6.2832); c.stroke();   // the tyre's colour stripe
+    c.restore();
+    circ(c, u, y0, x, y, 229, { fill: BP.bg, lw: 1.1 });                    // 18-inch rim behind its cover
+    K.hidden(c, function () { c.beginPath(); c.arc(x * u, (y - y0) * u, 164 * u, 0, 6.2832); });   // brake disc, hidden inside
+    c.save(); c.translate(x * u, (y - y0) * u); c.rotate((s.clock || 0) * (s.t > 0.98 ? 1.6 : 0));
+    c.strokeStyle = 'rgba(159,198,242,.35)'; c.lineWidth = 0.7;
+    for (var i = 0; i < 5; i++) { var a = i / 5 * 6.2832; c.beginPath(); c.moveTo(Math.cos(a) * 60 * u, Math.sin(a) * 60 * u); c.lineTo(Math.cos(a) * 210 * u, Math.sin(a) * 210 * u); c.stroke(); }
+    c.restore();
+    circ(c, u, y0, x, y, 45, { fill: BP.line, stroke: BP.line, lw: 0.6 });
+  }
+
+  var PARTS = [
+    { id: 'fwing', name: 'Front wing', sub: 'first to meet the air', y: 645, h: 265, x0: 2020, x1: 2800, dx: 200, dy: 0, z: 6, anchor: 0.5,
+      note: 'The first part the air hits. Its four slats push the front of the car down and steer the air round the front tyres and under the floor. The mechanics can change the angle of its flaps in a pit stop.',
+      draw: function (c, u) {
+        var y0 = 645;
+        S(c, u, y0, 'M2780 905 L2150 905 Q2075 902 2068 850 L2060 700 Q2062 655 2110 650 L2300 652 Q2420 660 2480 720 L2780 868 Z', { fill: BP.bg, stroke: BP.dim, lw: 0.9 });   // the endplate
+        S(c, u, y0, 'M2385 760 L2425 760 L2470 868 L2430 868 Z', { fill: BP.deep, lw: 0.9 });   // pylon up to the nose
+        drawFoil(c, u, y0, foil(2790, 880, 520, 4, 30));
+        drawFoil(c, u, y0, foil(2330, 832, 200, 14, 18));
+        drawFoil(c, u, y0, foil(2190, 790, 150, 26, 14));
+        drawFoil(c, u, y0, foil(2108, 737, 110, 40, 11));
+      } },
+    { id: 'nose', name: 'Nose', sub: 'crash structure', y: 560, h: 215, x0: 1750, x1: 2700, dx: 200, dy: -1250, z: 4, anchor: 0.5,
+      note: 'A hollow carbon-fibre cone. In a big crash it is built to crumple, soaking up the hit so the driver doesn\'t have to. Every new nose must pass an official crash test before it can race.',
+      draw: function (c, u) {
+        var y0 = 560;
+        S(c, u, y0, 'M1750 560 Q2250 590 2688 712 Q2716 732 2690 752 L1750 775 Z', { lw: 1.3 });
+        [0.3, 0.55, 0.78].forEach(function (f) { F(c, u, y0, 'M1760 ' + (565 + f * 200) + ' Q2250 ' + (594 + f * 150) + ' 2650 ' + (718 + f * 30)); });
+        Hd(c, u, y0, 'M1800 600 Q2200 625 2600 722 L2600 742 L1800 750');
+        K.rect(c, 1745 * u, 0, 14 * u, 215 * u, { fill: BP.deep, lw: 0.8 });
+      } },
+    { id: 'cell', name: 'Survival cell and halo', sub: 'carbon fibre · titanium', y: 60, h: 820, x0: -350, x1: 1750, dx: 0, dy: -1320, z: 3, anchor: 0.35,
+      note: 'The driver lies almost flat inside a carbon-fibre shell, feet higher than hips, with the fuel tank behind. The titanium hoop over the head is the halo: it weighs about 7 kg but can hold up about 12 tonnes, the weight of a double-decker bus.',
+      draw: function (c, u) {
+        var y0 = 60;
+        S(c, u, y0, 'M-350 880 L1150 880 L1750 795 L1750 565 Q1300 500 950 470 L0 470 L-40 100 Q-50 66 -100 64 L-350 60 Z', { lw: 1.3 });
+        // engraving: lines bunch up towards the bottom of the shell
+        [0.25, 0.45, 0.62, 0.76, 0.87].forEach(function (f) { var yy = 500 + f * 360; F(c, u, y0, 'M-330 ' + yy + ' L' + (1150 + f * 400) + ' ' + yy, 'rgba(159,198,242,' + (0.12 + f * 0.25).toFixed(2) + ')'); });
+        Hd(c, u, y0, 'M-330 490 L-40 490 L-40 860 L-330 860 Z');                          // fuel tank behind the driver
+        Hd(c, u, y0, 'M300 560 Q420 800 620 790 L1550 700');                              // the driver, lying almost flat
+        S(c, u, y0, 'M-28 150 Q-12 230 -8 330 L-40 330 Q-46 230 -56 150 Z', { fill: '#061F3B', stroke: BP.dim, lw: 0.8 });   // airbox intake
+        // helmet, then the halo over it
+        c.save(); c.beginPath(); c.rect(0, -1e4, 1e4 * u + 1e4, (470 - y0) * u + 1e4); c.clip();
+        circ(c, u, y0, 330, 445, 125, { fill: 'rgba(255,201,74,.85)', stroke: BP.line, lw: 1 });
+        c.restore();
+        K.rect(c, 360 * u, (390 - y0) * u, 95 * u, 30 * u, { fill: BP.deep, stroke: BP.deep, lw: 0.5 });
+        pth(c, u, y0, 'M940 478 Q800 330 640 316 L150 312 Q70 330 50 470');
+        c.lineCap = 'round'; c.strokeStyle = BP.line; c.lineWidth = Math.max(2.4, 55 * u); c.stroke();
+        c.strokeStyle = BP.bg; c.lineWidth = Math.max(0.8, 22 * u); c.stroke(); c.lineCap = 'butt';
+        c.save(); c.beginPath(); c.rect(-350 * u, (480 - y0) * u, 30 * u, 400 * u); K.hatch(c, 4, BP.faint); c.restore();
+      } },
+    { id: 'pods', name: 'Sidepods', sub: 'radiators keep it cool', y: 130, h: 740, x0: -1300, x1: 350, dx: 0, dy: -360, z: 5, anchor: 0.58,
+      note: 'The bulges on each side, joined to the engine cover. Air rushes in at the front, through radiators, and carries the engine\'s heat away. There are no cooling fans: only the air the car drives through.',
+      draw: function (c, u) {
+        var y0 = 130;
+        S(c, u, y0, 'M350 590 Q60 500 -340 480 L-350 130 Q-800 260 -1300 620 L-1300 780 L-700 870 L300 870 L350 800 Z', { lw: 1.3 });
+        F(c, u, y0, 'M330 610 Q-200 560 -1250 700', 'rgba(159,198,242,.45)');
+        F(c, u, y0, 'M300 830 Q-400 805 -1250 765');
+        F(c, u, y0, 'M-380 200 Q-800 300 -1260 640');
+        for (var i = 0; i < 4; i++) F(c, u, y0, 'M' + (-620 - i * 90) + ' ' + (345 + i * 45) + ' L' + (-560 - i * 90) + ' ' + (322 + i * 45), BP.dim, 0.9);   // cooling louvres
+        Hd(c, u, y0, 'M-420 620 L120 600 L180 840 L-360 850 Z');                            // radiator inside
+        Hd(c, u, y0, 'M-300 640 L-240 830 M-150 632 L-90 836 M0 625 L60 838');
+        S(c, u, y0, 'M350 600 Q318 600 318 640 L318 770 Q318 790 350 790 Z', { fill: '#061F3B', stroke: BP.dim, lw: 0.9 });   // the air inlet
+      } },
+    { id: 'pu', name: 'Power unit', sub: 'V6 turbo + hybrid', y: 490, h: 360, x0: -1250, x1: -360, dx: -150, dy: -1260, z: 2, anchor: 1,
+      note: 'A small 1.6 litre V6 engine that spins up to 15,000 times a minute, plus a turbo and electric motors. The hybrid part catches energy when the car brakes, stores it in a battery under the fuel tank, then gives it back as an extra push. Together: about 1,000 horsepower.',
+      draw: function (c, u) {
+        var y0 = 490;
+        S(c, u, y0, 'M-360 540 L-1080 590 L-1180 840 L-360 850 Z', { lw: 1.2, hatch: 6 });
+        S(c, u, y0, 'M-400 545 L-420 500 L-880 520 L-900 580 Z', { fill: BP.deep, lw: 0.9 });   // air plenum on top
+        [-560, -760, -960].forEach(function (x) { circ(c, u, y0, x, 690, 70, { fill: BP.bg, stroke: BP.dim, lw: 0.9 }); circ(c, u, y0, x, 690, 20, { fill: BP.deep, stroke: BP.dim, lw: 0.7 }); });
+        circ(c, u, y0, -1170, 580, 75, { fill: BP.deep, lw: 1.1 });                                      // turbo
+        c.strokeStyle = BP.dim; c.lineWidth = 0.7; c.beginPath(); for (var a = 0; a < 12; a += 0.3) { var r = (12 + a * 5) * u, xx = -1170 * u + Math.cos(a) * r, yy = (580 - y0) * u + Math.sin(a) * r; if (a) c.lineTo(xx, yy); else c.moveTo(xx, yy); } c.stroke();
+        circ(c, u, y0, -1170, 580, 26, { fill: 'rgba(124,240,188,.35)', stroke: BP.ok, lw: 0.9 });     // MGU-H on the turbo shaft
+        K.rect(c, -600 * u, (765 - y0) * u, 180 * u, 65 * u, { fill: 'rgba(124,240,188,.22)', stroke: BP.ok, lw: 0.9 });   // MGU-K
+        F(c, u, y0, 'M-560 798 L-520 778 L-520 812 L-470 790', BP.ok, 0.9);
+      } },
+    { id: 'gbox', name: 'Gearbox', sub: '8 gears + reverse', y: 600, h: 220, x0: -2260, x1: -1250, dx: -200, dy: -880, z: 1, anchor: 0,
+      note: 'Eight gears, changed with paddles behind the steering wheel in a few hundredths of a second. Its case is so strong that the rear wing and the back wheels\' suspension bolt straight onto it. The red light on the back flashes in the rain.',
+      draw: function (c, u) {
+        var y0 = 600;
+        S(c, u, y0, 'M-1250 600 L-1900 640 L-2250 700 L-2250 745 L-1950 790 L-1250 820 Z', { lw: 1.2 });
+        [[-1440, 710, 62], [-1610, 722, 48], [-1760, 732, 36]].forEach(function (g) { Hd(c, u, y0, 'M' + (g[0] + g[2]) + ' ' + g[1] + ' Q' + (g[0] + g[2]) + ' ' + (g[1] + g[2]) + ' ' + g[0] + ' ' + (g[1] + g[2]) + ' Q' + (g[0] - g[2]) + ' ' + (g[1] + g[2]) + ' ' + (g[0] - g[2]) + ' ' + g[1] + ' Q' + (g[0] - g[2]) + ' ' + (g[1] - g[2]) + ' ' + g[0] + ' ' + (g[1] - g[2]) + ' Q' + (g[0] + g[2]) + ' ' + (g[1] - g[2]) + ' ' + (g[0] + g[2]) + ' ' + g[1]); });
+        F(c, u, y0, 'M-1260 760 L-1940 720', 'rgba(159,198,242,.4)');
+        K.rect(c, -2250 * u, (705 - y0) * u, 32 * u, 32 * u, { fill: '#FF4D3D', stroke: BP.line, lw: 0.8 });   // rain light
+      } },
+    { id: 'rwing', name: 'Rear wing', sub: 'with the DRS flap', y: 0, h: 560, x0: -2800, x1: -2150, dx: -150, dy: -1380, z: 7, anchor: 0.12,
+      note: 'Another upside-down wing, pressing the back tyres into the road. On the straights the driver can press a button to tip the top flap open (DRS). Air slips through the gap, so the car goes about 10 to 15 km/h faster. Tap it to see the flap move.',
+      draw: function (c, u, k, s) {
+        var y0 = 0;
+        S(c, u, y0, 'M-2790 0 L-2300 0 Q-2262 4 -2262 40 L-2262 300 Q-2264 420 -2330 470 L-2700 470 Q-2790 470 -2790 400 Z', { fill: BP.bg, stroke: BP.dim, lw: 0.9 });   // endplate
+        S(c, u, y0, 'M-2470 150 Q-2420 300 -2290 390 L-2150 560 L-2200 560 L-2330 412 Q-2470 320 -2510 150 Z', { fill: BP.deep, lw: 0.9 });   // swan-neck pylon down to the gearbox
+        drawFoil(c, u, y0, foil(RW_MAIN.x, RW_MAIN.y, RW_MAIN.ch, RW_MAIN.deg, RW_MAIN.th));
+        drawFoil(c, u, y0, foil(-2300, 440, 220, 6, 22));                                          // beam wing
+        var open = s.selected ? 0.5 - 0.5 * Math.cos((s.clock || 0) * 2.2) : 0, dg = lerp(FLAP.closed, DRS_OPEN, open), le = flapLE(dg, FLAP);
+        if (s.selected) drawFoil(c, u, y0, foil(flapLE(DRS_OPEN, FLAP)[0], flapLE(DRS_OPEN, FLAP)[1], FLAP.ch, DRS_OPEN, 22), { fill: 'rgba(0,0,0,0)', stroke: BP.dim, lw: 0.8, dash: [3, 3] });
+        drawFoil(c, u, y0, foil(le[0], le[1], FLAP.ch, dg, 22));
+        F(c, u, y0, 'M-2520 ' + (mainUpperY(-2520, RW_MAIN) - 4) + ' L' + (le[0] - 50) + ' ' + (le[1] + 18), BP.line, 1);   // DRS actuator rod
+        if (s.selected && u > 0.07) K.text(c, open > 0.5 ? 'DRS OPEN' : 'DRS SHUT', -2525 * u, -30 * u - 4, { align: 'center', size: 9, col: BP.amber });
+      } },
+    { id: 'floor', name: 'Floor', sub: 'makes most of the downforce', y: 760, h: 190, x0: -2000, x1: 1750, dx: 0, dy: 260, z: 0, anchor: 0.75,
+      note: 'The biggest wing of all, upside down under the car. Two tunnels squeeze the air rushing underneath, so it speeds up and sucks the car down, more than half of all its downforce. Underneath is a wooden plank: wear it down more than 1 mm and the car is disqualified.',
+      draw: function (c, u, k, s) {
+        var y0 = 760;
+        S(c, u, y0, 'M1700 880 L-1450 880 L-1990 762 L-2000 790 L-1470 932 L1680 935 Q1745 932 1745 905 Q1745 880 1700 880 Z', { lw: 1.2 });
+        Hd(c, u, y0, 'M1500 900 Q600 925 -300 922 Q-1200 912 -1980 778');                          // the tunnel roof, hidden inside
+        K.rect(c, -900 * u, (935 - y0) * u, 2000 * u, Math.max(1.5, 10 * u), { fill: 'rgba(255,201,74,.45)', stroke: BP.amber, lw: 0.8 });   // the plank
+        if (s.selected) {   // air squeezed underneath, then pulling the car down
+          c.save(); c.setLineDash([5, 4]); c.lineDashOffset = -(s.clock || 0) * 30; c.strokeStyle = BP.air; c.lineWidth = 1.3;
+          [0, 1].forEach(function (j) { pth(c, u, y0, 'M1900 ' + (975 + j * 45) + ' L-800 ' + (975 + j * 30) + ' Q-1500 ' + (975 + j * 25) + ' -2150 ' + (820 + j * 40)); c.stroke(); });
+          c.restore();
+          [-900, 0, 900].forEach(function (x) { K.arrow(c, x * u, (720 - y0) * u, x * u, (860 - y0) * u, BP.ok, 2); });
+        }
+      } },
+    { id: 'wheels', name: 'Wheels and tyres', sub: '18 in · smooth slicks', y: 230, h: 720, x0: -2260, x1: 2060, dx: 0, dy: 0, z: 8, anchor: 0.45,
+      note: 'Smooth racing tyres with no tread, so more rubber touches the road. They grip best when hot, around 100 °C. The back ones are 405 mm wide, the front 305 mm. Inside the wheels, the brake discs glow at over 1,000 °C.',
+      draw: function (c, u, k, s) { wheel(c, u, 230, FX, s); wheel(c, u, 230, RX, s); } }
+  ];
+
+  var F1X = {
+    title: 'FIG 6.C · ARI F1 · SIDE VIEW', width: 5600, reserve: [170, 260], stagger: 0.3, narrowBalloons: true,
+    height: function (W) { return Math.round(W < 560 ? clamp(W * 0.82, 290, 400) : clamp(W * 0.4, 430, 480)); },
+    span: { x0: RX, x1: FX, y: 1010, label: '3,600 WHEELBASE' },
+    parts: PARTS,
+    overlay: function (c, o) {   // the ground, overall length and height, shown while it is together
+      var a = clamp(1 - o.t / 0.3, 0, 1); if (a <= 0) return;
+      var u = o.u, X = function (x) { return o.cx + x * u; }, Y = function (y) { return o.cy + y * u; };
+      c.globalAlpha = a;
+      K.line(c, [X(-2950), Y(GND), X(2950), Y(GND)], BP.dim, 1);
+      for (var x = -2900; x < 2950; x += 120) K.line(c, [X(x), Y(GND), X(x) - 5, Y(GND) + 5], BP.faint, 0.6);
+      var yl = Y(-110);   // overall length
+      K.line(c, [X(-2800), Y(-8), X(-2800), yl - 4], BP.faint, 0.7, [2, 3]); K.line(c, [X(2800), Y(870), X(2800), yl - 4], BP.faint, 0.7, [2, 3]);
+      K.line(c, [X(-2800), yl, X(2800), yl], BP.dim, 0.9); K.head(c, X(-2800), yl, -1, 0, BP.dim, 5); K.head(c, X(2800), yl, 1, 0, BP.dim, 5);
+      var lab = 'ABOUT 5,600 OVERALL'; c.font = '600 9.5px ' + K.MONO; var tw = c.measureText(lab).width;
+      c.fillStyle = BP.bg; c.fillRect(o.cx - tw / 2 - 4, yl - 7, tw + 8, 13); K.text(c, lab, o.cx, yl + 3.5, { align: 'center', size: 9.5, col: BP.line });
+      var xh = X(2880);   // overall height
+      K.line(c, [X(-2240), Y(0), xh + 4, Y(0)], BP.faint, 0.7, [2, 3]);
+      K.line(c, [xh, Y(0), xh, Y(GND)], BP.dim, 0.9); K.head(c, xh, Y(0), 0, -1, BP.dim, 5); K.head(c, xh, Y(GND), 0, 1, BP.dim, 5);
+      if (Y(560) - Y(0) > 44) { c.save(); c.translate(xh - 5, Y(280)); c.rotate(-Math.PI / 2); K.text(c, '950 MAX', 0, 0, { align: 'center', size: 9, col: BP.line }); c.restore(); }
+      c.globalAlpha = 1;
+    }
+  };
+
+  var cv = document.getElementById('xvF1'); if (!cv) return;
+  var view = AriExploded.create(cv, F1X);
+  var xf = document.getElementById('xf'), xfVal = document.getElementById('xfVal'), btn = document.getElementById('xfBtn');
+  var K1 = document.getElementById('xfK'), N1 = document.getElementById('xfName'), T1 = document.getElementById('xfNote'), list = document.getElementById('xfList');
+  function show(p) {
+    Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) { tr.classList.toggle('on', !!p && tr.dataset.id === p.id); });
+    if (!p) { K1.textContent = 'TAP A PART'; N1.textContent = 'Tap any part of the drawing'; T1.textContent = 'Take the car apart first, then tap a part or its number to find out what it does.'; return; }
+    K1.textContent = 'PART ' + p.no + ' · ' + p.sub.toUpperCase(); N1.textContent = p.name; T1.textContent = p.note; track('fpart_' + p.id);
+  }
+  list.innerHTML = '<thead><tr><th>No.</th><th>Part</th></tr></thead><tbody>' + PARTS.map(function (p) { return '<tr data-id="' + p.id + '"><td>' + p.no + '</td><td>' + p.name + '<small>' + p.sub + '</small></td></tr>'; }).join('') + '</tbody>';
+  Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) {
+    tr.addEventListener('click', function () { var p = PARTS.filter(function (q) { return q.id === tr.dataset.id; })[0]; view.select(p.id); show(p); if (view.t() < 0.9) view.animateTo(1, 1.4); });
+  });
+  view.onPick(show);
+  xf.addEventListener('input', function () { view.set(xf.value / 100); });
+  btn.addEventListener('click', function () { view.animateTo(view.t() > 0.5 ? 0 : 1, 1.6); track('fexplode'); });
+
+  // ===================== Top view and Section A-A (SVG, built here so the geometry stays exact) =====================
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent.appendChild(e); return e; }
+  function f1(n) { return (Math.round(n * 10) / 10).toString(); }
+  function dimH(g, x0, x1, y, label, cls) {
+    el(g, 'path', { 'class': 'dl', d: 'M' + x0 + ' ' + y + ' H' + x1 });
+    el(g, 'path', { 'class': 'dh', d: 'M' + x0 + ' ' + y + ' l6 -3 v6z M' + x1 + ' ' + y + ' l-6 -3 v6z' });
+    var w = label.length * 5.5 + 8; el(g, 'rect', { x: f1((x0 + x1) / 2 - w / 2), y: y - 6, width: f1(w), height: 12, fill: '#0D3B6E' });
+    el(g, 'text', { x: f1((x0 + x1) / 2), y: y + 3.2, 'text-anchor': 'middle', 'class': cls || '' }, label);
+  }
+  function dimV(g, x, y0, y1, label) {
+    el(g, 'path', { 'class': 'dl', d: 'M' + x + ' ' + y0 + ' V' + y1 });
+    el(g, 'path', { 'class': 'dh', d: 'M' + x + ' ' + y0 + ' l-3 6 h6z M' + x + ' ' + y1 + ' l-3 -6 h6z' });
+    var w = label.length * 5.5 + 8, cy = (y0 + y1) / 2;
+    el(g, 'rect', { x: f1(x - 6), y: f1(cy - w / 2), width: 12, height: f1(w), fill: '#0D3B6E' });
+    el(g, 'text', { x: x, y: f1(cy), 'text-anchor': 'middle', transform: 'rotate(-90 ' + x + ' ' + f1(cy) + ') translate(0 3.2)' }, label);
+  }
+
+  // Top view: nose at the top, 0.05 px per mm. Y runs from the front wing (0) to the back of the rear wing (5,600).
+  var tv = document.getElementById('xfTop');
+  if (tv) {
+    var Sc = 0.05, CX = 150, OY = 30;
+    var px = function (X) { return f1(CX + X * Sc); }, py = function (Y) { return f1(OY + Y * Sc); };
+    var poly = function (pts, mirror) { var d = 'M' + pts.map(function (p) { return px(p[0]) + ' ' + py(p[1]); }).join(' L'); return d + ' Z'; };
+    el(tv, 'path', { 'class': 'cl', d: 'M150 20 V318' });
+    // floor (hidden, under the body)
+    el(tv, 'path', { 'class': 'hid', d: poly([[-300, 1100], [300, 1100], [800, 1500], [800, 4200], [560, 4600], [-560, 4600], [-800, 4200], [-800, 1500]]) });
+    // suspension arms, then tyres
+    [-1, 1].forEach(function (sd) {
+      el(tv, 'path', { 'class': 'ln dim', d: 'M' + px(sd * 200) + ' ' + py(960) + ' L' + px(sd * 680) + ' ' + py(1100) + ' L' + px(sd * 240) + ' ' + py(1260) + ' M' + px(sd * 190) + ' ' + py(4560) + ' L' + px(sd * 600) + ' ' + py(4700) + ' L' + px(sd * 190) + ' ' + py(4840) });
+      var fx0 = sd > 0 ? 670 : -975, rx0 = sd > 0 ? 595 : -1000;
+      el(tv, 'rect', { 'class': 'lnf', x: px(fx0), y: py(740), width: f1(305 * Sc), height: f1(720 * Sc), rx: 2 });
+      el(tv, 'rect', { 'class': 'lnf', x: px(rx0), y: py(4340), width: f1(405 * Sc), height: f1(720 * Sc), rx: 2 });
+    });
+    // body: nose, survival cell, sidepods, engine cover, gearbox
+    el(tv, 'path', { 'class': 'lnf', d: 'M' + px(-190) + ' ' + py(1100) + ' L' + px(-420) + ' ' + py(1800) + ' L' + px(-420) + ' ' + py(2450) + ' L' + px(-780) + ' ' + py(2520) + ' L' + px(-780) + ' ' + py(3000) + ' Q' + px(-760) + ' ' + py(3700) + ' ' + px(-300) + ' ' + py(4100) + ' L' + px(-170) + ' ' + py(4250) + ' L' + px(-110) + ' ' + py(4900) + ' L' + px(110) + ' ' + py(4900) + ' L' + px(170) + ' ' + py(4250) + ' L' + px(300) + ' ' + py(4100) + ' Q' + px(760) + ' ' + py(3700) + ' ' + px(780) + ' ' + py(3000) + ' L' + px(780) + ' ' + py(2520) + ' L' + px(420) + ' ' + py(2450) + ' L' + px(420) + ' ' + py(1800) + ' L' + px(190) + ' ' + py(1100) + ' Z' });
+    el(tv, 'path', { 'class': 'lnf', d: 'M' + px(-70) + ' ' + py(140) + ' Q' + px(0) + ' ' + py(70) + ' ' + px(70) + ' ' + py(140) + ' L' + px(190) + ' ' + py(1100) + ' L' + px(-190) + ' ' + py(1100) + ' Z' });
+    [-1, 1].forEach(function (sd) {
+      el(tv, 'rect', { 'class': 'inlet', x: px(sd > 0 ? 440 : -770), y: py(2470), width: f1(330 * Sc), height: f1(80 * Sc) });
+      el(tv, 'rect', { 'class': 'hid', x: px(sd > 0 ? 460 : -740), y: py(2620), width: f1(280 * Sc), height: f1(600 * Sc) });
+    });
+    el(tv, 'path', { 'class': 'ln dim', d: 'M150 ' + py(3150) + ' V' + py(4250) });
+    el(tv, 'rect', { 'class': 'ln dim', x: px(-140), y: py(2840), width: f1(280 * Sc), height: f1(320 * Sc), rx: 3 });
+    el(tv, 'ellipse', { 'class': 'ln', cx: 150, cy: py(2330), rx: f1(230 * Sc), ry: f1(470 * Sc) });
+    el(tv, 'circle', { 'class': 'helm', cx: 150, cy: py(2470), r: f1(125 * Sc) });
+    el(tv, 'path', { 'class': 'halo', d: 'M150 ' + py(1860) + ' C150 ' + py(1990) + ' ' + px(-250) + ' ' + py(2030) + ' ' + px(-250) + ' ' + py(2230) + ' V' + py(2760) + ' M150 ' + py(1860) + ' C150 ' + py(1990) + ' ' + px(250) + ' ' + py(2030) + ' ' + px(250) + ' ' + py(2230) + ' V' + py(2760) });
+    el(tv, 'rect', { 'class': 'redl', x: px(-35), y: py(4900), width: f1(70 * Sc), height: f1(60 * Sc) });
+    // wings (red), front with endplates
+    el(tv, 'path', { 'class': 'wingr', d: 'M' + px(-950) + ' ' + py(90) + ' Q150 ' + py(-90) + ' ' + px(950) + ' ' + py(90) + ' L' + px(950) + ' ' + py(420) + ' L' + px(560) + ' ' + py(420) + ' Q150 ' + py(300) + ' ' + px(-560) + ' ' + py(420) + ' L' + px(-950) + ' ' + py(420) + ' Z' });
+    [-1, 1].forEach(function (sd) { el(tv, 'rect', { 'class': 'lnf', x: px(sd > 0 ? 950 : -990), y: py(70), width: f1(40 * Sc), height: f1(380 * Sc) }); });
+    el(tv, 'rect', { 'class': 'wingr', x: px(-525), y: py(5050), width: f1(1050 * Sc), height: f1(550 * Sc) });
+    el(tv, 'path', { 'class': 'ln dim', d: 'M' + px(-525) + ' ' + py(5380) + ' H' + px(525) });
+    // section line A-A through the rear wing
+    el(tv, 'path', { 'class': 'cl', d: 'M' + px(-700) + ' ' + py(5270) + ' H' + px(700), style: 'stroke:#FFC94A;stroke-dasharray:8 3 2 3' });
+    el(tv, 'path', { 'class': 'amberf', d: 'M' + px(-700) + ' ' + py(5270) + ' l0 -6 l-3 0 l3 -5 l3 5 l-3 0z M' + px(700) + ' ' + py(5270) + ' l0 -6 l-3 0 l3 -5 l3 5 l-3 0z' });
+    el(tv, 'text', { x: f1(CX - 700 * Sc - 8), y: f1(OY + 5270 * Sc + 3), 'text-anchor': 'end', 'class': 'amber' }, 'A');
+    el(tv, 'text', { x: f1(CX + 700 * Sc + 8), y: f1(OY + 5270 * Sc + 3), 'class': 'amber' }, 'A');
+    // labels
+    el(tv, 'path', { 'class': 'lead', d: 'M' + px(250) + ' ' + py(2150) + ' L210 ' + py(1950) + ' H228' }); el(tv, 'text', { x: 228, y: f1(OY + 1950 * Sc - 4), 'text-anchor': 'end' }, 'HALO');
+    el(tv, 'path', { 'class': 'lead', d: 'M' + px(-600) + ' ' + py(2900) + ' L92 ' + py(3150) + ' H50' }); el(tv, 'text', { x: 50, y: f1(OY + 3150 * Sc - 4), 'class': 'dimt' }, 'SIDEPOD');
+    el(tv, 'path', { 'class': 'lead', d: 'M' + px(-700) + ' ' + py(4000) + ' L92 ' + py(3700) + ' H50' }); el(tv, 'text', { x: 50, y: f1(OY + 3700 * Sc + 11), 'class': 'dimt' }, 'FLOOR');
+    el(tv, 'text', { x: 50, y: f1(OY + 3700 * Sc + 21), 'class': 'dimt' }, '(HIDDEN)');
+    el(tv, 'text', { x: 150, y: 12, 'text-anchor': 'middle', 'class': 'dimt' }, '▲ FRONT');
+    // dimensions
+    el(tv, 'path', { 'class': 'ext', d: 'M160 ' + py(0) + ' H246 M' + px(530) + ' ' + py(5600) + ' H246' });
+    dimV(tv, 240, +py(0), +py(5600), 'ABOUT 5,600');
+    el(tv, 'path', { 'class': 'ext', d: 'M' + px(-975) + ' ' + py(1100) + ' H34 M' + px(-1000) + ' ' + py(4700) + ' H34' });
+    dimV(tv, 40, +py(1100), +py(4700), 'WHEELBASE 3,600 MAX');
+    el(tv, 'path', { 'class': 'ext', d: 'M' + px(-1000) + ' ' + py(5065) + ' V334 M' + px(1000) + ' ' + py(5065) + ' V334' });
+    dimH(tv, +px(-1000), +px(1000), 330, '2,000 MAX');
+  }
+
+  // Section A-A: the rear wing cut through, 0.5 px per mm. Car's nose is to the right, so the air comes from the right.
+  var sg = document.getElementById('xfSec'), secFlap = null;
+  if (sg) {
+    var s2 = 0.5, OX = 272 - RW_MAIN.x * s2, OYs = 175 - RW_MAIN.y * s2;
+    var q = function (x, y) { return f1(OX + x * s2) + ' ' + f1(OYs + y * s2); };
+    var fd = function (pts) { return 'M' + pts.map(function (p) { return q(p[0], p[1]); }).join(' L') + ' Z'; };
+    var openLE = flapLE(DRS_OPEN, FLAP);
+    // air: over the top and underneath, thrown upwards behind the wing
+    el(sg, 'path', { 'class': 'airl', d: 'M298 118 C220 118 170 100 120 80 L44 42' });
+    el(sg, 'path', { 'class': 'airl', d: 'M298 205 C230 208 160 196 110 170 L46 124' });
+    el(sg, 'path', { 'class': 'airl', d: 'M298 245 C220 248 150 238 96 208 L46 172' });
+    el(sg, 'path', { 'class': 'airf', d: 'M38 39 L46 37.5 L43 45Z M40 120 L48 121 L44 128Z M40 168 L48 169 L44 176Z' });
+    el(sg, 'text', { x: 292, y: 110, 'text-anchor': 'end', 'class': 'dimt' }, '← AIR');
+    el(sg, 'text', { x: 62, y: 28, 'class': 'airt' }, 'AIR THROWN UP');
+    // wing sections
+    el(sg, 'path', { 'class': 'wingr', d: fd(foil(RW_MAIN.x, RW_MAIN.y, RW_MAIN.ch, RW_MAIN.deg, RW_MAIN.th)) });
+    el(sg, 'path', { 'class': 'wingo', d: fd(foil(openLE[0], openLE[1], FLAP.ch, DRS_OPEN, 22)) });
+    var cl0 = flapLE(FLAP.closed, FLAP);
+    secFlap = el(sg, 'path', { 'class': 'wingr', d: fd(foil(cl0[0], cl0[1], FLAP.ch, FLAP.closed, 22)) });
+    el(sg, 'circle', { 'class': 'lnf', cx: f1(OX + FLAP.tx * s2), cy: f1(OYs + FLAP.ty * s2), r: 2.2 });
+    // DRS slot, measured
+    var gx = OX + openLE[0] * s2 + 4, gTop = OYs + openLE[1] * s2, gBot = OYs + mainUpperY(openLE[0] + 8, RW_MAIN) * s2;
+    el(sg, 'path', { 'class': 'amberl', d: 'M' + f1(gx) + ' ' + f1(gTop) + ' V' + f1(gBot) });
+    el(sg, 'path', { 'class': 'amberf', d: 'M' + f1(gx) + ' ' + f1(gTop) + ' l-3 6 h6z M' + f1(gx) + ' ' + f1(gBot) + ' l-3 -6 h6z' });
+    el(sg, 'text', { x: f1(gx + 8), y: f1((gTop + gBot) / 2 + 3), 'class': 'amber' }, '85 MAX');
+    // labels
+    el(sg, 'path', { 'class': 'lead', d: 'M226 166 L234 152 H290' }); el(sg, 'text', { x: 290, y: 148, 'text-anchor': 'end' }, 'MAIN PLANE');
+    el(sg, 'path', { 'class': 'lead', d: 'M28 72 L36 79' }); el(sg, 'text', { x: 6, y: 68 }, 'DRS FLAP');
+    el(sg, 'text', { x: 12, y: 254, 'class': 'dimt' }, 'FLAP SHUT: MORE GRIP');
+    el(sg, 'text', { x: 12, y: 266, 'class': 'dimt' }, 'OPEN (DASHED): LESS DRAG');
+    // the push
+    el(sg, 'path', { 'class': 'grnl', d: 'M180 186 V250' }); el(sg, 'path', { 'class': 'grnf', d: 'M180 260 L174.5 249 H185.5Z' });
+    el(sg, 'text', { x: 192, y: 262, 'class': 'grn' }, 'CAR PUSHED DOWN');
+    el(sg, 'text', { x: 12, y: 290, 'class': 'dimt' }, 'SECTION A–A · SIZES IN MM');
+  }
+
+  // motion: the canvas, the wheels and the DRS flap while the sheet is on screen
+  var on = false, last = 0, clk = 0;
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function frame(ts) {
+    var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts; clk += dt;
+    view.tick(dt);
+    if (secFlap && !reduce) {
+      var k = clamp(0.5 - 0.5 * Math.cos(clk * 1.3) * 1.25, 0, 1), dg = lerp(FLAP.closed, DRS_OPEN, k), le = flapLE(dg, FLAP);
+      secFlap.setAttribute('d', 'M' + foil(le[0], le[1], FLAP.ch, dg, 22).map(function (p) { return f1(272 + (p[0] - RW_MAIN.x) * 0.5) + ' ' + f1(175 + (p[1] - RW_MAIN.y) * 0.5); }).join(' L') + ' Z');
+    }
+    xfVal.textContent = Math.round(view.t() * 100) + '%'; if (view.busy()) xf.value = Math.round(view.t() * 100);
+    btn.textContent = view.t() > 0.5 ? 'Put it back together' : 'Take it apart';
+    if (on) requestAnimationFrame(frame); else last = 0;
+  }
+  var io = new IntersectionObserver(function (e) { var vis = e.some(function (x) { return x.isIntersecting; }); if (vis && !on) { on = true; requestAnimationFrame(frame); } else if (!vis) on = false; }, { rootMargin: '100px' });
+  io.observe(document.getElementById('takeApart'));
+  window.addEventListener('resize', function () { view.resize(); });
+  window.__ariX = { view: view };
 })();
 </script>
 <script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
