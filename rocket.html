@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Ari – How does a rocket fly with nothing to push on?</title>
+  <meta name="description" content="Pull a rocket apart, look inside its motor, then fire it up. Playable science for children aged 7–12.">
+  <meta property="og:title" content="How does a rocket fly with nothing to push on?">
+  <meta property="og:description" content="Explode a rocket into its parts, then fire up its motor and see what it throws out of the back.">
+  <meta name="theme-color" content="#FFF8F3">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --peach-light: #FFF8F3; --peach-mid: #FFE8D6; --peach-warm: #FFDAB3;
+      --orange: #FF8C42; --orange-dark: #E8622C;
+      --brown-dark: #5D4037; --brown-mid: #8D6E63; --brown-light: #BCAAA4; --ink: #4A3229;
+      --rig: #191C30; --rig-2: #232842; --rig-3: #2E3454;
+      --rig-text: #E9E4F5; --rig-dim: #9EA3C4;
+      --mint: #6FD3A8; --mint-dark: #2F9D72; --sun: #FFC845; --sun-dark: #C98A12; --hot: #FF4D3D;
+      --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Nunito', sans-serif; background: var(--peach-light); color: var(--brown-dark); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 16px; }
+
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+    .logo { font-family: 'Fredoka', sans-serif; font-size: 26px; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--brown-dark); text-decoration: none; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .nav-link { font-weight: 800; font-size: 14px; color: var(--brown-dark); text-decoration: none; border: 2px solid var(--brown-dark); border-radius: 20px; padding: 7px 14px; }
+
+    .intro { padding: 6px 0 18px; max-width: 780px; }
+    .eyebrow { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); }
+    h1 { font-family: 'Fredoka', sans-serif; font-weight: 700; font-size: clamp(31px, 7.4vw, 56px); line-height: 1.04; margin: 8px 0 10px; color: var(--ink); letter-spacing: -.01em; }
+    h1 em { font-style: normal; color: var(--orange-dark); }
+    .lede { font-size: 18px; color: var(--brown-mid); line-height: 1.5; }
+    .lede b { color: var(--ink); }
+
+    .rig { position: relative; background: var(--rig); border-radius: 28px; padding: 10px; color: var(--rig-text); box-shadow: 0 30px 70px rgba(40,30,60,.28), inset 0 1px 0 rgba(255,255,255,.06); display: grid; gap: 10px; }
+    .rig::before { content: ''; position: absolute; inset: 12px -10px -12px 10px; z-index: -1; background: var(--peach-warm); border-radius: 28px; }
+    .screen { position: relative; border-radius: 20px; overflow: hidden; background: #14172A; }
+    .screen + .screen { margin-top: 10px; }
+    .screen-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 8px 6px 12px; background: #171A2E; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .screen-tag { font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; color: var(--rig-dim); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clock { font-family: var(--mono); font-weight: 600; font-size: 14px; color: white; letter-spacing: .04em; }
+    .clock small { color: var(--rig-dim); font-size: 10.5px; margin-left: 4px; }
+    .screen-tools { display: flex; gap: 6px; flex-shrink: 0; }
+    .tool { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--rig-text); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: 6px 10px; cursor: pointer; min-height: 30px; }
+    .tool[aria-pressed="true"] { background: var(--rig-text); color: var(--rig); }
+    #scene { display: block; width: 100%; touch-action: none; cursor: crosshair; }
+    #cell { display: block; width: 100%; }
+
+    .cockpit { display: grid; gap: 10px; align-content: start; }
+    .gauges { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .gauge { background: var(--rig-2); border-radius: 16px; padding: 8px 6px; text-align: center; border: 1px solid rgba(255,255,255,.05); }
+    .gauge svg { width: 100%; max-width: 120px; height: auto; display: block; margin: 0 auto; }
+    .g-val { font-family: var(--mono); font-weight: 600; font-size: 15px; color: white; margin-top: -4px; }
+    .g-lbl { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; color: var(--rig-dim); }
+
+    .panel-box { background: var(--rig-2); border-radius: 16px; padding: 10px 14px 10px; border: 1px solid rgba(255,255,255,.05); }
+    .box-head { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--rig-dim); margin-bottom: 6px; }
+    .box-head b { color: white; font-weight: 600; }
+    .box-head b.good { color: var(--mint); }
+    .box-foot { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); margin-top: 2px; }
+    input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 34px; background: transparent; cursor: pointer; }
+    input[type=range]::-webkit-slider-runnable-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-moz-range-track { height: 10px; border-radius: 8px; background: linear-gradient(90deg, #F2A06B, #FFE08A 50%, #F2A06B); }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 30px; height: 34px; margin-top: -12px; border-radius: 9px; background: repeating-linear-gradient(90deg, #3B63C4 0 5px, #6F92E6 5px 7px); border: 2px solid #0F1222; box-shadow: 0 3px 0 #0F1222; }
+    input[type=range]::-moz-range-thumb { width: 26px; height: 30px; border-radius: 9px; background: #4C74D6; border: 2px solid #0F1222; }
+
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app {
+      position: relative; overflow: hidden; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 15.5px; line-height: 1.1;
+      border: none; border-radius: 16px; padding: 10px 6px 9px; cursor: pointer; color: var(--rig-text); background: var(--rig-3);
+      box-shadow: 0 4px 0 #1C2038; display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 70px; justify-content: center;
+      transition: transform .08s, box-shadow .08s;
+    }
+    .app:active { transform: translateY(3px); box-shadow: 0 1px 0 #1C2038; }
+    .app .ic { font-size: 20px; line-height: 1; }
+    .app small { font-family: var(--mono); font-size: 9.5px; font-weight: 600; color: var(--rig-dim); letter-spacing: .02em; }
+    .app.on { background: var(--sun); color: #3A2A06; box-shadow: 0 4px 0 var(--sun-dark); }
+    .app.on small { color: #6B4E10; }
+    .app .bar { position: absolute; left: 0; bottom: 0; height: 4px; background: #3A2A06; width: 0; }
+    .app.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    @keyframes nudge { 0%,100% { filter: none; } 50% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,200,80,.7)); } }
+
+    .ari { display: flex; gap: 10px; align-items: flex-start; background: var(--peach-light); color: var(--ink); border-radius: 18px; padding: 12px 14px; min-height: 76px; }
+    .ari .owl { flex: 0 0 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, var(--orange), var(--orange-dark)); display: grid; place-items: center; font-size: 18px; }
+    .ari p { font-size: 15px; line-height: 1.45; }
+    .ari p b { color: var(--orange-dark); }
+    .ari.pop { animation: pop .35s ease; }
+    @keyframes pop { from { transform: scale(.97); opacity: .4; } to { transform: none; opacity: 1; } }
+    .ari .again { display: none; margin-top: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; border: none; border-radius: 999px; padding: 8px 14px; background: var(--orange); color: white; cursor: pointer; }
+    .ari .again.show { display: inline-block; }
+
+    .missions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .mission { border-radius: 12px; padding: 7px 6px; text-align: center; background: var(--rig-2); border: 1px solid rgba(255,255,255,.06); font-size: 12px; font-weight: 800; color: var(--rig-dim); line-height: 1.2; transition: background .3s, color .3s; }
+    .mission i { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+    .mission.now { background: var(--rig-3); color: white; border-color: rgba(255,200,140,.5); }
+    .mission.done { background: #1F3B33; color: var(--mint); border-color: rgba(111,211,168,.35); }
+
+    .experiments { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .experiments span { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--rig-dim); margin-right: 2px; }
+    .chip { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 14px; color: var(--rig-text); background: transparent; border: 1.5px dashed rgba(255,255,255,.3); border-radius: 999px; padding: 8px 13px; cursor: pointer; min-height: 40px; }
+    .chip[aria-pressed="true"] { background: var(--hot); border-style: solid; border-color: var(--hot); color: white; }
+    .chip.fix[aria-pressed="true"] { background: var(--mint); border-color: var(--mint); color: #10251C; }
+    .chip.hidden { display: none; }
+    .chip.nudge { animation: nudge 1.4s ease-in-out infinite; border-color: var(--sun); }
+
+    .stages { margin: 34px 0 6px; }
+    .stages h2, .next h2, .why h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin-bottom: 6px; }
+    .stages > p, .next > p, .why > p { color: var(--brown-mid); font-size: 16px; margin-bottom: 14px; }
+    .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stage { background: white; border-radius: 18px; padding: 14px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); }
+    .stage .k { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .08em; }
+    .stage h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+    .stage p { font-size: 14px; line-height: 1.45; }
+    .big-idea { margin-top: 14px; font-size: 16px; color: var(--brown-mid); background: var(--peach-mid); border-radius: 16px; padding: 14px 16px; line-height: 1.5; }
+    .big-idea b { color: var(--ink); }
+
+    .signup { margin: 34px 0 40px; background: var(--ink); color: #FFEFE3; border-radius: 28px; padding: 28px 20px; }
+    .signup h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(26px, 6vw, 38px); line-height: 1.08; color: white; }
+    .signup p { margin-top: 10px; font-size: 17px; line-height: 1.55; color: #F3D9C8; }
+    .form-box { margin-top: 18px; background: white; border-radius: 18px; padding: 14px; }
+    .form-box iframe { border: none !important; }
+    .fine { margin-top: 12px; font-size: 13px; color: #D9BBA8; }
+
+    .figs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .fig { background: white; border-radius: 18px; padding: 14px; position: relative; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: inherit; text-decoration: none; display: block; }
+    .fig .no { font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--brown-light); letter-spacing: .05em; }
+    .fig h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin: 2px 0 4px; }
+    .fig p { font-size: 13.5px; color: var(--brown-mid); line-height: 1.4; }
+    .fig .tag { position: absolute; top: 12px; right: 12px; font-size: 11px; font-weight: 800; background: var(--peach-mid); border-radius: 10px; padding: 2px 8px; color: var(--brown-mid); }
+    .fig .tag.go { background: var(--orange); color: white; }
+
+    .why { margin: 44px 0 48px; }
+    .why-grid { display: grid; gap: 10px; }
+    .why-item { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); }
+    .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
+    .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+
+    footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
+    footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
+
+    @media (min-width: 900px) {
+      .rig { grid-template-columns: 1.75fr 1fr; padding: 14px; gap: 14px; }
+      .stage-grid { grid-template-columns: repeat(4, 1fr); }
+      .figs { grid-template-columns: repeat(3, 1fr); }
+      .why-grid { grid-template-columns: repeat(3, 1fr); }
+      .signup { padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+      .form-box { margin-top: 0; }
+    }
+  </style>
+  <style>
+    #space, #fall { display: block; width: 100%; touch-action: none; -webkit-user-select: none; user-select: none; }
+    #space { cursor: pointer; }
+    .rig > *, .screens, .screen { min-width: 0; }
+    .launch { display: grid; gap: 6px; padding: 10px 12px 12px; background: #171A2E; border-top: 1px solid rgba(255,255,255,.05); }
+    .launch .box-head { margin-bottom: 0; }
+    .speed-box { border-radius: 14px; padding: 2px 4px 0; }
+    .speed-box.nudge { animation: nudge 1.4s ease-in-out infinite; }
+    .marks { position: relative; height: 15px; font-family: var(--mono); font-size: 10px; color: var(--rig-dim); }
+    .marks span { position: absolute; top: 0; transform: translateX(-50%); white-space: nowrap; }
+    .marks span::before { content: ''; position: absolute; left: 50%; top: -9px; width: 2px; height: 7px; background: currentColor; border-radius: 1px; }
+    .marks .m-orbit { color: var(--mint); }
+    .marks .m-esc { color: var(--sun); }
+    .marks .m0 { transform: none; } .marks .m0::before { left: 13px; }
+    .marks .m13 { transform: translateX(-100%); } .marks .m13::before { left: auto; right: 13px; }
+    .btns { display: flex; gap: 8px; }
+    .btn { flex: 1; min-height: 48px; border: none; border-radius: 14px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; cursor: pointer; transition: transform .08s, box-shadow .08s; }
+    .btn:active { transform: translateY(3px); }
+    .btn.go { background: var(--orange); color: white; box-shadow: 0 4px 0 var(--orange-dark); }
+    .btn.go:active { box-shadow: 0 1px 0 var(--orange-dark); }
+    .btn.stop { background: var(--hot); color: white; box-shadow: 0 4px 0 #A82A1E; }
+    .btn.stop:active { box-shadow: 0 1px 0 #A82A1E; }
+    .btn.reset { flex: 0 0 auto; padding: 0 16px; background: var(--rig-3); color: var(--rig-text); box-shadow: 0 4px 0 #1C2038; font-size: 16px; }
+    .btn.hidden { display: none; }
+    .btn.nudge { animation: nudge 1.4s ease-in-out infinite; }
+  </style>
+  <style>
+    /* ===== Ari blueprint system =====
+       Three drawing styles, picked by job:
+       1. Blueprint sheet (white on blue): explainer canvases, cutaways, plan views.
+       2. Instrument panel (blueprint rig): gauges, sliders, tests, controls.
+       3. Graph-paper figures (ink on squared paper): the explanation cards below the rig. */
+    :root {
+      --bp: #0D3B6E; --bp-deep: #082A4F; --bp-grid: rgba(170,210,255,.07); --bp-grid2: rgba(170,210,255,.16);
+      --bp-line: #EEF5FF; --bp-dim: #9FC6F2; --bp-faint: rgba(159,198,242,.42);
+      --bp-amber: #FFC94A; --bp-air: #79E3FF; --bp-warn: #FF8A7A; --bp-ok: #7CF0BC;
+      --gp: #F4F8FC; --gp-grid: rgba(52,124,190,.12); --gp-grid2: rgba(52,124,190,.24); --gp-rule: #B7CCE0;
+      --gp-ink: #17324F; --gp-dim: #5B7A99; --gp-red: #D4452F; --gp-blue: #1F86C7;
+    }
+    /* 2. Instrument panel */
+    .rig { background-color: var(--bp-deep); border-radius: 12px; box-shadow: 0 30px 70px rgba(20,40,80,.3);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -5px; }
+    .rig::before { border-radius: 12px; }
+    .screen { border-radius: 4px; background: var(--bp); box-shadow: 0 0 0 1px var(--bp-faint); }
+    .screen-bar { background: var(--bp-deep); border-bottom: 1px solid var(--bp-faint); }
+    .screen-tag { color: var(--bp-dim); }
+    .tool { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); }
+    .tool[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-line); }
+    .gauge, .panel-box, .stick-box { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; }
+    .gauge { padding: 8px 6px 7px; }
+    .g-val { display: inline-block; margin-top: 2px; padding: 1px 7px; background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 2px; font-size: 14px; color: var(--bp-line); font-variant-numeric: tabular-nums; }
+    .g-lbl { color: var(--bp-dim); margin-top: 5px; }
+    .ari { border-radius: 6px; }
+    .mission { border-radius: 2px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-dim); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+    .mission i::before { content: 'TEST '; }
+    .mission.now { background: rgba(255,201,74,.12); border-color: var(--bp-amber); color: var(--bp-line); }
+    .mission.done { background: rgba(124,240,188,.1); border-color: var(--bp-ok); color: var(--bp-ok); }
+    .mission.done i::after { content: ' ✓'; }
+    .experiments span { color: var(--bp-dim); }
+    .chip { border-radius: 3px; border: 1px dashed var(--bp-faint); color: var(--bp-line); }
+    .chip[aria-pressed="true"] { background: var(--bp-warn); border-color: var(--bp-warn); color: #2A0E08; }
+    .chip.reset { border-style: solid; border-color: var(--bp-faint); }
+    .lab-controls { background: var(--bp); border-top: 1px solid var(--bp-faint); padding-top: 10px; }
+    .lab-controls label { color: var(--bp-dim); }
+    input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-moz-range-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-webkit-slider-thumb { width: 16px; height: 28px; margin-top: -7px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); box-shadow: 0 0 0 1px var(--bp-amber); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 26px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); }
+    input[type=range]:focus-visible { outline: 2px solid var(--bp-amber); outline-offset: 2px; }
+    .screen.fly { background: var(--bp); }
+
+    /* 3. Full blueprint figure sheets (F1: everything on blue, colour only where it means something) */
+    .stage { background-color: var(--bp); border: 1px solid var(--bp-faint); border-radius: 3px; box-shadow: none; color: var(--bp-dim);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 50px 50px, 50px 50px, 10px 10px, 10px 10px; }
+    .stage .k { color: var(--bp-amber); }
+    .stage h3 { color: var(--bp-line); }
+    .stage p { color: #C6DCF5; }
+    .dwg { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--bp-faint); overflow: visible; }
+    .dwg text { font-family: var(--mono); font-size: 8px; font-weight: 600; fill: var(--bp-line); letter-spacing: .03em; }
+    .dwg .td { fill: var(--bp-dim); } .dwg .ta { fill: var(--bp-amber); } .dwg .tg { fill: var(--bp-ok); } .dwg .tc { fill: var(--bp-air); } .dwg .tr { fill: #FF6B5E; }
+    .dwg .ln { stroke: var(--bp-line); stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .lnf { stroke: var(--bp-line); stroke-width: 1.3; fill: var(--bp); stroke-linejoin: round; }
+    .dwg .lnh { fill: var(--bp-line); }
+    .dwg .dimln { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .dwg .dsh { stroke-dasharray: 4 3; }
+    .dwg .ctrln { stroke: var(--bp-dim); stroke-width: .7; fill: none; stroke-dasharray: 9 2 2 2; }
+    .dwg .redw { fill: #E5231B; stroke: var(--bp-line); stroke-width: 1.3; stroke-linejoin: round; }
+    .dwg .hatchf { fill: url(#bpHatch); stroke: var(--bp-line); stroke-width: 1.3; }
+    .dwg .grn { stroke: var(--bp-ok); stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .grnf { fill: var(--bp-ok); }
+    .dwg .amb { stroke: var(--bp-amber); stroke-width: 2.4; fill: none; stroke-linecap: round; }
+    .dwg .ambf { fill: var(--bp-amber); }
+    .dwg .air { stroke: var(--bp-air); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .airf { fill: var(--bp-air); }
+    .dwg .draw { stroke-dasharray: 260; stroke-dashoffset: 260; animation: figdraw 4s ease-in-out infinite; }
+    .dwg .pulse { animation: figpulse 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center top; }
+    @keyframes figflow { to { stroke-dashoffset: -18; } }
+    @keyframes figdraw { 0% { stroke-dashoffset: 260; } 55%, 100% { stroke-dashoffset: 0; } }
+    @keyframes figpulse { 0%, 100% { transform: scaleY(.7); } 50% { transform: scaleY(1.1); } }
+    .big-idea { background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 3px; color: #C6DCF5; position: relative; padding-top: 28px; }
+    .big-idea::before { content: 'NOTE 1'; position: absolute; top: 0; left: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--bp-deep); background: var(--bp-amber); padding: 3px 9px; }
+    .big-idea b { color: var(--bp-line); }
+    @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .dwg .air, .dwg .draw, .dwg .pulse { animation: none; stroke-dashoffset: 0; } }
+
+    .dwg .dshp { stroke-dasharray: 5 4; }
+    .dwg { overflow: hidden; }
+    .dwg .red { stroke: #FF6B5E; stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .redf { fill: #FF6B5E; }
+    .stages > p.big-idea { color: #C6DCF5; }
+    /* Satellite controls */
+    .launch { background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .box-head, .box-foot { color: var(--bp-dim); }
+    .box-head b { color: var(--bp-amber); }
+    .marks { color: var(--bp-dim); }
+    .marks .m-orbit { color: var(--bp-ok); }
+    .marks .m-esc { color: var(--bp-amber); }
+    .marks .m0::before { left: 6px; } .marks .m13::before { right: 6px; }
+    .speed-box.nudge { animation: none; box-shadow: inset 0 0 0 2px var(--bp-amber); }
+    .btn { border-radius: 4px; }
+    .btn.go { background: var(--bp-amber); color: #2A1E02; box-shadow: 0 4px 0 #B88A1A, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .btn.go:active { box-shadow: 0 1px 0 #B88A1A; }
+    .btn.stop { background: var(--bp-warn); color: #3A0D08; box-shadow: 0 4px 0 #B23A2E, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .btn.reset { background: transparent; color: var(--bp-line); box-shadow: none; border: 1px solid var(--bp-faint); }
+  </style>
+  <style>
+    #xvRocket, #xvMotor { display: block; width: 100%; touch-action: manipulation; cursor: pointer; }
+    .hidden { display: none !important; }
+    .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .xctl { display: grid; gap: 8px; padding: 10px 12px 12px; background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .xctl .box-head { display: flex; justify-content: space-between; margin: 0; }
+    .btn.nudge { animation: none; box-shadow: 0 4px 0 #B88A1A, 0 0 0 3px var(--bp-amber); }
+    .btn.stop[aria-pressed="true"] { background: var(--bp-ok); color: #06261A; box-shadow: 0 4px 0 #2F9D72; }
+    .part-card { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; padding: 12px 14px; min-height: 118px; }
+    .pc-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--bp-amber); }
+    .part-card h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--bp-line); margin: 3px 0 4px; }
+    .part-card p { font-size: 14.5px; line-height: 1.45; color: #C6DCF5; }
+    .plist-wrap { overflow-x: auto; }
+    .plist { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; color: var(--bp-line); }
+    .plist th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; color: var(--bp-dim); padding: 0 8px 6px 0; border-bottom: 1px solid var(--bp-line); }
+    .plist td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--bp-faint); cursor: pointer; }
+    .plist td:first-child { width: 2.4em; font-weight: 600; color: var(--bp-amber); }
+    .plist tr:hover td { color: var(--bp-amber); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <nav>
+      <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
+      <a class="nav-link" href="#signup">Get the next one</a>
+    </nav>
+
+    <header class="intro">
+      <div class="eyebrow">Fig. 10 · The rocket</div>
+      <h1>How does a rocket fly with <em>nothing to push on</em>?</h1>
+      <p class="lede">In space there's no air and no ground. <b>Pull a rocket apart, look inside its motor, then fire it up and see what it throws out of the back.</b></p>
+    </header>
+
+    <section class="rig" aria-label="An exploded rocket and rocket motor">
+      <div class="screens">
+        <div class="screen">
+          <div class="screen-bar">
+            <div class="tabs" role="group" aria-label="What to look at">
+              <button class="tool" id="tabRocket" aria-pressed="true">The rocket</button>
+              <button class="tool" id="tabMotor" aria-pressed="false">The rocket motor</button>
+            </div>
+          </div>
+          <canvas id="xvRocket" aria-label="A rocket drawn as a blueprint. Explode it to see its parts: nose cone, satellite, second stage, interstage, liquid oxygen tank, fuel tank and engines."></canvas>
+          <canvas id="xvMotor" class="hidden" aria-label="A rocket motor drawn as a blueprint. Explode it to see the turbopump, injector, combustion chamber, throat and nozzle, or fire it to see fuel and oxygen burn and shoot out of the nozzle."></canvas>
+          <div class="xctl">
+            <div class="box-head"><span>ASSEMBLED</span><b id="xtVal">0%</b><span>EXPLODED</span></div>
+            <input type="range" id="xt" min="0" max="100" value="0" aria-label="How far apart the parts are">
+            <div class="btns">
+              <button class="btn go" id="explodeBtn">Explode it</button>
+              <button class="btn stop" id="fireBtn">🔥 Fire the motor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cockpit">
+        <div class="part-card" id="partCard">
+          <div class="pc-k" id="pcK">TAP A PART</div>
+          <h3 id="pcName">Tap any part of the drawing</h3>
+          <p id="pcNote">Explode the rocket first, then tap a part or its number to find out what it does.</p>
+        </div>
+        <div class="ari" id="ari" aria-live="polite">
+          <div class="owl">🦉</div>
+          <div><p id="ariText"></p></div>
+        </div>
+        <div class="plist-wrap"><table class="plist" id="plist"></table></div>
+      </div>
+    </section>
+
+    <section class="stages">
+      <h2>Throw gas down, go up</h2>
+      <p>What happens inside a rocket motor, every second it fires.</p>
+      <div class="stage-grid">
+        <div class="stage"><div class="k">FIG 10.1 · PUMP</div><h3>Shove it in</h3><p>A turbopump spins tens of thousands of times a minute, forcing fuel and liquid oxygen into the motor: hundreds of litres every second.</p></div>
+        <div class="stage"><div class="k">FIG 10.2 · BURN</div><h3>Burn it hot</h3><p>The injector sprays them together through hundreds of tiny holes. They burn at about 3,300 °C and make a huge amount of hot gas.</p></div>
+        <div class="stage"><div class="k">FIG 10.3 · SQUEEZE</div><h3>Squeeze it out</h3><p>The gas can only escape through the narrow throat. Then the bell-shaped nozzle lets it spread out and speed up to about 3 km every second.</p></div>
+        <div class="stage"><div class="k">FIG 10.4 · PUSH</div><h3>Push back</h3><p>Throwing all that gas down pushes the rocket up. It doesn't need air or ground to push on, which is why rockets work in space.</p></div>
+      </div>
+      <p class="big-idea"><b>The big idea:</b> a rocket is mostly tanks. More than 90% of its weight at lift-off is fuel and liquid oxygen, and the motor's whole job is to throw that out of the back as fast as it can.</p>
+    </section>
+
+    <section class="signup" id="signup">
+      <div>
+        <h2>Worked it out? There's a whole workshop of these.</h2>
+        <p>We make machines your child can poke, fly and break. Jet engines, drones, touchscreens, satellites. We'll email you when the next one is ready.</p>
+        <p class="fine">No spam. Unsubscribe in one click.</p>
+      </div>
+      <div class="form-box">
+        <iframe id="tallyForm" loading="lazy" width="100%" height="160" frameborder="0" marginheight="0" marginwidth="0" title="Get the next Ari machine"></iframe>
+      </div>
+    </section>
+
+    <!-- MACHINES -->
+    <section class="next">
+      <h2>More machines</h2>
+      <p>Each one starts with a question a curious kid would ask.</p>
+      <div class="figs">
+        <a class="fig" href="/heart.html"><span class="tag go">Play</span><div class="no">FIG. 09</div><h3>The heart</h3><p>How does your heart pump blood?</p></a>
+        <a class="fig" href="/speaker.html"><span class="tag go">Play</span><div class="no">FIG. 08</div><h3>Speaker</h3><p>How does a speaker make sound?</p></a>
+        <a class="fig" href="/f1.html"><span class="tag go">Play</span><div class="no">FIG. 06</div><h3>F1 car</h3><p>How does an F1 car stick to the road?</p></a>
+        <a class="fig" href="/touch.html"><span class="tag go">Play</span><div class="no">FIG. 05</div><h3>Touchscreen</h3><p>How does your phone know where your finger is?</p></a>
+        <a class="fig" href="/drone.html"><span class="tag go">Play</span><div class="no">FIG. 04</div><h3>Drone</h3><p>How does a drone fly with no wings?</p></a>
+        <a class="fig" href="/machines.html"><span class="tag go">All</span><div class="no">THE WORKSHOP</div><h3>See every machine →</h3><p>9 machines to play, and more on the way.</p></a>
+      </div>
+    </section>
+    <!-- /MACHINES -->
+
+    <section class="why">
+      <h2>Why parents like it</h2>
+      <p>Built for children aged roughly 7 to 12.</p>
+      <div class="why-grid">
+        <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
+        <div class="why-item"><h3>Newton's own idea</h3><p>Isaac Newton imagined a cannon on a mountain so tall it poked out of the air. Now they get to fire it.</p></div>
+        <div class="why-item"><h3>No ads. No accounts.</h3><p>Children don't sign up for anything. Only you get the email, and only if you ask for it.</p></div>
+      </div>
+    </section>
+
+    <footer>
+      <div><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div>
+      <div>© 2026 Ari</div>
+    </footer>
+  </div>
+
+<script src="exploded.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ===================== Sign-up form =====================
+  var params = new URLSearchParams(location.search);
+  var src = { object: 'rocket' };
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'ref'].forEach(function (k) { if (params.get(k)) src[k] = params.get(k); });
+  var stats = { interactions: 0 };
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'rocket' }); } catch (e) {} }
+  function loadForm() {
+    var q = new URLSearchParams({ alignLeft: '1', hideTitle: '1', transparentBackground: '1', dynamicHeight: '1' });
+    Object.keys(src).forEach(function (k) { q.set(k, src[k]); });
+    q.set('interactions', String(stats.interactions)); q.set('missions', '0');
+    var f = document.getElementById('tallyForm');
+    f.setAttribute('data-tally-src', 'https://tally.so/embed/q45EaG?' + q.toString());
+    if (window.Tally) window.Tally.loadEmbeds(); else f.src = f.getAttribute('data-tally-src');
+  }
+  var formLoaded = false;
+  var io = new IntersectionObserver(function (e) { if (!formLoaded && e[0].isIntersecting) { formLoaded = true; loadForm(); io.disconnect(); } }, { rootMargin: '200px' });
+  io.observe(document.getElementById('signup'));
+
+  // ===================== Exploded views =====================
+  var K = AriExploded.kit, BP = K.BP;
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  var height = function (W) { return Math.round(clamp(W * 1.45, 540, 740)); };
+
+  // a fuel or oxygen tank: a cylinder, its liquid, and the hidden dome ends as dashed lines
+  function tank(c, u, w, h, tint, label, labelCol) {
+    K.rect(c, -w / 2 * u, 0, w * u, h * u);
+    c.fillStyle = tint; c.fillRect(-w / 2 * u + 1.5, h * u * 0.2, w * u - 3, h * u * 0.78);
+    K.line(c, [-w / 2 * u + 1.5, h * u * 0.2, w / 2 * u - 1.5, h * u * 0.2], labelCol, 0.9, [3, 2]);
+    c.setLineDash([3, 3]); c.strokeStyle = BP.dim; c.lineWidth = 0.8;
+    c.beginPath(); c.ellipse(0, h * u * 0.1, w / 2 * u - 1.5, h * u * 0.08, 0, Math.PI, 0); c.stroke();
+    c.beginPath(); c.ellipse(0, h * u * 0.9, w / 2 * u - 1.5, h * u * 0.08, 0, 0, Math.PI); c.stroke(); c.setLineDash([]);
+    if (u > 2.6) K.text(c, label, 0, h * u * 0.58, { align: 'center', size: clamp(u * 1.7, 7, 11), col: labelCol, weight: 700 });
+  }
+  function bell(c, u, x, y, wTop, wBot, h) {
+    K.shape(c, function () { c.beginPath(); c.moveTo((x - wTop) * u, y * u); c.bezierCurveTo((x - wTop) * u, (y + h * 0.5) * u, (x - wBot) * u, (y + h * 0.7) * u, (x - wBot) * u, (y + h) * u); c.lineTo((x + wBot) * u, (y + h) * u); c.bezierCurveTo((x + wBot) * u, (y + h * 0.7) * u, (x + wTop) * u, (y + h * 0.5) * u, (x + wTop) * u, y * u); c.closePath(); });
+  }
+
+  var ROCKET = {
+    title: 'FIG 10.A · THE ROCKET', width: 10, dim: { label: 'ABOUT 70 m TALL' }, reserve: [2, 3], stagger: 0.3, height: height,
+    parts: [
+      { id: 'payload', name: 'Satellite', y: 3, h: 10, x0: -3.2, x1: 3.2, dy: -7,
+        note: 'The satellite: the whole reason for the trip. It sits right at the top, folded up, until the rocket lets it go.',
+        draw: function (c, u) {
+          K.rect(c, -2 * u, 1 * u, 4 * u, 5 * u, { fill: 'rgba(255,201,74,.25)', stroke: BP.amber });
+          K.rect(c, -3.2 * u, 1.5 * u, 1 * u, 4 * u, { fill: 'rgba(121,227,255,.25)' }); K.rect(c, 2.2 * u, 1.5 * u, 1 * u, 4 * u, { fill: 'rgba(121,227,255,.25)' });
+          K.shape(c, function () { c.beginPath(); c.moveTo(-2 * u, 6 * u); c.lineTo(2 * u, 6 * u); c.lineTo(3 * u, 10 * u); c.lineTo(-3 * u, 10 * u); c.closePath(); }, { hatch: 4 });
+        } },
+      { id: 'fairL', name: 'Nose cone', label: false, y: 0, h: 14, x0: -5, x1: 0, dx: -6, dy: -11,
+        note: 'The nose cone (engineers call it the fairing) shields the satellite from the rushing air, then splits in two and falls away.',
+        draw: function (c, u) { K.shape(c, function () { c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(-5 * u, 5 * u, -5 * u, 14 * u); c.lineTo(0, 14 * u); c.closePath(); }); } },
+      { id: 'fairR', name: 'Nose cone', y: 0, h: 14, x0: 0, x1: 5, dx: 6, dy: -11, anchor: 0.6,
+        note: 'The nose cone (engineers call it the fairing) shields the satellite from the rushing air, then splits in two and falls away.',
+        draw: function (c, u) { K.shape(c, function () { c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(5 * u, 5 * u, 5 * u, 14 * u); c.lineTo(0, 14 * u); c.closePath(); }); } },
+      { id: 'stage2', name: 'Second stage', y: 14, h: 20, dy: -2,
+        note: 'A smaller rocket on top of the big one. It fires after the first stage drops away and pushes the satellite up to orbit speed.',
+        draw: function (c, u) {
+          bell(c, u, 0, 16, 1.2, 2.4, 4);
+          tank(c, u, 10, 16, 'rgba(121,227,255,.12)', '2', BP.air);
+        } },
+      { id: 'inter', name: 'Interstage', y: 30, h: 5, dy: 3,
+        note: 'The joint between the two stages. It holds them together on the way up, then lets go.',
+        draw: function (c, u) { K.rect(c, -5 * u, 0, 10 * u, 5 * u, { hatch: 5 }); } },
+      { id: 'lox', name: 'Liquid oxygen tank', y: 35, h: 27, dy: 8,
+        note: 'Fire needs oxygen, and there is none in space. So the rocket carries its own, cooled to −183 °C so it turns liquid and fits in the tank.',
+        draw: function (c, u) { tank(c, u, 10, 27, 'rgba(121,227,255,.16)', 'O₂', BP.air); } },
+      { id: 'fuel', name: 'Fuel tank', y: 62, h: 22, dy: 13,
+        note: 'Rocket fuel: a very pure kerosene, a lot like the fuel jet planes use.',
+        draw: function (c, u) { tank(c, u, 10, 22, 'rgba(255,201,74,.16)', 'FUEL', BP.amber); } },
+      { id: 'engines', name: 'Engines', y: 84, h: 16, x0: -5.5, x1: 5.5, dy: 19, anchor: 0.35,
+        note: 'Where the fuel and oxygen burn and blast out of the back. Tap "The rocket motor" at the top to look inside one.',
+        draw: function (c, u) {
+          K.rect(c, -5 * u, 0, 10 * u, 7 * u);
+          K.line(c, [-5 * u, 0, -1.5 * u, 7 * u, 1.5 * u, 0, 5 * u, 7 * u], BP.dim, 0.8);
+          [-3.3, 0, 3.3].forEach(function (x) { bell(c, u, x, 7, 0.8, 1.7, 9); });
+        } }
+    ]
+  };
+
+  var firing = false;
+  var MOTOR = {
+    title: 'FIG 10.B · THE ROCKET MOTOR', width: 30, reserve: [7, 30], stagger: 0.25, height: height,
+    parts: [
+      { id: 'pump', name: 'Turbopump', y: 0, h: 12, x0: -12, x1: 12, dy: -12, anchor: 0.4,
+        note: 'Spins tens of thousands of times a minute, shoving fuel and liquid oxygen into the motor: hundreds of litres every second.',
+        draw: function (c, u, k, s) {
+          K.line(c, [-9 * u, 5 * u, 9 * u, 5 * u], BP.line, 2);
+          K.line(c, [-8 * u, 0, -8 * u, 2 * u], BP.amber, 2); K.line(c, [8 * u, 0, 8 * u, 2 * u], BP.air, 2);
+          K.line(c, [-8 * u, 8 * u, -5 * u, 12 * u], BP.amber, 2); K.line(c, [8 * u, 8 * u, 5 * u, 12 * u], BP.air, 2);
+          K.shape(c, function () { c.beginPath(); c.arc(-8 * u, 5 * u, 3 * u, 0, 6.3); }, { fill: 'rgba(255,201,74,.2)', stroke: BP.amber });
+          K.shape(c, function () { c.beginPath(); c.arc(8 * u, 5 * u, 3 * u, 0, 6.3); }, { fill: 'rgba(121,227,255,.2)', stroke: BP.air });
+          K.shape(c, function () { c.beginPath(); c.arc(0, 5 * u, 3.4 * u, 0, 6.3); });
+          var a0 = s.clock * (firing ? 14 : 0.6);
+          for (var i = 0; i < 8; i++) { var a = a0 + i * Math.PI / 4; K.line(c, [Math.cos(a) * 1 * u, 5 * u + Math.sin(a) * 1 * u, Math.cos(a + 0.5) * 3 * u, 5 * u + Math.sin(a + 0.5) * 3 * u], BP.dim, 1); }
+        } },
+      { id: 'inj', name: 'Injector', y: 12, h: 3, x0: -8, x1: 8, dy: -6,
+        note: 'A plate with hundreds of tiny holes. It sprays the fuel and oxygen together so they mix and burn fast.',
+        draw: function (c, u) {
+          K.rect(c, -8 * u, 0, 16 * u, 3 * u, { hatch: 4 });
+          c.fillStyle = BP.line; for (var x = -6.5; x <= 6.6; x += 1.3) { c.beginPath(); c.arc(x * u, 1.5 * u, Math.max(0.8, 0.25 * u), 0, 6.3); c.fill(); }
+        } },
+      { id: 'chamber', name: 'Combustion chamber', y: 15, h: 16, x0: -8, x1: 8, dy: 0,
+        note: 'Where the fuel and oxygen burn, at about 3,300 °C. That makes a huge amount of very hot gas that has to get out.',
+        draw: function (c, u) {
+          K.rect(c, -8 * u, 0, 16 * u, 16 * u);
+          K.line(c, [-7 * u, 0, -7 * u, 16 * u], BP.dim, 0.8, [3, 3]); K.line(c, [7 * u, 0, 7 * u, 16 * u], BP.dim, 0.8, [3, 3]);
+        } },
+      { id: 'throat', name: 'Throat', y: 31, h: 5, x0: -8, x1: 8, dy: 6, anchor: 0.6,
+        note: 'The narrow neck. All the gas from the chamber has to squeeze through this small gap, which makes it rush out very fast.',
+        draw: function (c, u) {
+          K.shape(c, function () { c.beginPath(); c.moveTo(-8 * u, 0); c.lineTo(8 * u, 0); c.quadraticCurveTo(4 * u, 1 * u, 3.5 * u, 5 * u); c.lineTo(-3.5 * u, 5 * u); c.quadraticCurveTo(-4 * u, 1 * u, -8 * u, 0); c.closePath(); }, { hatch: 4 });
+        } },
+      { id: 'nozzle', name: 'Nozzle', y: 36, h: 34, x0: -15, x1: 15, dy: 12, anchor: 0.45,
+        note: 'The big bell. The gas spreads out inside it and speeds up even more, to about 3 km every second, before it leaves.',
+        draw: function (c, u) {
+          K.shape(c, function () { c.beginPath(); c.moveTo(-3.5 * u, 0); c.bezierCurveTo(-5 * u, 10 * u, -11 * u, 22 * u, -15 * u, 34 * u); c.lineTo(15 * u, 34 * u); c.bezierCurveTo(11 * u, 22 * u, 5 * u, 10 * u, 3.5 * u, 0); c.closePath(); });
+          for (var k = 1; k <= 3; k++) { var f = k / 4; c.strokeStyle = BP.faint; c.lineWidth = 0.7; c.beginPath(); c.moveTo(-3.5 * u * (1 - f), 0); c.bezierCurveTo(-5 * u * (1 - f), 10 * u, -11 * u * (1 - f), 22 * u, -15 * u * (1 - f), 34 * u); c.stroke(); c.beginPath(); c.moveTo(3.5 * u * (1 - f), 0); c.bezierCurveTo(5 * u * (1 - f), 10 * u, 11 * u * (1 - f), 22 * u, 15 * u * (1 - f), 34 * u); c.stroke(); }
+        } }
+    ],
+    overlay: function (c, o) {
+      if (!firing || o.t > 0.05) return;
+      var u = o.u, X = function (x) { return o.cx + x * u; }, Y = function (y) { return o.cy + y * u; }, fl = 0.8 + 0.2 * Math.sin(o.clock * 31) * Math.sin(o.clock * 7);
+      // fuel and oxygen flowing in
+      c.lineDashOffset = -o.clock * 60;
+      K.line(c, [X(-8), Y(-6), X(-8), Y(2)], BP.amber, 3, [6, 5]); K.line(c, [X(-8), Y(8), X(-5), Y(12), X(-2), Y(14.5)], BP.amber, 3, [6, 5]);
+      K.line(c, [X(8), Y(-6), X(8), Y(2)], BP.air, 3, [6, 5]); K.line(c, [X(8), Y(8), X(5), Y(12), X(2), Y(14.5)], BP.air, 3, [6, 5]);
+      c.lineDashOffset = 0;
+      K.text(c, 'FUEL', X(-9), Y(-3), { align: 'right', col: BP.amber, weight: 700 });
+      K.text(c, 'OXYGEN', X(9), Y(-3), { col: BP.air, weight: 700 });
+      // the fire inside the chamber, through the throat and down the nozzle
+      var g = c.createRadialGradient(X(0), Y(24), 2, X(0), Y(24), 9 * u);
+      g.addColorStop(0, 'rgba(255,245,200,' + fl + ')'); g.addColorStop(0.5, 'rgba(255,170,60,' + 0.85 * fl + ')'); g.addColorStop(1, 'rgba(255,120,40,.15)');
+      c.fillStyle = g; c.fillRect(X(-6.8), Y(15.2), 13.6 * u, 15.6 * u);
+      c.save(); c.beginPath(); c.moveTo(X(-3.2), Y(36)); c.bezierCurveTo(X(-4.6), Y(46), X(-10.5), Y(58), X(-14.4), Y(70)); c.lineTo(X(14.4), Y(70)); c.bezierCurveTo(X(10.5), Y(58), X(4.6), Y(46), X(3.2), Y(36)); c.closePath();
+      var gn = c.createLinearGradient(0, Y(36), 0, Y(70)); gn.addColorStop(0, 'rgba(255,190,90,' + 0.85 * fl + ')'); gn.addColorStop(1, 'rgba(255,120,40,.35)'); c.fillStyle = gn; c.fill(); c.restore();
+      // exhaust plume with shock diamonds
+      var pg = c.createLinearGradient(0, Y(70), 0, Y(99)); pg.addColorStop(0, 'rgba(255,170,70,' + 0.75 * fl + ')'); pg.addColorStop(1, 'rgba(255,120,40,0)');
+      c.fillStyle = pg; c.beginPath(); c.moveTo(X(-14), Y(70)); c.lineTo(X(14), Y(70)); c.lineTo(X(9), Y(99)); c.lineTo(X(-9), Y(99)); c.closePath(); c.fill();
+      for (var k = 0; k < 3; k++) { var y0 = 72 + k * 8.5; c.strokeStyle = 'rgba(255,240,200,' + (0.8 - k * 0.2) + ')'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(X(0), Y(y0)); c.lineTo(X(5 - k), Y(y0 + 4)); c.lineTo(X(0), Y(y0 + 8)); c.lineTo(X(-5 + k), Y(y0 + 4)); c.closePath(); c.stroke(); }
+      c.strokeStyle = 'rgba(255,230,180,.8)'; c.lineWidth = 1.5;
+      for (k = 0; k < 14; k++) { var px = ((k * 37) % 23) - 11.5, py = 70 + ((o.clock * 90 + k * 13) % 29); c.beginPath(); c.moveTo(X(px * (1 - (py - 70) / 60)), Y(py)); c.lineTo(X(px * (1 - (py - 70) / 60)), Y(py + 2.5)); c.stroke(); }
+      // labels
+      K.line(c, [X(4), Y(23), X(9.5), Y(23)], BP.line, 0.9); K.text(c, '≈ 3,300 °C', X(10.5), Y(26), { col: '#FFB067', weight: 700, size: 11 });
+      K.text(c, 'SQUEEZED', X(9.5), Y(34.5), { col: BP.line, size: 9.5 });
+      K.text(c, '≈ 3 km/s', X(10), Y(86), { col: BP.amber, weight: 700, size: 10.5 });
+      K.text(c, 'OUT', X(10), Y(90.5), { col: BP.amber, size: 9.5 });
+      K.arrow(c, X(-19), Y(62), X(-19), Y(30), BP.ok, 3);
+      c.save(); c.translate(X(-21.5), Y(46)); c.rotate(-Math.PI / 2); K.text(c, 'THRUST', 0, 0, { align: 'center', col: BP.ok, weight: 700 }); c.restore();
+    }
+  };
+
+  var cvR = document.getElementById('xvRocket'), cvM = document.getElementById('xvMotor');
+  var views = { rocket: AriExploded.create(cvR, ROCKET), motor: null }, specs = { rocket: ROCKET, motor: MOTOR }, tab = 'rocket', seen = { rocket: false, motor: false };
+  var xt = document.getElementById('xt'), xtVal = document.getElementById('xtVal'), explodeBtn = document.getElementById('explodeBtn'), fireBtn = document.getElementById('fireBtn');
+  var pcK = document.getElementById('pcK'), pcName = document.getElementById('pcName'), pcNote = document.getElementById('pcNote'), plist = document.getElementById('plist');
+  function view() { return views[tab]; }
+  function showPart(p) {
+    if (!p) { pcK.textContent = 'TAP A PART'; pcName.textContent = 'Tap any part of the drawing'; pcNote.textContent = 'Explode it first, then tap a part or its number to find out what it does.'; return; }
+    pcK.textContent = 'PART ' + (p.no || '') + ' · ' + specs[tab].title.split('· ')[1]; pcName.textContent = p.name; pcNote.textContent = p.note;
+    stats.interactions++; track('part_' + p.id);
+  }
+  function fillList() {
+    var rows = specs[tab].parts.filter(function (p) { return p.label !== false; });
+    plist.innerHTML = '<thead><tr><th>No.</th><th>Part</th></tr></thead><tbody>' + rows.map(function (p) { return '<tr data-id="' + p.id + '"><td>' + p.no + '</td><td>' + p.name + '</td></tr>'; }).join('') + '</tbody>';
+    Array.prototype.forEach.call(plist.querySelectorAll('tr[data-id]'), function (tr) {
+      tr.addEventListener('click', function () { var p = specs[tab].parts.filter(function (q) { return q.id === tr.dataset.id; })[0]; view().select(p.id); showPart(p); if (view().t() < 0.9) view().animateTo(1, 1.4); });
+    });
+  }
+  function setTab(t) {
+    tab = t; firing = false;
+    cvR.classList.toggle('hidden', t !== 'rocket'); cvM.classList.toggle('hidden', t !== 'motor');
+    if (!views.motor && t === 'motor') { views.motor = AriExploded.create(cvM, MOTOR); views.motor.onPick(showPart); }
+    view().resize();
+    document.getElementById('tabRocket').setAttribute('aria-pressed', String(t === 'rocket'));
+    document.getElementById('tabMotor').setAttribute('aria-pressed', String(t === 'motor'));
+        fillList(); showPart(null); stats.interactions++; track('tab_' + t);
+  }
+  views.rocket.onPick(showPart);
+  document.getElementById('tabRocket').addEventListener('click', function () { setTab('rocket'); });
+  document.getElementById('tabMotor').addEventListener('click', function () { setTab('motor'); });
+  xt.addEventListener('input', function () { firing = false; view().set(xt.value / 100); });
+  xt.addEventListener('change', function () { stats.interactions++; });
+  explodeBtn.addEventListener('click', function () { firing = false; view().animateTo(view().t() > 0.5 ? 0 : 1, 1.6); stats.interactions++; track('explode_' + tab); });
+  fireBtn.addEventListener('click', function () {
+    if (tab !== 'motor') { setTab('motor'); }
+    firing = !firing; if (firing) { view().animateTo(0, 0.8); track('fire'); }
+    stats.interactions++;
+  });
+  window.addEventListener('resize', function () { view().resize(); });
+
+  // ===================== Ari =====================
+  var ariEl = document.getElementById('ari'), ariText = document.getElementById('ariText'), lastMsg = '';
+  function say(html) { if (html === lastMsg) return; lastMsg = html; ariText.innerHTML = html; ariEl.classList.remove('pop'); void ariEl.offsetWidth; ariEl.classList.add('pop'); }
+  function coach() {
+    var t = view().t();
+    if (t > 0.98) seen[tab] = true;
+    if (tab === 'rocket') {
+      if (t < 0.02 && !seen.rocket) return say('This is a rocket, drawn like an engineer would. Tap <b>Explode it</b> to pull it apart.');
+      if (t > 0.98) return say('Look how much of it is <b>tanks</b>! More than <b>90%</b> of a rocket\'s weight at lift-off is fuel and liquid oxygen. Tap any part to find out what it does, then look inside <b>the rocket motor</b>.');
+      return say('Slide it back together, or tap <b>The rocket motor</b> to see where all that fuel goes.');
+    }
+    if (firing && t < 0.05) return say('<b>Fuel</b> and <b>oxygen</b> are pumped in and burn at about <b>3,300 °C</b>. The hot gas squeezes through the throat and shoots out of the nozzle at about <b>3 km every second</b>. Throw gas down, and the rocket goes <b>up</b>.');
+    if (t > 0.98) return say('Five parts make the whole motor work. Tap each one, then press <b>Fire the motor</b> to see them working together.');
+    if (seen.motor) return say('Press <b>Fire the motor</b> to watch it run.');
+    return say('This is one rocket motor. Tap <b>Explode it</b> to see what\'s inside, or <b>Fire the motor</b> to start it up.');
+  }
+
+  // ===================== Loop =====================
+  var last = performance.now();
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    var v = view(); v.tick(dt);
+    var pct = Math.round(v.t() * 100); if (+xt.value !== pct && v.busy()) xt.value = pct; xtVal.textContent = pct + '%';
+    explodeBtn.textContent = v.t() > 0.5 ? 'Put it back together' : 'Explode it';
+    fireBtn.setAttribute('aria-pressed', String(firing));
+    explodeBtn.classList.toggle('nudge', !seen[tab] && v.t() < 0.05 && !firing);
+    coach();
+    requestAnimationFrame(frame);
+  }
+  fillList(); requestAnimationFrame(frame);
+  window.__ari = { views: views, setTab: setTab, fire: function (b) { firing = !!b; }, tab: function () { return tab; } };
+})();
+</script>
+<script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
+</body>
+</html>
