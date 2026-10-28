@@ -40,6 +40,36 @@
     },
     rect: function (c, x, y, w, h, o) { kit.shape(c, function () { c.beginPath(); c.rect(x, y, w, h); }, o); },
     head: function (c, x, y, ux, uy, col, s) { s = s || 7; c.fillStyle = col; c.beginPath(); c.moveTo(x, y); c.lineTo(x - ux * s - uy * s * 0.45, y - uy * s + ux * s * 0.45); c.lineTo(x - ux * s + uy * s * 0.45, y - uy * s - ux * s * 0.45); c.closePath(); c.fill(); },
+    // a cylinder seen slightly from above, drawn like an engraving: origin top-centre, sizes in units, u = px per unit
+    // o.rings [y], o.bands [[y0, y1, 'stringers' | 'hatch']], o.top (show the open top), o.shade, o.seams [x fractions]
+    cyl: function (c, u, w, h, o) { kit.frustum(c, u, w, w, h, o); },
+    frustum: function (c, u, wt, wb, h, o) {
+      o = o || {}; var at = wt / 2 * u, ab = wb / 2 * u, H = h * u, et = Math.max(1.2, at * 0.14), eb = Math.max(1.2, ab * 0.14);
+      var X = function (f, y) { var a = at + (ab - at) * (y / H); return f * a; }, E = function (y) { var a = at + (ab - at) * (y / H); return Math.max(1.2, a * 0.14); };
+      var sil = function () { c.beginPath(); c.moveTo(-at, 0); c.quadraticCurveTo(0, -2 * et, at, 0); c.lineTo(ab, H); c.quadraticCurveTo(0, H + 2 * eb, -ab, H); c.closePath(); };
+      sil(); c.fillStyle = o.fill || BP.bg; c.fill();
+      if (o.tint) { c.save(); sil(); c.clip(); c.fillStyle = o.tint[2]; var y0 = o.tint[0] * u, y1 = o.tint[1] * u; c.fillRect(-ab - at, y0, 2 * (ab + at), y1 - y0); c.restore(); }
+      c.save(); sil(); c.clip();
+      (o.bands || []).forEach(function (b) {
+        var y0 = b[0] * u, y1 = b[1] * u;
+        if (b[2] === 'hatch') { c.beginPath(); c.rect(-ab - at, y0, 2 * (ab + at), y1 - y0); kit.hatch(c, 4, BP.faint); }
+        else { c.strokeStyle = BP.dim; c.lineWidth = 0.6; c.beginPath(); for (var k = -14; k <= 14; k++) { var f = Math.sin(k / 14 * Math.PI / 2); c.moveTo(X(f, y0), y0 + E(y0) * (1 - f * f)); c.lineTo(X(f, y1), y1 + E(y1) * (1 - f * f)); } c.stroke(); }
+        c.strokeStyle = BP.line; c.lineWidth = 0.9; [y0, y1].forEach(function (y) { var a = X(1, y); c.beginPath(); c.moveTo(-a, y); c.quadraticCurveTo(0, y + 2 * E(y), a, y); c.stroke(); });
+      });
+      if (o.shade !== false) {   // engraving-style shading: lines bunch up towards the right-hand edge
+        for (var k = 4; k <= 9; k++) { var f = Math.sin(k / 10 * Math.PI / 2); c.strokeStyle = 'rgba(159,198,242,' + (0.12 + 0.07 * (k - 4)) + ')'; c.lineWidth = 0.7; c.beginPath(); c.moveTo(X(f, 0), E(0) * (1 - f * f)); c.lineTo(X(f, H), H + E(H) * (1 - f * f)); c.stroke(); }
+        c.strokeStyle = 'rgba(159,198,242,.12)'; c.beginPath(); c.moveTo(X(-0.55, 0), E(0) * 0.7); c.lineTo(X(-0.55, H), H + E(H) * 0.7); c.stroke();
+      }
+      (o.seams || []).forEach(function (f) { c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.beginPath(); c.moveTo(X(f, 0), E(0) * (1 - f * f)); c.lineTo(X(f, H), H + E(H) * (1 - f * f)); c.stroke(); });
+      (o.rings || []).forEach(function (yy) { var y = yy * u, a = X(1, y); c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.beginPath(); c.moveTo(-a, y); c.quadraticCurveTo(0, y + 2 * E(y), a, y); c.stroke(); });
+      c.restore();
+      sil(); c.strokeStyle = BP.line; c.lineWidth = 1.3; c.lineJoin = 'round'; c.stroke();
+      // the rim at the top: an open ring you can see into once the part is pulled away
+      c.fillStyle = o.topFill || BP.deep; c.beginPath(); c.moveTo(-at, 0); c.quadraticCurveTo(0, -2 * et, at, 0); c.quadraticCurveTo(0, 2 * et, -at, 0); c.fill();
+      c.strokeStyle = BP.line; c.lineWidth = 1; c.beginPath(); c.moveTo(-at, 0); c.quadraticCurveTo(0, 2 * et, at, 0); c.stroke();
+    },
+    // a dashed hidden line (things you can't see, like tank ends inside the body)
+    hidden: function (c, fn) { c.save(); c.setLineDash([3, 3]); c.strokeStyle = BP.dim; c.lineWidth = 0.8; fn(); c.stroke(); c.restore(); },
     arrow: function (c, x1, y1, x2, y2, col, wd) { var l = Math.hypot(x2 - x1, y2 - y1) || 1, ux = (x2 - x1) / l, uy = (y2 - y1) / l, s = 6 + wd * 1.6; kit.line(c, [x1, y1, x2 - ux * s * 0.6, y2 - uy * s * 0.6], col, wd); kit.head(c, x2, y2, ux, uy, col, s); }
   };
 
@@ -94,7 +124,27 @@
       }
       // parts
       hits = [];
-      parts.forEach(function (p) {
+      // dimension brackets beside the assembled machine, like a real general-arrangement drawing
+      var da = clamp(1 - t / 0.3, 0, 1);
+      if (da > 0 && (spec.dims || spec.span)) {
+        c.globalAlpha = da;
+        var hw0 = (spec.width || 10) / 2, xE = L.cx - hw0 * u - 8;
+        (spec.dims || []).forEach(function (d) {
+          var x = xE - 14 - (d.col || 0) * 26, ya = L.cy + d.y0 * u, yb = L.cy + d.y1 * u;
+          kit.line(c, [x - 4, ya, xE + 4, ya], BP.faint, 0.7, [2, 3]); kit.line(c, [x - 4, yb, xE + 4, yb], BP.faint, 0.7, [2, 3]);
+          kit.line(c, [x, ya, x, yb], BP.dim, 0.9); kit.head(c, x, ya, 0, -1, BP.dim, 5); kit.head(c, x, yb, 0, 1, BP.dim, 5);
+          if (yb - ya > 34) { c.save(); c.translate(x - 4, (ya + yb) / 2); c.rotate(-Math.PI / 2); c.font = '600 ' + (W < 420 ? 8.5 : 9.5) + 'px ' + MONO; var tw = c.measureText(d.label).width; if (tw < yb - ya - 12) { c.fillStyle = BP.bg; c.fillRect(-tw / 2 - 3, -8, tw + 6, 11); kit.text(c, d.label, 0, 0, { align: 'center', size: W < 420 ? 8.5 : 9.5, col: d.col ? BP.line : BP.dim }); } c.restore(); }
+        });
+        if (spec.span) {
+          var sy = L.cy + spec.span.y * u, sa = L.cx + spec.span.x0 * u, sb = L.cx + spec.span.x1 * u;
+          kit.line(c, [sa, sy - 10, sa, sy + 4], BP.faint, 0.7); kit.line(c, [sb, sy - 10, sb, sy + 4], BP.faint, 0.7);
+          kit.line(c, [sa, sy, sb, sy], BP.dim, 0.9); kit.head(c, sa, sy, -1, 0, BP.dim, 5); kit.head(c, sb, sy, 1, 0, BP.dim, 5);
+          kit.text(c, spec.span.label, (sa + sb) / 2, sy + 13, { align: 'center', size: 9.5, col: BP.line });
+        }
+        c.globalAlpha = 1;
+      }
+      var order = parts.map(function (p, i) { return { p: p, z: p.z != null ? p.z : (spec.bottomUp ? -i : i) }; }).sort(function (a, b) { return a.z - b.z; }).map(function (q) { return q.p; });
+      order.forEach(function (p) {
         var o = off(p, t), x = L.cx + o[0] * u, y = L.cy + (p.y + o[1]) * u;
         c.save(); c.translate(x, y); p.draw(c, u, kit, { t: t, clock: clock, selected: sel === p.id }); c.restore();
         var hw = (spec.width || 10) / 2, rx0 = x + (p.x0 != null ? p.x0 : -hw) * u, rx1 = x + (p.x1 != null ? p.x1 : hw) * u;

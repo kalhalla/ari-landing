@@ -300,6 +300,10 @@
     .part-card h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--bp-line); margin: 3px 0 4px; }
     .part-card p { font-size: 14.5px; line-height: 1.45; color: #C6DCF5; }
     .plist-wrap { overflow-x: auto; }
+    .plist.spec { margin-top: 14px; }
+    .plist.spec td { cursor: default; }
+    .plist.spec td:first-child { width: auto; color: var(--bp-dim); font-weight: 500; }
+    .plist.spec td:last-child { text-align: right; color: var(--bp-line); font-weight: 600; }
     .plist { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; color: var(--bp-line); }
     .plist th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; color: var(--bp-dim); padding: 0 8px 6px 0; border-bottom: 1px solid var(--bp-line); }
     .plist td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--bp-faint); cursor: pointer; }
@@ -329,8 +333,8 @@
               <button class="tool" id="tabMotor" aria-pressed="false">The rocket motor</button>
             </div>
           </div>
-          <canvas id="xvRocket" aria-label="A rocket drawn as a blueprint. Explode it to see its parts: nose cone, satellite, second stage, interstage, liquid oxygen tank, fuel tank and engines."></canvas>
-          <canvas id="xvMotor" class="hidden" aria-label="A rocket motor drawn as a blueprint. Explode it to see the turbopump, injector, combustion chamber, throat and nozzle, or fire it to see fuel and oxygen burn and shoot out of the nozzle."></canvas>
+          <canvas id="xvRocket" aria-label="A Saturn V rocket drawn as a blueprint, 110.6 metres tall. Explode it to see its parts: escape tower, command module, service module, lunar module, adapter panels, instrument unit, three stages, the oxygen and kerosene tanks, and five F-1 engines."></canvas>
+          <canvas id="xvMotor" class="hidden" aria-label="An F-1 rocket engine drawn as a blueprint. Explode it to see the turbopump, injector, combustion chamber, throat and nozzle, or fire it to see fuel and oxygen burn and shoot out of the nozzle."></canvas>
           <div class="xctl">
             <div class="box-head"><span>ASSEMBLED</span><b id="xtVal">0%</b><span>EXPLODED</span></div>
             <input type="range" id="xt" min="0" max="100" value="0" aria-label="How far apart the parts are">
@@ -353,6 +357,7 @@
           <div><p id="ariText"></p></div>
         </div>
         <div class="plist-wrap"><table class="plist" id="plist"></table></div>
+        <div class="plist-wrap"><table class="plist spec" id="spec"></table></div>
       </div>
     </section>
 
@@ -360,12 +365,12 @@
       <h2>Throw gas down, go up</h2>
       <p>What happens inside a rocket motor, every second it fires.</p>
       <div class="stage-grid">
-        <div class="stage"><div class="k">FIG 10.1 · PUMP</div><h3>Shove it in</h3><p>A turbopump spins tens of thousands of times a minute, forcing fuel and liquid oxygen into the motor: hundreds of litres every second.</p></div>
-        <div class="stage"><div class="k">FIG 10.2 · BURN</div><h3>Burn it hot</h3><p>The injector sprays them together through hundreds of tiny holes. They burn at about 3,300 °C and make a huge amount of hot gas.</p></div>
-        <div class="stage"><div class="k">FIG 10.3 · SQUEEZE</div><h3>Squeeze it out</h3><p>The gas can only escape through the narrow throat. Then the bell-shaped nozzle lets it spread out and speed up to about 3 km every second.</p></div>
+        <div class="stage"><div class="k">FIG 10.1 · PUMP</div><h3>Shove it in</h3><p>A turbopump as powerful as 55 F1 cars spins 5,500 times a minute, forcing fuel and liquid oxygen into the engine: about 2.6 tonnes every second.</p></div>
+        <div class="stage"><div class="k">FIG 10.2 · BURN</div><h3>Burn it hot</h3><p>The injector sprays them together through over 6,000 tiny holes. They burn at about 3,300 °C and make a huge amount of hot gas.</p></div>
+        <div class="stage"><div class="k">FIG 10.3 · SQUEEZE</div><h3>Squeeze it out</h3><p>The gas can only escape through the narrow throat. Then the bell-shaped nozzle lets it spread out and speed up to about 2.6 km every second.</p></div>
         <div class="stage"><div class="k">FIG 10.4 · PUSH</div><h3>Push back</h3><p>Throwing all that gas down pushes the rocket up. It doesn't need air or ground to push on, which is why rockets work in space.</p></div>
       </div>
-      <p class="big-idea"><b>The big idea:</b> a rocket is mostly tanks. More than 90% of its weight at lift-off is fuel and liquid oxygen, and the motor's whole job is to throw that out of the back as fast as it can.</p>
+      <p class="big-idea"><b>The big idea:</b> a rocket is mostly tanks. Nearly 90% of a Saturn V's weight at lift-off was fuel and liquid oxygen, and the motor's whole job is to throw that out of the back as fast as it can.</p>
     </section>
 
     <section class="signup" id="signup">
@@ -436,132 +441,182 @@
   // ===================== Exploded views =====================
   var K = AriExploded.kit, BP = K.BP;
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
-  var height = function (W) { return Math.round(clamp(W * 1.45, 540, 740)); };
-
-  // a fuel or oxygen tank: a cylinder, its liquid, and the hidden dome ends as dashed lines
-  function tank(c, u, w, h, tint, label, labelCol) {
-    K.rect(c, -w / 2 * u, 0, w * u, h * u);
-    c.fillStyle = tint; c.fillRect(-w / 2 * u + 1.5, h * u * 0.2, w * u - 3, h * u * 0.78);
-    K.line(c, [-w / 2 * u + 1.5, h * u * 0.2, w / 2 * u - 1.5, h * u * 0.2], labelCol, 0.9, [3, 2]);
-    c.setLineDash([3, 3]); c.strokeStyle = BP.dim; c.lineWidth = 0.8;
-    c.beginPath(); c.ellipse(0, h * u * 0.1, w / 2 * u - 1.5, h * u * 0.08, 0, Math.PI, 0); c.stroke();
-    c.beginPath(); c.ellipse(0, h * u * 0.9, w / 2 * u - 1.5, h * u * 0.08, 0, 0, Math.PI); c.stroke(); c.setLineDash([]);
-    if (u > 2.6) K.text(c, label, 0, h * u * 0.58, { align: 'center', size: clamp(u * 1.7, 7, 11), col: labelCol, weight: 700 });
+  var phoneish = function (W) { return W < 560; };
+  // sizes are real, in metres
+  function bellPath(c, u, x, y, wt, wb, h) { c.beginPath(); c.moveTo((x - wt / 2) * u, y * u); c.bezierCurveTo((x - wt / 2) * u, (y + h * 0.45) * u, (x - wb / 2) * u, (y + h * 0.65) * u, (x - wb / 2) * u, (y + h) * u); c.quadraticCurveTo(x * u, (y + h + wb * 0.12) * u, (x + wb / 2) * u, (y + h) * u); c.bezierCurveTo((x + wb / 2) * u, (y + h * 0.65) * u, (x + wt / 2) * u, (y + h * 0.45) * u, (x + wt / 2) * u, y * u); c.closePath(); }
+  function bell(c, u, x, y, wt, wb, h, o) {
+    o = o || {};
+    bellPath(c, u, x, y, wt, wb, h); c.fillStyle = o.fill || BP.bg; c.fill();
+    if (o.lines) { c.save(); bellPath(c, u, x, y, wt, wb, h); c.clip(); c.strokeStyle = BP.faint; c.lineWidth = 0.6; for (var k = -o.lines; k <= o.lines; k++) { var f = k / o.lines; c.beginPath(); c.moveTo((x + f * wt / 2) * u, y * u); c.bezierCurveTo((x + f * wt / 2) * u, (y + h * 0.45) * u, (x + f * wb / 2) * u, (y + h * 0.65) * u, (x + f * wb / 2) * u, (y + h) * u); c.stroke(); } c.restore(); }
+    (o.bands || []).forEach(function (b) { var yy = y + h * b, ww = wt + (wb - wt) * Math.pow(b, 1.6); c.strokeStyle = BP.dim; c.lineWidth = 0.8; c.beginPath(); c.moveTo((x - ww / 2) * u, yy * u); c.quadraticCurveTo(x * u, (yy + ww * 0.12) * u, (x + ww / 2) * u, yy * u); c.stroke(); });
+    bellPath(c, u, x, y, wt, wb, h); c.strokeStyle = o.stroke || BP.line; c.lineWidth = o.lw || 1.1; c.setLineDash(o.dash || []); c.stroke(); c.setLineDash([]);
   }
-  function bell(c, u, x, y, wTop, wBot, h) {
-    K.shape(c, function () { c.beginPath(); c.moveTo((x - wTop) * u, y * u); c.bezierCurveTo((x - wTop) * u, (y + h * 0.5) * u, (x - wBot) * u, (y + h * 0.7) * u, (x - wBot) * u, (y + h) * u); c.lineTo((x + wBot) * u, (y + h) * u); c.bezierCurveTo((x + wBot) * u, (y + h * 0.7) * u, (x + wTop) * u, (y + h * 0.5) * u, (x + wTop) * u, y * u); c.closePath(); });
+  function tag(c, u, t, x, y, col) { if (u > 4.2) K.text(c, t, x * u, y * u, { align: 'center', size: clamp(u * 1.25, 7, 10.5), col: col || BP.dim, weight: 700 }); }
+  function dome(c, u, w, y, up) { K.hidden(c, function () { c.beginPath(); c.ellipse(0, y * u, w / 2 * u, w * 0.18 * u, 0, up ? Math.PI : 0, up ? 0 : Math.PI); }); }
+  function roll(c, u, w, y0, y1) {   // the black-and-white roll pattern, drawn as hatched panels
+    var a = w / 2; c.save(); c.beginPath(); c.rect(0, y0 * u, a * 0.62 * u, (y1 - y0) * u); c.rect(-a * u, y0 * u, a * 0.38 * u, (y1 - y0) * u); K.hatch(c, 3, 'rgba(238,245,255,.35)'); c.restore();
   }
 
   var ROCKET = {
-    title: 'FIG 10.A · THE ROCKET', width: 10, dim: { label: 'ABOUT 70 m TALL' }, reserve: [2, 3], stagger: 0.3, height: height,
+    title: 'FIG 10.A · SATURN V', width: 10.1, reserve: [1, 4], stagger: 0.32, bottomUp: true,
+    height: function (W) { return Math.round(clamp(W * (phoneish(W) ? 2.35 : 1.5), 640, 980)); },
+    dims: [
+      { y0: 0, y1: 25, label: 'APOLLO SPACECRAFT · 25 m' }, { y0: 25.9, y1: 43.7, label: '3RD STAGE · 17.8 m' },
+      { y0: 43.7, y1: 68.6, label: '2ND STAGE · 24.9 m' }, { y0: 68.6, y1: 110.6, label: '1ST STAGE · 42 m' },
+      { y0: 0, y1: 110.6, label: 'TOTAL HEIGHT · 110.6 m', col: 1 }
+    ],
+    span: { x0: -5.05, x1: 5.05, y: 113.5, label: '10.1 m' },
     parts: [
-      { id: 'payload', name: 'Satellite', y: 3, h: 10, x0: -3.2, x1: 3.2, dy: -7,
-        note: 'The satellite: the whole reason for the trip. It sits right at the top, folded up, until the rocket lets it go.',
+      { id: 'les', name: 'Escape tower', y: 0, h: 6, x0: -1.1, x1: 1.1, dy: -25, anchor: 0.35,
+        note: 'A small rocket on a frame. If anything went wrong on the launch pad, it would pull the astronauts\' capsule clear in seconds. It was never needed on a Moon mission.',
         draw: function (c, u) {
-          K.rect(c, -2 * u, 1 * u, 4 * u, 5 * u, { fill: 'rgba(255,201,74,.25)', stroke: BP.amber });
-          K.rect(c, -3.2 * u, 1.5 * u, 1 * u, 4 * u, { fill: 'rgba(121,227,255,.25)' }); K.rect(c, 2.2 * u, 1.5 * u, 1 * u, 4 * u, { fill: 'rgba(121,227,255,.25)' });
-          K.shape(c, function () { c.beginPath(); c.moveTo(-2 * u, 6 * u); c.lineTo(2 * u, 6 * u); c.lineTo(3 * u, 10 * u); c.lineTo(-3 * u, 10 * u); c.closePath(); }, { hatch: 4 });
+          K.line(c, [0, 0, 0, 0.6 * u], BP.line, 1.2);
+          K.frustum(c, u, 0.15, 0.6, 0.6, { shade: false }); c.save(); c.translate(0, 0.6 * u); K.cyl(c, u, 0.65, 2.6, { rings: [0.5, 1.6] }); c.restore();
+          c.save(); c.translate(0, 3.2 * u); K.frustum(c, u, 0.65, 1.0, 0.5, { shade: false }); c.restore();
+          var y0 = 3.7 * u, y1 = 6 * u, a0 = 0.45 * u, a1 = 1.05 * u;
+          K.line(c, [-a0, y0, -a1, y1], BP.line, 1.1); K.line(c, [a0, y0, a1, y1], BP.line, 1.1);
+          K.line(c, [-a0, y0, a1 * 0.7, (y0 + y1) / 2, -a1, y1], BP.dim, 0.7); K.line(c, [a0, y0, -a1 * 0.7, (y0 + y1) / 2, a1, y1], BP.dim, 0.7);
+          K.line(c, [-a1 * 0.72, (y0 + y1) / 2, a1 * 0.72, (y0 + y1) / 2], BP.dim, 0.7);
         } },
-      { id: 'fairL', name: 'Nose cone', label: false, y: 0, h: 14, x0: -5, x1: 0, dx: -6, dy: -11,
-        note: 'The nose cone (engineers call it the fairing) shields the satellite from the rushing air, then splits in two and falls away.',
-        draw: function (c, u) { K.shape(c, function () { c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(-5 * u, 5 * u, -5 * u, 14 * u); c.lineTo(0, 14 * u); c.closePath(); }); } },
-      { id: 'fairR', name: 'Nose cone', y: 0, h: 14, x0: 0, x1: 5, dx: 6, dy: -11, anchor: 0.6,
-        note: 'The nose cone (engineers call it the fairing) shields the satellite from the rushing air, then splits in two and falls away.',
-        draw: function (c, u) { K.shape(c, function () { c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(5 * u, 5 * u, 5 * u, 14 * u); c.lineTo(0, 14 * u); c.closePath(); }); } },
-      { id: 'stage2', name: 'Second stage', y: 14, h: 20, dy: -2,
-        note: 'A smaller rocket on top of the big one. It fires after the first stage drops away and pushes the satellite up to orbit speed.',
+      { id: 'cm', name: 'Command module', y: 5.8, h: 3.4, x0: -2, x1: 2, dy: -20,
+        note: 'The cone where three astronauts sat. Out of the whole 110-metre rocket, it was the only part that came back to Earth.',
         draw: function (c, u) {
-          bell(c, u, 0, 16, 1.2, 2.4, 4);
-          tank(c, u, 10, 16, 'rgba(121,227,255,.12)', '2', BP.air);
+          K.frustum(c, u, 0.8, 3.9, 3.2, { rings: [1.2, 2.4], seams: [-0.35, 0.35] });
+          K.rect(c, 0.45 * u, 1.5 * u, 0.35 * u, 0.3 * u, { fill: BP.deep, lw: 0.8 });
+          c.save(); c.translate(0, 3.2 * u); K.cyl(c, u, 3.9, 0.2, { shade: false, bands: [[0, 0.2, 'hatch']] }); c.restore();
         } },
-      { id: 'inter', name: 'Interstage', y: 30, h: 5, dy: 3,
-        note: 'The joint between the two stages. It holds them together on the way up, then lets go.',
-        draw: function (c, u) { K.rect(c, -5 * u, 0, 10 * u, 5 * u, { hatch: 5 }); } },
-      { id: 'lox', name: 'Liquid oxygen tank', y: 35, h: 27, dy: 8,
-        note: 'Fire needs oxygen, and there is none in space. So the rocket carries its own, cooled to −183 °C so it turns liquid and fits in the tank.',
-        draw: function (c, u) { tank(c, u, 10, 27, 'rgba(121,227,255,.16)', 'O₂', BP.air); } },
-      { id: 'fuel', name: 'Fuel tank', y: 62, h: 22, dy: 13,
-        note: 'Rocket fuel: a very pure kerosene, a lot like the fuel jet planes use.',
-        draw: function (c, u) { tank(c, u, 10, 22, 'rgba(255,201,74,.16)', 'FUEL', BP.amber); } },
-      { id: 'engines', name: 'Engines', y: 84, h: 16, x0: -5.5, x1: 5.5, dy: 19, anchor: 0.35,
-        note: 'Where the fuel and oxygen burn and blast out of the back. Tap "The rocket motor" at the top to look inside one.',
+      { id: 'sm', name: 'Service module', y: 9.2, h: 7.4, x0: -2, x1: 2, dy: -15,
+        note: 'Carried the air, water and electricity, plus the engine that put the astronauts into orbit round the Moon and brought them home again.',
+        draw: function (c, u, k, s) {
+          if (s.t > 0.12) { c.globalAlpha = clamp((s.t - 0.12) / 0.2, 0, 1); bell(c, u, 0, 7.4, 0.9, 2.4, 2.6, { lines: 4 }); c.globalAlpha = 1; }
+          K.cyl(c, u, 3.9, 7.4, { rings: [0.4, 6.9], seams: [-0.45, 0.45] });
+          K.rect(c, -1.3 * u, 2.2 * u, 0.9 * u, 3 * u, { fill: 'rgba(238,245,255,.06)', stroke: BP.dim, lw: 0.8 });
+          K.line(c, [0.9 * u, 1.3 * u, 1.5 * u, 1.3 * u], BP.line, 1); K.line(c, [1.2 * u, 1.0 * u, 1.2 * u, 1.6 * u], BP.line, 1);
+        } },
+      { id: 'lm', name: 'Lunar module', y: 17.6, h: 5.8, x0: -2.6, x1: 2.6, dy: -10, z: -20,
+        note: 'The Moon lander, folded up and hidden inside the rocket for the trip. Two astronauts flew it down to the Moon\'s surface.',
         draw: function (c, u) {
-          K.rect(c, -5 * u, 0, 10 * u, 7 * u);
-          K.line(c, [-5 * u, 0, -1.5 * u, 7 * u, 1.5 * u, 0, 5 * u, 7 * u], BP.dim, 0.8);
-          [-3.3, 0, 3.3].forEach(function (x) { bell(c, u, x, 7, 0.8, 1.7, 9); });
+          K.shape(c, function () { c.beginPath(); c.moveTo(-1.4 * u, 0.6 * u); c.lineTo(0.8 * u, 0.4 * u); c.lineTo(1.6 * u, 1.2 * u); c.lineTo(1.6 * u, 3.0 * u); c.lineTo(-1.6 * u, 3.0 * u); c.lineTo(-1.8 * u, 1.6 * u); c.closePath(); }, { fill: 'rgba(255,201,74,.14)', stroke: BP.amber });
+          K.rect(c, -0.35 * u, 1.3 * u, 0.7 * u, 0.6 * u, { fill: BP.deep, stroke: BP.amber, lw: 0.8 });
+          K.line(c, [0.8 * u, 0.4 * u, 1.3 * u, -0.1 * u], BP.amber, 0.9); c.strokeStyle = BP.amber; c.beginPath(); c.arc(1.4 * u, -0.25 * u, 0.25 * u, 0, 6.3); c.stroke();
+          K.rect(c, -2.1 * u, 3.0 * u, 4.2 * u, 1.7 * u, { fill: 'rgba(255,201,74,.14)', stroke: BP.amber, hatch: 5, hatchCol: 'rgba(255,201,74,.35)' });
+          [-1, 1].forEach(function (sd) { K.line(c, [sd * 2.1 * u, 3.4 * u, sd * 2.5 * u, 5.6 * u], BP.amber, 1); K.line(c, [sd * 2.1 * u, 4.6 * u, sd * 2.5 * u, 5.6 * u], BP.amber, 0.8); K.line(c, [sd * 2.2 * u, 5.7 * u, sd * 2.8 * u, 5.7 * u], BP.amber, 1.2); });
+        } },
+      { id: 'slaL', name: 'Adapter panels', label: false, y: 16.6, h: 8.4, x0: -3.3, x1: 0, dx: -5.5, dy: -9,
+        note: 'Four panels that hide the lunar module on the way up. In space they peel open like petals to let it out.',
+        draw: function (c, u) { K.shape(c, function () { c.beginPath(); c.moveTo(-1.95 * u, 0); c.lineTo(0, 0); c.lineTo(0, 8.4 * u); c.lineTo(-3.3 * u, 8.4 * u); c.closePath(); }); K.line(c, [-1.0 * u, 0, -1.7 * u, 8.4 * u], BP.faint, 0.8); [2.1, 4.2, 6.3].forEach(function (y) { var a = 1.95 + 1.35 * y / 8.4; K.line(c, [-a * u, y * u, 0, y * u + a * 0.12 * u], BP.faint, 0.7); }); } },
+      { id: 'slaR', name: 'Adapter panels', y: 16.6, h: 8.4, x0: 0, x1: 3.3, dx: 5.5, dy: -9, anchor: 0.4,
+        note: 'Four panels that hide the lunar module on the way up. In space they peel open like petals to let it out.',
+        draw: function (c, u) { K.shape(c, function () { c.beginPath(); c.moveTo(1.95 * u, 0); c.lineTo(0, 0); c.lineTo(0, 8.4 * u); c.lineTo(3.3 * u, 8.4 * u); c.closePath(); }); K.line(c, [1.0 * u, 0, 1.7 * u, 8.4 * u], BP.faint, 0.8); [2.1, 4.2, 6.3].forEach(function (y) { var a = 1.95 + 1.35 * y / 8.4; K.line(c, [a * u, y * u, 0, y * u + a * 0.12 * u], BP.faint, 0.7); }); for (var k = 1; k <= 3; k++) K.line(c, [(1.95 + 1.35 * k / 4) * u * 0.4 + k * 0.5 * u, 0.6 * u, (1.95 + 1.35 * k / 4) * u * 0.4 + k * 0.7 * u, 7.8 * u], 'rgba(159,198,242,.2)', 0.6); } },
+      { id: 'iu', name: 'Instrument unit', y: 25, h: 0.9, x0: -3.3, x1: 3.3, dy: -5.5,
+        note: 'A thin ring packed with computers and gyroscopes. It steered the whole rocket for the first few hours of the trip.',
+        draw: function (c, u) { K.cyl(c, u, 6.6, 0.9, { shade: false, seams: [-0.7, -0.2, 0.3, 0.75] }); } },
+      { id: 's4b', name: 'Third stage', y: 25.9, h: 17.8, x0: -5.05, x1: 5.05, dy: -2.5,
+        note: 'Pushes the spacecraft into orbit round Earth, then fires a second time to send it off towards the Moon. One J-2 engine, burning liquid hydrogen and liquid oxygen.',
+        draw: function (c, u) {
+          c.save(); c.translate(0, 14.6 * u); K.frustum(c, u, 6.6, 10.1, 3.2, { rings: [1.6], seams: [-0.6, -0.2, 0.2, 0.6] });
+          K.rect(c, -4.6 * u, 0.8 * u, 0.5 * u, 1.2 * u, { lw: 0.8 }); K.rect(c, 4.1 * u, 0.8 * u, 0.5 * u, 1.2 * u, { lw: 0.8 });
+          bell(c, u, 0, 0.2, 0.7, 2.0, 2.8, { stroke: BP.dim, dash: [3, 3], fill: 'rgba(0,0,0,0)' }); c.restore();
+          K.cyl(c, u, 6.6, 14.6, { rings: [1.0, 13.6], seams: [-0.3, 0.3], tint: [1.2, 13.4, 'rgba(121,227,255,.08)'] });
+          dome(c, u, 6.2, 9.6, false); tag(c, u, 'LH₂', 0, 5.6, BP.air); tag(c, u, 'LOX', 0, 12.2, BP.air);
+        } },
+      { id: 's2', name: 'Second stage', y: 43.7, h: 24.9, x0: -5.05, x1: 5.05, dy: 0.5,
+        note: 'Five J-2 engines burning liquid hydrogen and liquid oxygen for about six minutes, taking the rocket almost all the way to orbit.',
+        draw: function (c, u, k, s) {
+          if (s.t > 0.12) { c.globalAlpha = clamp((s.t - 0.12) / 0.2, 0, 1); [-1.7, 1.7].forEach(function (x) { bell(c, u, x, 24.9, 0.6, 1.9, 3.2, { stroke: BP.dim }); }); [-3.3, 0, 3.3].forEach(function (x) { bell(c, u, x, 24.9, 0.6, 2.0, 3.4, { lines: 3 }); }); c.globalAlpha = 1; }
+          K.cyl(c, u, 10.1, 24.9, { rings: [3.0, 8, 13, 18.4], bands: [[0, 1.2, 'stringers'], [19.3, 24.9, 'stringers']], tint: [3.4, 18.2, 'rgba(121,227,255,.08)'] });
+          K.line(c, [-0.9 * u, 1.2 * u, -0.9 * u, 19.3 * u], BP.faint, 0.8); K.line(c, [-1.5 * u, 1.2 * u, -1.5 * u, 19.3 * u], BP.faint, 0.8);
+          dome(c, u, 9.6, 15.2, true); tag(c, u, 'LH₂', 1.6, 9, BP.air); tag(c, u, 'LOX', 1.6, 17.6, BP.air);
+        } },
+      { id: 'loxT', name: 'Oxygen tank', y: 68.6, h: 16, x0: -5.05, x1: 5.05, dy: 4.5,
+        note: 'Part of the first stage. Liquid oxygen at −183 °C: about 1,400 tonnes of it, because fuel can\'t burn without oxygen.',
+        draw: function (c, u) {
+          K.cyl(c, u, 10.1, 16, { rings: [5, 10], bands: [[0, 3.2, 'stringers']], tint: [3.4, 15.6, 'rgba(121,227,255,.1)'] });
+          dome(c, u, 9.6, 3.6, true); dome(c, u, 9.6, 15.2, false); tag(c, u, 'LIQUID', 1.7, 8.6, BP.air); tag(c, u, 'OXYGEN', 1.7, 10.2, BP.air);
+        } },
+      { id: 'rp1', name: 'Kerosene tank', y: 84.6, h: 16, x0: -5.05, x1: 5.05, dy: 8.5,
+        note: 'Part of the first stage. About 640 tonnes of rocket-grade kerosene, a lot like the fuel jet planes use.',
+        draw: function (c, u) {
+          K.cyl(c, u, 10.1, 16, { rings: [8, 12], bands: [[0, 3.0, 'stringers']], tint: [3.4, 15.6, 'rgba(255,201,74,.1)'] });
+          dome(c, u, 9.6, 3.6, true); dome(c, u, 9.6, 15.4, false); tag(c, u, 'KEROSENE', 1.8, 9.4, BP.amber);
+        } },
+      { id: 'f1s', name: 'F-1 engines', y: 100.6, h: 10, x0: -8.2, x1: 8.2, dy: 13, anchor: 0.55,
+        note: 'Five F-1 engines, the most powerful single-chamber liquid-fuelled rocket engines ever flown. Together they burnt about 13 tonnes of fuel and oxygen every second.',
+        draw: function (c, u) {
+          [-1.7, 1.7].forEach(function (x) { bell(c, u, x, 4.0, 1.3, 3.2, 5.6, { stroke: BP.dim, bands: [0.55] }); });
+          [-3.4, 0, 3.4].forEach(function (x) { bell(c, u, x, 4.2, 1.3, 3.5, 5.8, { lines: 5, bands: [0.55, 0.75, 0.9] }); });
+          [-1, 1].forEach(function (sd) {
+            K.shape(c, function () { c.beginPath(); c.moveTo(sd * 3.4 * u, 2.4 * u); c.lineTo(sd * 4.9 * u, 2.4 * u); c.lineTo(sd * 4.6 * u, 5.4 * u); c.lineTo(sd * 2.6 * u, 5.4 * u); c.closePath(); }, { lw: 1 });
+            K.shape(c, function () { c.beginPath(); c.moveTo(sd * 5.05 * u, 1.0 * u); c.lineTo(sd * 7.9 * u, 3.6 * u); c.lineTo(sd * 7.9 * u, 6.4 * u); c.lineTo(sd * 5.05 * u, 5.0 * u); c.closePath(); }, { hatch: 4 });
+          });
+          K.cyl(c, u, 10.1, 2.6, { bands: [[0, 2.6, 'stringers']] });
         } }
     ]
   };
 
   var firing = false;
   var MOTOR = {
-    title: 'FIG 10.B · THE ROCKET MOTOR', width: 30, reserve: [7, 30], stagger: 0.25, height: height,
+    title: 'FIG 10.B · F-1 ENGINE', width: 3.7, reserve: [0.9, 3.4], stagger: 0.25,
+    height: function (W) { return Math.round(clamp(W * (phoneish(W) ? 1.5 : 1.15), 540, 820)); },
+    dims: [{ y0: 0, y1: 5.6, label: 'HEIGHT · 5.6 m' }],
     parts: [
-      { id: 'pump', name: 'Turbopump', y: 0, h: 12, x0: -12, x1: 12, dy: -12, anchor: 0.4,
-        note: 'Spins tens of thousands of times a minute, shoving fuel and liquid oxygen into the motor: hundreds of litres every second.',
+      { id: 'pump', name: 'Turbopump', y: 0.3, h: 2.7, x0: -2.5, x1: -0.9, dx: -1.8, dy: -0.7, anchor: 0.35,
+        note: 'A turbine as powerful as about 55 F1 cars, spinning 5,500 times a minute. It shoves fuel and oxygen into the engine: about 2.6 tonnes every second.',
         draw: function (c, u, k, s) {
-          K.line(c, [-9 * u, 5 * u, 9 * u, 5 * u], BP.line, 2);
-          K.line(c, [-8 * u, 0, -8 * u, 2 * u], BP.amber, 2); K.line(c, [8 * u, 0, 8 * u, 2 * u], BP.air, 2);
-          K.line(c, [-8 * u, 8 * u, -5 * u, 12 * u], BP.amber, 2); K.line(c, [8 * u, 8 * u, 5 * u, 12 * u], BP.air, 2);
-          K.shape(c, function () { c.beginPath(); c.arc(-8 * u, 5 * u, 3 * u, 0, 6.3); }, { fill: 'rgba(255,201,74,.2)', stroke: BP.amber });
-          K.shape(c, function () { c.beginPath(); c.arc(8 * u, 5 * u, 3 * u, 0, 6.3); }, { fill: 'rgba(121,227,255,.2)', stroke: BP.air });
-          K.shape(c, function () { c.beginPath(); c.arc(0, 5 * u, 3.4 * u, 0, 6.3); });
-          var a0 = s.clock * (firing ? 14 : 0.6);
-          for (var i = 0; i < 8; i++) { var a = a0 + i * Math.PI / 4; K.line(c, [Math.cos(a) * 1 * u, 5 * u + Math.sin(a) * 1 * u, Math.cos(a + 0.5) * 3 * u, 5 * u + Math.sin(a + 0.5) * 3 * u], BP.dim, 1); }
+          K.line(c, [-1.5 * u, 1.0 * u, -0.9 * u, 0.55 * u, -0.6 * u, 0.55 * u], BP.air, 2.2); K.line(c, [-1.9 * u, 1.9 * u, -1.2 * u, 1.5 * u, -0.7 * u, 1.05 * u], BP.amber, 2.2);
+          K.line(c, [-1.7 * u, 2.9 * u, -1.7 * u, 3.3 * u, -1.35 * u, 3.4 * u], BP.dim, 2);
+          c.save(); c.translate(-1.7 * u, 0); K.cyl(c, u, 0.9, 2.9, { rings: [0.5, 1.4, 2.1], bands: [[2.1, 2.9, 'hatch']] }); c.restore();
+          [[0.9, BP.air], [1.75, BP.amber]].forEach(function (q) { K.shape(c, function () { c.beginPath(); c.ellipse(-1.7 * u, q[0] * u, 0.62 * u, 0.28 * u, 0, 0, 6.3); }, { fill: q[1] === BP.air ? 'rgba(121,227,255,.15)' : 'rgba(255,201,74,.15)', stroke: q[1], lw: 1.1 }); });
+          var a0 = s.clock * (firing ? 12 : 0.5); for (var i = 0; i < 6; i++) { var a = a0 + i * Math.PI / 3; K.line(c, [-1.7 * u, 2.5 * u, -1.7 * u + Math.cos(a) * 0.35 * u, 2.5 * u + Math.sin(a) * 0.12 * u], BP.line, 0.8); }
         } },
-      { id: 'inj', name: 'Injector', y: 12, h: 3, x0: -8, x1: 8, dy: -6,
-        note: 'A plate with hundreds of tiny holes. It sprays the fuel and oxygen together so they mix and burn fast.',
+      { id: 'inj', name: 'Injector', y: 0, h: 1.0, x0: -0.7, x1: 0.7, dy: -1.7, anchor: 0.6,
+        note: 'A plate with over 6,000 tiny holes. It sprays the fuel and oxygen together so they mix and burn fast. The dome above it brings the oxygen in.',
         draw: function (c, u) {
-          K.rect(c, -8 * u, 0, 16 * u, 3 * u, { hatch: 4 });
-          c.fillStyle = BP.line; for (var x = -6.5; x <= 6.6; x += 1.3) { c.beginPath(); c.arc(x * u, 1.5 * u, Math.max(0.8, 0.25 * u), 0, 6.3); c.fill(); }
+          K.rect(c, -0.2 * u, 0, 0.4 * u, 0.25 * u, { lw: 0.9 });
+          K.shape(c, function () { c.beginPath(); c.moveTo(-0.65 * u, 0.85 * u); c.bezierCurveTo(-0.6 * u, 0.3 * u, 0.6 * u, 0.3 * u, 0.65 * u, 0.85 * u); c.closePath(); });
+          K.rect(c, -0.68 * u, 0.85 * u, 1.36 * u, 0.15 * u, { hatch: 3, lw: 0.9 });
         } },
-      { id: 'chamber', name: 'Combustion chamber', y: 15, h: 16, x0: -8, x1: 8, dy: 0,
-        note: 'Where the fuel and oxygen burn, at about 3,300 °C. That makes a huge amount of very hot gas that has to get out.',
+      { id: 'tc', name: 'Combustion chamber', y: 1.0, h: 2.6, x0: -1.3, x1: 1.3, dy: 0,
+        note: 'Where the fuel and oxygen burn, at about 3,300 °C. The walls are made of hundreds of thin tubes with cold fuel flowing through them, so the metal doesn\'t melt. At the bottom of the chamber is the narrow throat.',
         draw: function (c, u) {
-          K.rect(c, -8 * u, 0, 16 * u, 16 * u);
-          K.line(c, [-7 * u, 0, -7 * u, 16 * u], BP.dim, 0.8, [3, 3]); K.line(c, [7 * u, 0, 7 * u, 16 * u], BP.dim, 0.8, [3, 3]);
+          var prof = function () { c.beginPath(); c.moveTo(-0.6 * u, 0); c.lineTo(-0.6 * u, 0.85 * u); c.quadraticCurveTo(-0.6 * u, 1.15 * u, -0.38 * u, 1.2 * u); c.bezierCurveTo(-0.6 * u, 1.6 * u, -1.0 * u, 2.1 * u, -1.3 * u, 2.6 * u); c.lineTo(1.3 * u, 2.6 * u); c.bezierCurveTo(1.0 * u, 2.1 * u, 0.6 * u, 1.6 * u, 0.38 * u, 1.2 * u); c.quadraticCurveTo(0.6 * u, 1.15 * u, 0.6 * u, 0.85 * u); c.lineTo(0.6 * u, 0); c.closePath(); };
+          prof(); c.fillStyle = BP.bg; c.fill();
+          c.save(); prof(); c.clip(); c.strokeStyle = BP.faint; c.lineWidth = 0.6;
+          for (var k = -9; k <= 9; k++) { var f = k / 9; c.beginPath(); c.moveTo(f * 0.6 * u, 0); c.lineTo(f * 0.6 * u, 0.85 * u); c.quadraticCurveTo(f * 0.6 * u, 1.15 * u, f * 0.38 * u, 1.2 * u); c.bezierCurveTo(f * 0.6 * u, 1.6 * u, f * 1.0 * u, 2.1 * u, f * 1.3 * u, 2.6 * u); c.stroke(); }
+          c.restore(); prof(); c.strokeStyle = BP.line; c.lineWidth = 1.3; c.stroke();
+          c.strokeStyle = BP.dim; c.lineWidth = 0.8; [1.7, 2.15].forEach(function (y) { var a = y < 2 ? 0.75 : 1.05; c.beginPath(); c.moveTo(-a * u, y * u); c.quadraticCurveTo(0, (y + 0.12) * u, a * u, y * u); c.stroke(); });
         } },
-      { id: 'throat', name: 'Throat', y: 31, h: 5, x0: -8, x1: 8, dy: 6, anchor: 0.6,
-        note: 'The narrow neck. All the gas from the chamber has to squeeze through this small gap, which makes it rush out very fast.',
-        draw: function (c, u) {
-          K.shape(c, function () { c.beginPath(); c.moveTo(-8 * u, 0); c.lineTo(8 * u, 0); c.quadraticCurveTo(4 * u, 1 * u, 3.5 * u, 5 * u); c.lineTo(-3.5 * u, 5 * u); c.quadraticCurveTo(-4 * u, 1 * u, -8 * u, 0); c.closePath(); }, { hatch: 4 });
-        } },
-      { id: 'nozzle', name: 'Nozzle', y: 36, h: 34, x0: -15, x1: 15, dy: 12, anchor: 0.45,
-        note: 'The big bell. The gas spreads out inside it and speeds up even more, to about 3 km every second, before it leaves.',
-        draw: function (c, u) {
-          K.shape(c, function () { c.beginPath(); c.moveTo(-3.5 * u, 0); c.bezierCurveTo(-5 * u, 10 * u, -11 * u, 22 * u, -15 * u, 34 * u); c.lineTo(15 * u, 34 * u); c.bezierCurveTo(11 * u, 22 * u, 5 * u, 10 * u, 3.5 * u, 0); c.closePath(); });
-          for (var k = 1; k <= 3; k++) { var f = k / 4; c.strokeStyle = BP.faint; c.lineWidth = 0.7; c.beginPath(); c.moveTo(-3.5 * u * (1 - f), 0); c.bezierCurveTo(-5 * u * (1 - f), 10 * u, -11 * u * (1 - f), 22 * u, -15 * u * (1 - f), 34 * u); c.stroke(); c.beginPath(); c.moveTo(3.5 * u * (1 - f), 0); c.bezierCurveTo(5 * u * (1 - f), 10 * u, 11 * u * (1 - f), 22 * u, 15 * u * (1 - f), 34 * u); c.stroke(); }
-        } }
+      { id: 'mani', name: 'Exhaust ring', y: 3.6, h: 0.35, x0: -1.4, x1: 1.4, dy: 1.0,
+        note: 'The turbine\'s own hot exhaust is piped round this ring and blown along the inside of the nozzle extension, a cooler blanket of gas that protects it.',
+        draw: function (c, u) { K.cyl(c, u, 2.75, 0.35, { shade: false, bands: [[0, 0.35, 'hatch']] }); } },
+      { id: 'ext', name: 'Nozzle extension', y: 3.95, h: 1.65, x0: -1.85, x1: 1.85, dy: 2.0, anchor: 0.45,
+        note: 'The big bell. The hot gas spreads out inside it and speeds up to about 2.6 km every second before it leaves the engine.',
+        draw: function (c, u) { K.frustum(c, u, 2.7, 3.7, 1.65, { rings: [0.4, 0.8, 1.2], topFill: 'rgba(0,0,0,0)' }); } }
     ],
     overlay: function (c, o) {
       if (!firing || o.t > 0.05) return;
       var u = o.u, X = function (x) { return o.cx + x * u; }, Y = function (y) { return o.cy + y * u; }, fl = 0.8 + 0.2 * Math.sin(o.clock * 31) * Math.sin(o.clock * 7);
-      // fuel and oxygen flowing in
       c.lineDashOffset = -o.clock * 60;
-      K.line(c, [X(-8), Y(-6), X(-8), Y(2)], BP.amber, 3, [6, 5]); K.line(c, [X(-8), Y(8), X(-5), Y(12), X(-2), Y(14.5)], BP.amber, 3, [6, 5]);
-      K.line(c, [X(8), Y(-6), X(8), Y(2)], BP.air, 3, [6, 5]); K.line(c, [X(8), Y(8), X(5), Y(12), X(2), Y(14.5)], BP.air, 3, [6, 5]);
+      K.line(c, [X(-2.35), Y(-0.7), X(-2.35), Y(1.75), X(-1.9), Y(1.75), X(-1.2), Y(1.5), X(-0.7), Y(1.05), X(-0.3), Y(0.95)], BP.amber, 3, [7, 5]);
+      K.line(c, [X(-1.45), Y(-0.7), X(-1.45), Y(0.95), X(-0.9), Y(0.55), X(-0.6), Y(0.55), X(-0.2), Y(0.45)], BP.air, 3, [7, 5]);
       c.lineDashOffset = 0;
-      K.text(c, 'FUEL', X(-9), Y(-3), { align: 'right', col: BP.amber, weight: 700 });
-      K.text(c, 'OXYGEN', X(9), Y(-3), { col: BP.air, weight: 700 });
-      // the fire inside the chamber, through the throat and down the nozzle
-      var g = c.createRadialGradient(X(0), Y(24), 2, X(0), Y(24), 9 * u);
-      g.addColorStop(0, 'rgba(255,245,200,' + fl + ')'); g.addColorStop(0.5, 'rgba(255,170,60,' + 0.85 * fl + ')'); g.addColorStop(1, 'rgba(255,120,40,.15)');
-      c.fillStyle = g; c.fillRect(X(-6.8), Y(15.2), 13.6 * u, 15.6 * u);
-      c.save(); c.beginPath(); c.moveTo(X(-3.2), Y(36)); c.bezierCurveTo(X(-4.6), Y(46), X(-10.5), Y(58), X(-14.4), Y(70)); c.lineTo(X(14.4), Y(70)); c.bezierCurveTo(X(10.5), Y(58), X(4.6), Y(46), X(3.2), Y(36)); c.closePath();
-      var gn = c.createLinearGradient(0, Y(36), 0, Y(70)); gn.addColorStop(0, 'rgba(255,190,90,' + 0.85 * fl + ')'); gn.addColorStop(1, 'rgba(255,120,40,.35)'); c.fillStyle = gn; c.fill(); c.restore();
-      // exhaust plume with shock diamonds
-      var pg = c.createLinearGradient(0, Y(70), 0, Y(99)); pg.addColorStop(0, 'rgba(255,170,70,' + 0.75 * fl + ')'); pg.addColorStop(1, 'rgba(255,120,40,0)');
-      c.fillStyle = pg; c.beginPath(); c.moveTo(X(-14), Y(70)); c.lineTo(X(14), Y(70)); c.lineTo(X(9), Y(99)); c.lineTo(X(-9), Y(99)); c.closePath(); c.fill();
-      for (var k = 0; k < 3; k++) { var y0 = 72 + k * 8.5; c.strokeStyle = 'rgba(255,240,200,' + (0.8 - k * 0.2) + ')'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(X(0), Y(y0)); c.lineTo(X(5 - k), Y(y0 + 4)); c.lineTo(X(0), Y(y0 + 8)); c.lineTo(X(-5 + k), Y(y0 + 4)); c.closePath(); c.stroke(); }
+      K.text(c, 'KEROSENE', X(-2.45), Y(-0.75), { align: 'right', col: BP.amber, weight: 700 });
+      K.text(c, 'OXYGEN', X(-1.35), Y(-0.75), { col: BP.air, weight: 700 });
+      var g = c.createRadialGradient(X(0), Y(1.5), 2, X(0), Y(1.5), 0.8 * u);
+      g.addColorStop(0, 'rgba(255,245,200,' + fl + ')'); g.addColorStop(0.6, 'rgba(255,170,60,' + 0.85 * fl + ')'); g.addColorStop(1, 'rgba(255,120,40,.2)');
+      c.fillStyle = g; c.fillRect(X(-0.56), Y(1.02), 1.12 * u, 0.98 * u);
+      c.save(); c.beginPath(); c.moveTo(X(-0.36), Y(2.2)); c.bezierCurveTo(X(-0.58), Y(2.6), X(-0.98), Y(3.1), X(-1.26), Y(3.6)); c.lineTo(X(-1.3), Y(3.95)); c.lineTo(X(-1.8), Y(5.6)); c.lineTo(X(1.8), Y(5.6)); c.lineTo(X(1.3), Y(3.95)); c.lineTo(X(1.26), Y(3.6)); c.bezierCurveTo(X(0.98), Y(3.1), X(0.58), Y(2.6), X(0.36), Y(2.2)); c.closePath();
+      var gn = c.createLinearGradient(0, Y(2.2), 0, Y(5.6)); gn.addColorStop(0, 'rgba(255,190,90,' + 0.8 * fl + ')'); gn.addColorStop(1, 'rgba(255,120,40,.3)'); c.fillStyle = gn; c.fill(); c.restore();
+      var pg = c.createLinearGradient(0, Y(5.6), 0, Y(8.9)); pg.addColorStop(0, 'rgba(255,170,70,' + 0.75 * fl + ')'); pg.addColorStop(1, 'rgba(255,120,40,0)');
+      c.fillStyle = pg; c.beginPath(); c.moveTo(X(-1.8), Y(5.7)); c.lineTo(X(1.8), Y(5.7)); c.lineTo(X(1.2), Y(8.9)); c.lineTo(X(-1.2), Y(8.9)); c.closePath(); c.fill();
+      for (var k = 0; k < 3; k++) { var y0 = 5.85 + k * 0.95; c.strokeStyle = 'rgba(255,240,200,' + (0.8 - k * 0.2) + ')'; c.lineWidth = 1.4; c.beginPath(); c.moveTo(X(0), Y(y0)); c.lineTo(X(0.6 - k * 0.1), Y(y0 + 0.45)); c.lineTo(X(0), Y(y0 + 0.9)); c.lineTo(X(-0.6 + k * 0.1), Y(y0 + 0.45)); c.closePath(); c.stroke(); }
       c.strokeStyle = 'rgba(255,230,180,.8)'; c.lineWidth = 1.5;
-      for (k = 0; k < 14; k++) { var px = ((k * 37) % 23) - 11.5, py = 70 + ((o.clock * 90 + k * 13) % 29); c.beginPath(); c.moveTo(X(px * (1 - (py - 70) / 60)), Y(py)); c.lineTo(X(px * (1 - (py - 70) / 60)), Y(py + 2.5)); c.stroke(); }
-      // labels
-      K.line(c, [X(4), Y(23), X(9.5), Y(23)], BP.line, 0.9); K.text(c, '≈ 3,300 °C', X(10.5), Y(26), { col: '#FFB067', weight: 700, size: 11 });
-      K.text(c, 'SQUEEZED', X(9.5), Y(34.5), { col: BP.line, size: 9.5 });
-      K.text(c, '≈ 3 km/s', X(10), Y(86), { col: BP.amber, weight: 700, size: 10.5 });
-      K.text(c, 'OUT', X(10), Y(90.5), { col: BP.amber, size: 9.5 });
-      K.arrow(c, X(-19), Y(62), X(-19), Y(30), BP.ok, 3);
-      c.save(); c.translate(X(-21.5), Y(46)); c.rotate(-Math.PI / 2); K.text(c, 'THRUST', 0, 0, { align: 'center', col: BP.ok, weight: 700 }); c.restore();
+      for (k = 0; k < 14; k++) { var px = (((k * 37) % 23) - 11.5) / 11.5 * 1.6, py = 5.7 + ((o.clock * 9 + k * 1.3) % 3.1); c.beginPath(); c.moveTo(X(px * (1 - (py - 5.7) / 7)), Y(py)); c.lineTo(X(px * (1 - (py - 5.7) / 7)), Y(py + 0.28)); c.stroke(); }
+      K.line(c, [X(0.45), Y(1.5), X(1.45), Y(1.5)], BP.line, 0.9); K.text(c, '≈ 3,300 °C', X(1.5), Y(1.5) + 4, { col: '#FFB067', weight: 700, size: 11 });
+      K.line(c, [X(0.4), Y(2.2), X(1.45), Y(2.2)], BP.line, 0.9); K.text(c, 'THROAT', X(1.5), Y(2.2) + 4, { col: BP.line, size: 9.5 });
+      K.text(c, '≈ 2.6 km/s', X(1.45), Y(7.3), { col: BP.amber, weight: 700, size: 10.5 }); K.text(c, 'OUT', X(1.45), Y(7.3) + 13, { col: BP.amber, size: 9.5 });
+      K.arrow(c, X(2.2), Y(5.2), X(2.2), Y(2.9), BP.ok, 3);
+      c.save(); c.translate(X(2.2) + 14, Y(4.05)); c.rotate(-Math.PI / 2); K.text(c, 'THRUST', 0, 0, { align: 'center', col: BP.ok, weight: 700 }); c.restore();
     }
   };
 
@@ -575,7 +630,12 @@
     pcK.textContent = 'PART ' + (p.no || '') + ' · ' + specs[tab].title.split('· ')[1]; pcName.textContent = p.name; pcNote.textContent = p.note;
     stats.interactions++; track('part_' + p.id);
   }
-  function fillList() {
+  var SPECS = {
+    rocket: [['Height', '110.6 m'], ['Width', '10.1 m'], ['Weight at lift-off', '≈ 2,900 t'], ['Fuel and oxygen', 'nearly 90%'], ['Stages', '3'], ['First-stage burn', '≈ 150 s']],
+    motor: [['Height', '5.6 m'], ['Nozzle exit', '3.7 m'], ['Fuel', 'kerosene + liquid oxygen'], ['Burns', '≈ 2.6 t every second'], ['Chamber', '≈ 3,300 °C'], ['Gas out at', '≈ 2.6 km/s']]
+  };
+  function fillSpec() { document.getElementById('spec').innerHTML = '<thead><tr><th colspan="2">' + (tab === 'rocket' ? 'SATURN V · SPEC' : 'F-1 ENGINE · SPEC') + '</th></tr></thead><tbody>' + SPECS[tab].map(function (r) { return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>'; }).join('') + '</tbody>'; }
+  function fillList() { fillSpec();
     var rows = specs[tab].parts.filter(function (p) { return p.label !== false; });
     plist.innerHTML = '<thead><tr><th>No.</th><th>Part</th></tr></thead><tbody>' + rows.map(function (p) { return '<tr data-id="' + p.id + '"><td>' + p.no + '</td><td>' + p.name + '</td></tr>'; }).join('') + '</tbody>';
     Array.prototype.forEach.call(plist.querySelectorAll('tr[data-id]'), function (tr) {
@@ -611,12 +671,12 @@
     var t = view().t();
     if (t > 0.98) seen[tab] = true;
     if (tab === 'rocket') {
-      if (t < 0.02 && !seen.rocket) return say('This is a rocket, drawn like an engineer would. Tap <b>Explode it</b> to pull it apart.');
-      if (t > 0.98) return say('Look how much of it is <b>tanks</b>! More than <b>90%</b> of a rocket\'s weight at lift-off is fuel and liquid oxygen. Tap any part to find out what it does, then look inside <b>the rocket motor</b>.');
+      if (t < 0.02 && !seen.rocket) return say('This is a Saturn V, the rocket that took astronauts to the Moon, drawn like an engineer would. It\'s taller than Big Ben. Tap <b>Explode it</b> to pull it apart.');
+      if (t > 0.98) return say('Look how much of it is <b>tanks</b>! Nearly <b>90%</b> of a Saturn V\'s weight at lift-off is fuel and liquid oxygen. Tap any part to find out what it does, then look inside <b>the rocket motor</b>.');
       return say('Slide it back together, or tap <b>The rocket motor</b> to see where all that fuel goes.');
     }
-    if (firing && t < 0.05) return say('<b>Fuel</b> and <b>oxygen</b> are pumped in and burn at about <b>3,300 °C</b>. The hot gas squeezes through the throat and shoots out of the nozzle at about <b>3 km every second</b>. Throw gas down, and the rocket goes <b>up</b>.');
-    if (t > 0.98) return say('Five parts make the whole motor work. Tap each one, then press <b>Fire the motor</b> to see them working together.');
+    if (firing && t < 0.05) return say('<b>Fuel</b> and <b>oxygen</b> are pumped in and burn at about <b>3,300 °C</b>. The hot gas squeezes through the throat and shoots out of the nozzle at about <b>2.6 km every second</b>. Throw gas down, and the rocket goes <b>up</b>.');
+    if (t > 0.98) return say('This is an F-1, one of the five engines at the bottom of a Saturn V. Five parts make it work. Tap each one, then press <b>Fire the motor</b> to see them working together.');
     if (seen.motor) return say('Press <b>Fire the motor</b> to watch it run.');
     return say('This is one rocket motor. Tap <b>Explode it</b> to see what\'s inside, or <b>Fire the motor</b> to start it up.');
   }
