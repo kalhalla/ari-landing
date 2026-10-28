@@ -172,6 +172,92 @@
     .xray-box.nudge { animation: nudge 1.4s ease-in-out infinite; }
     .chip.wipe.hidden { display: none; }
   </style>
+  <style>
+    /* ===== Ari blueprint system =====
+       Three drawing styles, picked by job:
+       1. Blueprint sheet (white on blue): the phone's frame, the X-ray view, the cut-away.
+       2. Instrument panel (blueprint rig): gauges, X-ray slider, tests, controls.
+       3. Graph-paper figures (ink on squared paper): the explanation cards below the rig.
+       The drawing app on the phone's screen stays in colour: it is "what you see". */
+    :root {
+      --bp: #0D3B6E; --bp-deep: #082A4F; --bp-grid: rgba(170,210,255,.07); --bp-grid2: rgba(170,210,255,.16);
+      --bp-line: #EEF5FF; --bp-dim: #9FC6F2; --bp-faint: rgba(159,198,242,.42);
+      --bp-amber: #FFC94A; --bp-air: #79E3FF; --bp-warn: #FF8A7A; --bp-ok: #7CF0BC;
+      --gp: #F4F8FC; --gp-grid: rgba(52,124,190,.12); --gp-grid2: rgba(52,124,190,.24); --gp-rule: #B7CCE0;
+      --gp-ink: #17324F; --gp-dim: #5B7A99; --gp-red: #D4452F; --gp-blue: #1F86C7;
+    }
+    /* 2. Instrument panel */
+    .rig { background-color: var(--bp-deep); border-radius: 12px; box-shadow: 0 30px 70px rgba(20,40,80,.3);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -5px; }
+    .rig::before { border-radius: 12px; }
+    .screen { border-radius: 4px; background: var(--bp); box-shadow: 0 0 0 1px var(--bp-faint); }
+    .screen-bar, .tools { background: var(--bp-deep); border-bottom: 1px solid var(--bp-faint); }
+    .screen-tag { color: var(--bp-dim); }
+    .tool { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); }
+    .tool[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-line); }
+    .tool-btn { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); padding: 6px 10px 6px 7px; }
+    .tool-btn[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-amber); box-shadow: 0 0 0 1px var(--bp-amber); }
+    .tool-btn.nudge { border-color: var(--bp-amber); }
+    .gauge, .panel-box, .xray-box { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; }
+    .gauge { padding: 8px 6px 7px; }
+    .g-val { display: inline-block; margin-top: 2px; padding: 1px 7px; background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 2px; font-size: 14px; color: var(--bp-line); font-variant-numeric: tabular-nums; }
+    .g-lbl { color: var(--bp-dim); margin-top: 5px; }
+    .box-head { color: var(--bp-dim); }
+    .box-head b { color: var(--bp-amber); }
+    .box-foot { color: var(--bp-dim); }
+    .ari { border-radius: 6px; }
+    .mission { border-radius: 2px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-dim); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+    .mission i::before { content: 'TEST '; }
+    .mission.now { background: rgba(255,201,74,.12); border-color: var(--bp-amber); color: var(--bp-line); }
+    .mission.done { background: rgba(124,240,188,.1); border-color: var(--bp-ok); color: var(--bp-ok); }
+    .mission.done i::after { content: ' ✓'; }
+    .experiments span { color: var(--bp-dim); }
+    .chip { border-radius: 3px; border: 1px dashed var(--bp-faint); color: var(--bp-line); }
+    .chip[aria-pressed="true"] { background: var(--bp-warn); border-color: var(--bp-warn); color: #2A0E08; }
+    .chip.nudge { border-color: var(--bp-amber); }
+    input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-moz-range-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-webkit-slider-thumb { width: 16px; height: 28px; margin-top: -7px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); box-shadow: 0 0 0 1px var(--bp-amber); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 26px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); }
+    input[type=range]:focus-visible { outline: 2px solid var(--bp-amber); outline-offset: 2px; }
+
+    /* 3. Graph-paper figures */
+    .stage { background-color: var(--gp); border: 1px solid var(--gp-rule); border-radius: 4px; box-shadow: none; color: var(--gp-dim);
+      background-image: linear-gradient(var(--gp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gp-grid) 1px, transparent 1px); background-size: 10px 10px; }
+    .stage .k { color: var(--gp-red); }
+    .stage h3 { color: var(--gp-ink); }
+    .stage p { color: #3E5875; }
+    .dwg { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gp-rule); overflow: visible; }
+    .dwg text { font-family: var(--mono); font-size: 8px; font-weight: 600; fill: var(--gp-ink); letter-spacing: .03em; }
+    .dwg .tr { fill: var(--gp-red); } .dwg .tb { fill: var(--gp-blue); } .dwg .td { fill: var(--gp-dim); }
+    .dwg .ink { stroke: var(--gp-ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .inkf { stroke: var(--gp-ink); stroke-width: 1.4; fill: #fff; stroke-linejoin: round; }
+    .dwg .inkh { fill: var(--gp-ink); }
+    .dwg .hatchf { fill: url(#gpHatch); stroke: var(--gp-ink); stroke-width: 1.5; }
+    .dwg .glassf { fill: url(#gpGlass); stroke: var(--gp-ink); stroke-width: 1.4; }
+    .dwg .dimln { stroke: var(--gp-dim); stroke-width: .8; fill: none; }
+    .dwg .dsh { stroke-dasharray: 4 3; }
+    .dwg .ctrln { stroke: var(--gp-dim); stroke-width: .7; fill: none; stroke-dasharray: 9 2 2 2; }
+    .dwg .red { stroke: var(--gp-red); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .redf { fill: var(--gp-red); }
+    .dwg .redd { stroke: var(--gp-red); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .blu { stroke: var(--gp-blue); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .bluso { stroke: var(--gp-blue); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .bluf { fill: var(--gp-blue); }
+    .dwg .scan { animation: figscan 2.4s steps(4, end) infinite; }
+    @keyframes figflow { to { stroke-dashoffset: -18; } }
+    @keyframes figscan { from { transform: translateY(0); } to { transform: translateY(96px); } }
+    .stages > p.big-idea { color: #3E5875; }
+    .big-idea { background: var(--gp); border: 1.5px solid var(--gp-ink); border-radius: 4px; color: #3E5875; position: relative; padding-top: 26px; }
+    .big-idea::before { content: 'NOTE 1'; position: absolute; top: 0; left: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--bp-line); background: var(--gp-ink); padding: 3px 9px; }
+    .big-idea b { color: var(--gp-ink); }
+    @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .dwg .blu, .dwg .redd, .dwg .scan { animation: none; } }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -241,11 +327,74 @@
     <section class="stages">
       <h2>Wires, charge, a dip, and some maths</h2>
       <p>What your phone does every time you touch it.</p>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+        <pattern id="gpHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#17324F" stroke-width=".9"/></pattern>
+        <pattern id="gpGlass" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="9" height="9" fill="#fff"/><line x1="0" y1="0" x2="0" y2="9" stroke="#5B7A99" stroke-width=".6"/><line x1="3" y1="0" x2="3" y2="9" stroke="#5B7A99" stroke-width=".6"/></pattern>
+      </defs></svg>
       <div class="stage-grid">
-        <div class="stage"><div class="k">01 · GRID</div><h3>Invisible wires</h3><p>Under the glass are rows and columns of wires so thin and clear you can't see them. Where they cross, they make a grid.</p></div>
-        <div class="stage"><div class="k">02 · CHARGE</div><h3>A tiny charge</h3><p>Each crossing holds a tiny electric charge, spread like an invisible field just above the glass.</p></div>
-        <div class="stage"><div class="k">03 · SOAK</div><h3>Your finger soaks it up</h3><p>Your body conducts electricity. Touch the glass and your finger draws away a little charge from the crossings underneath.</p></div>
-        <div class="stage"><div class="k">04 · FIND</div><h3>The phone does the maths</h3><p>Over a hundred times a second, the phone checks every crossing, finds where the charge dipped, and works out the middle of the dip. It can find several dips at once.</p></div>
+        <div class="stage">
+          <div class="k">FIG 5.1 · GRID</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="The wires seen from above. Rows run side to side, columns run up and down, and there is a crossing wherever they meet. The phone sends a signal along one row at a time.">
+            <rect class="scan" x="18" y="14" width="126" height="12" fill="rgba(212,69,47,.12)"/>
+            <path class="bluso" d="M30 10V102M57 10V102M84 10V102M111 10V102M138 10V102"/>
+            <path class="red" d="M18 20H150M18 44H150M18 68H150M18 92H150"/>
+            <g class="inkf"><circle cx="30" cy="20" r="2.6"/><circle cx="57" cy="20" r="2.6"/><circle cx="84" cy="20" r="2.6"/><circle cx="111" cy="20" r="2.6"/><circle cx="138" cy="20" r="2.6"/>
+              <circle cx="30" cy="44" r="2.6"/><circle cx="57" cy="44" r="2.6"/><circle cx="84" cy="44" r="2.6"/><circle cx="111" cy="44" r="2.6"/><circle cx="138" cy="44" r="2.6"/>
+              <circle cx="30" cy="68" r="2.6"/><circle cx="57" cy="68" r="2.6"/><circle cx="84" cy="68" r="2.6"/><circle cx="111" cy="68" r="2.6"/><circle cx="138" cy="68" r="2.6"/>
+              <circle cx="30" cy="92" r="2.6"/><circle cx="57" cy="92" r="2.6"/><circle cx="84" cy="92" r="2.6"/><circle cx="111" cy="92" r="2.6"/><circle cx="138" cy="92" r="2.6"/></g>
+            <path class="dimln" d="M140 42L158 32"/><text x="160" y="31">CROSSING</text>
+            <text class="tr" x="156" y="60">ROWS</text><text class="tr" x="156" y="70">SEND →</text>
+            <text class="tb" x="156" y="94">COLUMNS</text><text class="tb" x="156" y="104">LISTEN ↓</text>
+            <path class="dimln dsh" d="M30 104V113M57 104V113"/><path class="dimln" d="M30 110H57"/><path class="inkh" d="M30 110L35 108V112Z"/><path class="inkh" d="M57 110L52 108V112Z"/>
+            <text class="td" x="62" y="113">≈ 5 mm APART</text>
+          </svg>
+          <h3>Invisible wires</h3><p>Under the glass are rows and columns of wires so thin and clear you can't see them. Where a row crosses a column, it makes a crossing point.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 5.2 · CHARGE</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A slice through the screen. Glass on top, the wires underneath, and the picture at the bottom. An electric field loops up from the wires through the glass.">
+            <rect class="glassf" x="8" y="50" width="204" height="16"/>
+            <path class="blu" d="M26 74C26 30 54 30 54 74"/><path class="blu" d="M71 74C71 30 99 30 99 74"/><path class="blu" d="M116 74C116 30 144 30 144 74"/><path class="blu" d="M161 74C161 30 189 30 189 74"/>
+            <path class="red" d="M8 75H212"/>
+            <path class="bluf" d="M36 69h8v5h-8zM81 69h8v5h-8zM126 69h8v5h-8zM171 69h8v5h-8z"/>
+            <rect class="inkf" x="8" y="84" width="204" height="14"/><text x="110" y="94" text-anchor="middle">PICTURE</text>
+            <path class="dimln" d="M48 22L42 36"/><text class="tb" x="8" y="18">CHARGE FIELD</text>
+            <path class="dimln" d="M180 22L192 50"/><text x="212" y="18" text-anchor="end">GLASS ≈ 0.6 mm</text>
+            <text class="tr" x="8" y="112">ROW WIRE</text><text class="tb" x="212" y="112" text-anchor="end">COLUMN WIRES (CUT)</text>
+          </svg>
+          <h3>A tiny charge</h3><p>The phone pushes a tiny charge into each row. Where it crosses a column, an invisible electric field loops up through the glass and back down.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 5.3 · SOAK</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A fingertip touching the glass. The field lines under the finger bend up into it instead of going back to the wire, so that crossing has less charge than its neighbours.">
+            <path class="inkf" d="M88 0V30Q88 46 110 47Q132 46 132 30V0"/>
+            <rect class="glassf" x="8" y="48" width="204" height="16"/>
+            <path class="blu" d="M36 76C36 32 64 32 64 76"/><path class="blu" d="M156 76C156 32 184 32 184 76"/>
+            <path class="redd" d="M98 76C98 60 102 50 104 38"/><path class="redd" d="M122 76C122 60 118 50 116 38"/>
+            <path class="red" d="M110 36V14"/><path class="redf" d="M110 6L105.5 15H114.5Z"/>
+            <path class="red" d="M8 77H212"/>
+            <path class="bluf" d="M46 71h8v5h-8zM106 71h8v5h-8zM166 71h8v5h-8z"/>
+            <text class="tr" x="138" y="12">INTO YOUR</text><text class="tr" x="138" y="22">BODY</text>
+            <text class="td" x="8" y="44">GLASS</text>
+            <text x="50" y="94" text-anchor="middle">FULL</text><text class="tr" x="110" y="94" text-anchor="middle">DIP!</text><text x="170" y="94" text-anchor="middle">FULL</text>
+            <text class="td" x="110" y="112" text-anchor="middle">CHARGE AT EACH CROSSING</text>
+          </svg>
+          <h3>Your finger soaks it up</h3><p>Your body conducts electricity. Touch the glass and your finger pulls away some of the field, so the crossings under it hold less charge.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 5.4 · FIND</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A bar chart of the charge at seven crossings along one row. Three bars in the middle are shorter. The phone works out that the middle of the dip is between two crossings.">
+            <path class="dimln dsh" d="M18 40H192"/><text class="td" x="194" y="43">FULL</text>
+            <rect class="inkf" x="24" y="40" width="12" height="56"/><rect class="inkf" x="48" y="40" width="12" height="56"/>
+            <rect class="hatchf" x="72" y="48" width="12" height="48"/><rect class="hatchf" x="96" y="70" width="12" height="26"/><rect class="hatchf" x="120" y="60" width="12" height="36"/>
+            <rect class="inkf" x="144" y="42" width="12" height="54"/><rect class="inkf" x="168" y="40" width="12" height="56"/>
+            <path class="ink" d="M14 96H190"/>
+            <path class="red" d="M108.4 14V58"/><path class="redf" d="M108.4 66L104 57H112.8Z"/>
+            <text class="tr" x="114" y="14">MIDDLE OF</text><text class="tr" x="114" y="24">THE DIP</text>
+            <text class="td" x="102" y="110" text-anchor="middle">CROSSINGS ALONG ONE ROW →</text>
+          </svg>
+          <h3>The phone does the maths</h3><p>Over a hundred times a second, the phone checks every crossing, finds where the charge dipped, and works out the middle of the dip, even between two wires. It can find several dips at once.</p>
+        </div>
       </div>
       <p class="big-idea"><b>The big idea:</b> your finger becomes part of the circuit. Anything that conducts electricity like a finger, even a sausage, can work the screen. Things that don't, like a woolly glove or a wooden pencil, can't.</p>
     </section>
@@ -378,13 +527,53 @@
     cc2.style.height = CH + 'px'; cc2.width = Math.round(CW * dpr); cc2.height = Math.round(CH * dpr); cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     // phone geometry
     W = Math.max(W, 260);
-    var ph = H - 28, pw = Math.max(120, Math.min(ph * 0.5, W - 24));
+    var ph = H - 52, pw = Math.max(120, Math.min(ph * 0.5, W - 24));
     ph = Math.min(ph, pw * 2.0);
-    P = { x: (W - pw) / 2, y: (H - ph) / 2, w: pw, h: ph, r: pw * 0.13 };
+    P = { x: (W - pw) / 2, y: (H - ph) / 2 - 10, w: pw, h: ph, r: pw * 0.13 };
     var b = pw * 0.045;
     P.sx = P.x + b; P.sy = P.y + b * 1.6; P.sw = pw - 2 * b; P.sh = ph - b * 3.2; P.sr = P.r * 0.75;
   }
   function toScreen(x, y) { return [P.sx + x * P.sw, P.sy + y * P.sh]; }
+
+  // ===================== Blueprint drawing kit =====================
+  var BP = { bg: '#0D3B6E', deep: '#082A4F', grid: 'rgba(170,210,255,.07)', grid2: 'rgba(170,210,255,.16)', line: '#EEF5FF', dim: '#9FC6F2',
+    faint: 'rgba(159,198,242,.42)', amber: '#FFC94A', air: '#79E3FF', warn: '#FF8A7A', ok: '#7CF0BC' };
+  var MONO = '"IBM Plex Mono", ui-monospace, monospace', DASHDOT = [10, 3, 2, 3];
+  function bpSheet(c, w, h) {
+    c.fillStyle = BP.bg; c.fillRect(0, 0, w, h); c.lineWidth = 1;
+    for (var x = 0; x < w; x += 12) { c.strokeStyle = x % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); c.stroke(); }
+    for (var y = 0; y < h; y += 12) { c.strokeStyle = y % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(0, y + 0.5); c.lineTo(w, y + 0.5); c.stroke(); }
+    c.strokeStyle = BP.faint; c.strokeRect(4.5, 4.5, w - 9, h - 9);
+  }
+  function bpText(c, t, x, y, o) {
+    o = o || {}; c.font = (o.weight || 600) + ' ' + (o.size || 9.5) + 'px ' + MONO; c.fillStyle = o.col || BP.dim; c.textAlign = o.align || 'left'; c.fillText(t, x, y);
+  }
+  function bpLine(c, pts, col, wd, dash) {
+    c.strokeStyle = col; c.lineWidth = wd || 1; c.setLineDash(dash || []); c.beginPath();
+    for (var i = 0; i < pts.length; i += 2) { if (i) c.lineTo(pts[i], pts[i + 1]); else c.moveTo(pts[i], pts[i + 1]); }
+    c.stroke(); c.setLineDash([]);
+  }
+  function bpHatch(c, gap, col) {   // hatches inside the current path
+    c.save(); c.clip(); c.strokeStyle = col; c.lineWidth = 0.8; c.beginPath();
+    for (var k = -900; k < 2400; k += gap) { c.moveTo(k, -900); c.lineTo(k - 1800, 900); }
+    c.stroke(); c.restore();
+  }
+  function bpCorners(c, x, y, w, h) {
+    var k = 9; c.strokeStyle = BP.line; c.lineWidth = 1.4; c.beginPath();
+    c.moveTo(x, y + k); c.lineTo(x, y); c.lineTo(x + k, y); c.moveTo(x + w - k, y); c.lineTo(x + w, y); c.lineTo(x + w, y + k);
+    c.moveTo(x + w, y + h - k); c.lineTo(x + w, y + h); c.lineTo(x + w - k, y + h); c.moveTo(x + k, y + h); c.lineTo(x, y + h); c.lineTo(x, y + h - k); c.stroke();
+  }
+  function bpHead(c, x, y, ux, uy, col, s) {   // arrowhead with its tip at x,y pointing along ux,uy
+    s = s || 6; c.fillStyle = col; c.beginPath(); c.moveTo(x, y); c.lineTo(x - ux * s - uy * s * 0.45, y - uy * s + ux * s * 0.45); c.lineTo(x - ux * s + uy * s * 0.45, y - uy * s - ux * s * 0.45); c.closePath(); c.fill();
+  }
+  function bpDim(c, x1, y1, x2, y2, label, o) {   // dimension line with arrowheads both ends
+    o = o || {}; var l = Math.hypot(x2 - x1, y2 - y1), ux = (x2 - x1) / l, uy = (y2 - y1) / l;
+    bpLine(c, [x1, y1, x2, y2], BP.dim, 0.8); bpHead(c, x1, y1, -ux, -uy, BP.dim, 5); bpHead(c, x2, y2, ux, uy, BP.dim, 5);
+    if (label) {
+      c.font = '600 8.5px ' + MONO; var tw = c.measureText(label).width + 8, mx = (x1 + x2) / 2 + (o.dx || 0), my = (y1 + y2) / 2 + (o.dy || 0);
+      c.fillStyle = BP.bg; c.fillRect(mx - tw / 2, my - 6, tw, 12); bpText(c, label, mx, my + 3, { size: 8.5, align: 'center', col: o.col || BP.dim });
+    }
+  }
 
   // ===================== Drawing the phone =====================
   var INK = ['#FF8C42', '#3E8EF7', '#2FBF8A', '#E8508A', '#8A5CF6'];
@@ -392,14 +581,25 @@
   function drawPhone(dt) {
     var c = ctx;
     c.clearRect(0, 0, W, H);
-    var bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1C2038'); bg.addColorStop(1, '#14172A');
-    c.fillStyle = bg; c.fillRect(0, 0, W, H);
-    // soft desk shadow
-    c.fillStyle = 'rgba(0,0,0,.35)'; rr(c, P.x + 8, P.y + 12, P.w, P.h, P.r); c.fill();
-    // body
-    c.fillStyle = '#2B2F45'; rr(c, P.x, P.y, P.w, P.h, P.r); c.fill();
-    c.strokeStyle = '#0F1124'; c.lineWidth = 3; c.stroke();
-    c.strokeStyle = 'rgba(255,255,255,.12)'; c.lineWidth = 1.5; rr(c, P.x + 3, P.y + 3, P.w - 6, P.h - 6, P.r - 3); c.stroke();
+    bpSheet(c, W, H);
+    // centre lines through the phone
+    bpLine(c, [P.x + P.w / 2, P.y - 8, P.x + P.w / 2, P.y + P.h + 8], BP.faint, 0.7, DASHDOT);
+    bpLine(c, [P.x - 8, P.y + P.h / 2, P.x + P.w + 8, P.y + P.h / 2], BP.faint, 0.7, DASHDOT);
+    // side buttons (drawn first so the body overlaps them)
+    c.fillStyle = BP.deep; c.strokeStyle = BP.line; c.lineWidth = 1.2;
+    [[0.17, 0.05], [0.25, 0.08], [0.35, 0.08]].forEach(function (b) { rr(c, P.x - 3, P.y + P.h * b[0], 4, P.h * b[1], 1.5); c.fill(); c.stroke(); });
+    rr(c, P.x + P.w - 1, P.y + P.h * 0.26, 4, P.h * 0.12, 1.5); c.fill(); c.stroke();
+    // body: a line drawing on the sheet
+    c.fillStyle = BP.deep; rr(c, P.x, P.y, P.w, P.h, P.r); c.fill();
+    c.strokeStyle = BP.line; c.lineWidth = 1.6; c.stroke();
+    c.strokeStyle = BP.faint; c.lineWidth = 1; rr(c, P.x + 3.5, P.y + 3.5, P.w - 7, P.h - 7, P.r - 3); c.stroke();
+    // dimension lines: a typical 6.1-inch phone is about 72 mm wide and 147 mm tall
+    var dxL = P.x - 22, dyB = P.y + P.h + 18;
+    bpLine(c, [P.x - 4, P.y, dxL - 5, P.y], BP.faint, 0.7, [2, 3]); bpLine(c, [P.x - 4, P.y + P.h, dxL - 5, P.y + P.h], BP.faint, 0.7, [2, 3]);
+    bpDim(c, dxL, P.y, dxL, P.y + P.h, '147 mm');
+    bpLine(c, [P.x, P.y + P.h + 4, P.x, dyB + 5], BP.faint, 0.7, [2, 3]); bpLine(c, [P.x + P.w, P.y + P.h + 4, P.x + P.w, dyB + 5], BP.faint, 0.7, [2, 3]);
+    bpDim(c, P.x, dyB, P.x + P.w, dyB, '72 mm');
+    if (W < 600) bpText(c, 'FIG 5.A', 14, H - 14, { col: BP.line, size: 9.5 }); else bpText(c, 'FIG 5.A · FRONT VIEW · NTS', 14, 20, { col: BP.line, size: 9.5 });
     // screen content
     c.save(); rr(c, P.sx, P.sy, P.sw, P.sh, P.sr); c.clip();
     c.fillStyle = '#FFF8F3'; c.fillRect(P.sx, P.sy, P.sw, P.sh);
@@ -424,35 +624,40 @@
     }
     // ----- X-ray layer -----
     if (xray > 0.01) {
-      c.globalAlpha = xray * 0.88; c.fillStyle = '#0E1530'; c.fillRect(P.sx, P.sy, P.sw, P.sh); c.globalAlpha = 1;
+      c.globalAlpha = Math.min(1, xray * 1.05); bpSheet(c, W, H); c.globalAlpha = 1;
       var gx = function (col) { return P.sx + (col + 0.5) / COLS * P.sw; }, gy = function (row) { return P.sy + (row + 0.5) / ROWS * P.sh; };
       // scanning highlight (rows are driven one at a time)
       var sr = Math.floor(scanRow) % ROWS;
-      c.fillStyle = 'rgba(255,200,69,' + 0.18 * xray + ')'; c.fillRect(P.sx, gy(sr) - P.sh / ROWS / 2, P.sw, P.sh / ROWS);
-      c.lineWidth = 1.4;
-      c.strokeStyle = 'rgba(255,140,66,' + 0.75 * xray + ')';
-      for (var r = 0; r < ROWS; r++) { c.beginPath(); c.moveTo(P.sx, gy(r)); c.lineTo(P.sx + P.sw, gy(r)); c.stroke(); }
-      c.strokeStyle = 'rgba(90,160,255,' + 0.75 * xray + ')';
+      c.fillStyle = 'rgba(255,201,74,' + 0.16 * xray + ')'; c.fillRect(P.sx, gy(sr) - P.sh / ROWS / 2, P.sw, P.sh / ROWS);
+      c.lineWidth = 1.2;
+      // rows (the phone sends a signal along these) in amber, columns (it listens on these) in cyan
+      for (var r = 0; r < ROWS; r++) { c.strokeStyle = 'rgba(255,201,74,' + (r === sr ? 0.95 : 0.6) * xray + ')'; c.beginPath(); c.moveTo(P.sx, gy(r)); c.lineTo(P.sx + P.sw, gy(r)); c.stroke(); }
+      c.strokeStyle = 'rgba(121,227,255,' + 0.6 * xray + ')';
       for (var col = 0; col < COLS; col++) { c.beginPath(); c.moveTo(gx(col), P.sy); c.lineTo(gx(col), P.sy + P.sh); c.stroke(); }
       var nr = Math.max(2, P.sw / COLS * 0.13);
       for (r = 0; r < ROWS; r++) for (col = 0; col < COLS; col++) {
         var v = nodes[r * COLS + col], x = gx(col), y = gy(r);
         if (v < 0.97) {
           var g = c.createRadialGradient(x, y, 0, x, y, nr * 4.5);
-          g.addColorStop(0, 'rgba(255,77,61,' + (1 - v) * 0.9 * xray + ')'); g.addColorStop(1, 'rgba(255,77,61,0)');
+          g.addColorStop(0, 'rgba(255,138,122,' + (1 - v) * 0.95 * xray + ')'); g.addColorStop(1, 'rgba(255,138,122,0)');
           c.fillStyle = g; c.beginPath(); c.arc(x, y, nr * 4.5, 0, 6.3); c.fill();
         }
-        c.fillStyle = 'rgba(' + Math.round(255 * v) + ',' + Math.round(232 * v + 20) + ',' + Math.round(140 * v + 40) + ',' + (0.35 + 0.55 * v) * xray + ')';
+        // each crossing: a white dot that shrinks and reddens as its charge is soaked up
+        c.fillStyle = 'rgba(' + Math.round(255 - 17 * v) + ',' + Math.round(138 + 107 * v) + ',' + Math.round(122 + 133 * v) + ',' + (0.45 + 0.55 * v) * xray + ')';
         c.beginPath(); c.arc(x, y, nr * (0.55 + 0.45 * v), 0, 6.3); c.fill();
       }
       // what the phone works out
       detected.forEach(function (d) {
         var p = toScreen(d.x, d.y), s = P.sw * 0.07;
-        c.strokeStyle = 'rgba(124,240,188,' + xray + ')'; c.lineWidth = 2.5;
+        c.strokeStyle = 'rgba(124,240,188,' + xray + ')'; c.lineWidth = 2;
         c.beginPath(); c.arc(p[0], p[1], s, 0, 6.3); c.moveTo(p[0] - s * 1.6, p[1]); c.lineTo(p[0] + s * 1.6, p[1]); c.moveTo(p[0], p[1] - s * 1.6); c.lineTo(p[0], p[1] + s * 1.6); c.stroke();
       });
-      c.fillStyle = 'rgba(233,228,245,' + xray + ')'; c.font = '600 ' + Math.max(9, Math.round(P.sw * 0.04)) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'left';
-      c.fillText(ROWS + ' × ' + COLS + ' hidden wires', P.sx + 8, P.sy + P.sh - 10);
+      c.globalAlpha = xray; var fs = Math.max(9, Math.round(P.sw * 0.04));
+      var lbx = P.sx + P.sr * 0.6, lby = P.sy + P.sh - P.sr * 0.35;
+      c.fillStyle = BP.deep; c.fillRect(lbx - 4, lby - fs * 2.6, fs * 6.4, fs * 2.8); c.strokeStyle = BP.faint; c.lineWidth = 1; c.strokeRect(lbx - 4, lby - fs * 2.6, fs * 6.4, fs * 2.8);
+      bpText(c, ROWS + ' ROWS', lbx, lby - fs * 1.35, { size: fs, col: BP.amber });
+      bpText(c, COLS + ' COLUMNS', lbx, lby - fs * 0.25, { size: fs, col: BP.air });
+      c.globalAlpha = 1;
     }
     // water drops sit on the glass
     drops.forEach(function (d) {
@@ -466,19 +671,21 @@
     // what's touching (drawn over the glass)
     Object.keys(pointers).forEach(function (id) { var p = pointers[id], q = toScreen(p.x, p.y); drawToolIcon(c, p.tool, q[0], q[1], P.sw * 0.12); });
     // speaker + glass sheen
-    c.fillStyle = '#0F1124'; rr(c, P.x + P.w / 2 - P.w * 0.12, P.y + P.sy - P.y - (P.sy - P.y) * 0.62, P.w * 0.24, Math.max(4, (P.sy - P.y) * 0.32), 3); c.fill();
+    c.strokeStyle = BP.line; c.lineWidth = 1; rr(c, P.x + P.w / 2 - P.w * 0.12, P.y + P.sy - P.y - (P.sy - P.y) * 0.62, P.w * 0.24, Math.max(4, (P.sy - P.y) * 0.32), 3); c.stroke();
     c.save(); rr(c, P.sx, P.sy, P.sw, P.sh, P.sr); c.clip();
     var sh = c.createLinearGradient(P.sx, P.sy, P.sx + P.sw, P.sy + P.sh);
     sh.addColorStop(0, 'rgba(255,255,255,.10)'); sh.addColorStop(0.35, 'rgba(255,255,255,0)'); sh.addColorStop(1, 'rgba(255,255,255,.04)');
     c.fillStyle = sh; c.fillRect(P.sx, P.sy, P.sw, P.sh); c.restore();
+    c.strokeStyle = BP.line; c.lineWidth = 1.2; rr(c, P.sx, P.sy, P.sw, P.sh, P.sr); c.stroke();
     // side labels on wide screens
     if (W >= 600) {
-      c.font = '600 11px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
-      var lx = P.x + P.w + 26;
-      c.fillText(xray > 0.5 ? 'WHAT THE PHONE SEES' : 'WHAT YOU SEE', lx, P.y + 30);
-      c.fillStyle = '#E9E4F5'; c.font = '700 14px Nunito, sans-serif';
-      var lines = xray > 0.5 ? ['Dots = wire crossings,', 'each holding a charge.', 'Red = charge soaked up.', 'Green cross = where the', 'phone thinks you touched.'] : ['A screen you can draw on.', 'Slide X-RAY to look', 'under the glass.'];
-      lines.forEach(function (l, i) { c.fillText(l, lx, P.y + 56 + i * 20); });
+      var lx = P.x + P.w + 30, ly = P.y + 30;
+      bpLine(c, [P.x + P.w + 6, P.sy + P.sh * 0.18, lx - 6, ly - 4], BP.dim, 0.8); c.fillStyle = BP.dim; c.beginPath(); c.arc(P.x + P.w + 6, P.sy + P.sh * 0.18, 2, 0, 6.3); c.fill();
+      bpText(c, xray > 0.5 ? 'WHAT THE PHONE SEES' : 'WHAT YOU SEE', lx, ly, { size: 11, col: BP.amber });
+      c.fillStyle = BP.line; c.font = '700 14px Nunito, sans-serif'; c.textAlign = 'left';
+      var lines = xray > 0.5 ? [['Yellow lines = rows.', BP.amber], ['Blue lines = columns.', BP.air], ['Dots = where they cross,', BP.line], ['each holding a charge.', BP.line], ['Red = charge soaked up.', BP.warn], ['Green cross = where the', BP.ok], ['phone thinks you touched.', BP.ok]]
+        : [['A screen you can draw on.', BP.line], ['Slide X-RAY to look', BP.line], ['under the glass.', BP.line]];
+      lines.forEach(function (l, i) { c.fillStyle = l[1]; c.fillText(l[0], lx, ly + 26 + i * 20); });
     }
   }
   function drawToolIcon(c, t, x, y, s) {
@@ -505,109 +712,135 @@
   // ===================== Cut-away =====================
   var dash = 0;
   function drawCut(dt) {
-    var c = cctx, w = CW, h = CH;
-    c.clearRect(0, 0, w, h); c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
-    var left = w < 560 ? 12 : 120, right = w - 12, span = right - left;
+    var c = cctx, w = CW, h = CH, narrow = w < 560;
+    bpSheet(c, w, h);
+    var left = narrow ? 12 : 120, right = w - 12, span = right - left;
     var glassTop = h * 0.42, glassBot = h * 0.62, gridY = h * 0.66, dispTop = h * 0.71, dispBot = h * 0.86;
     // which slice: through the first touch, or the middle of the screen
     var ids = Object.keys(pointers), sliceY = ids.length ? pointers[ids[0]].y : (drops.length ? drops[0].y : 0.5);
     var rowNear = Math.min(ROWS - 1, Math.max(0, Math.round(sliceY * ROWS - 0.5)));
-    // display pixels
-    for (var i = 0; i < Math.floor(span / 6); i++) { c.fillStyle = ['#E8508A', '#2FBF8A', '#3E8EF7'][i % 3]; c.globalAlpha = 0.55; c.fillRect(left + i * 6, dispTop, 5, dispBot - dispTop); }
+    // the picture layer: outlined, with its red, green and blue pixels as dashes of colour
+    c.fillStyle = BP.deep; c.fillRect(left, dispTop, span, dispBot - dispTop);
+    for (var i = 0; i < Math.floor(span / 6); i++) { c.fillStyle = ['#FF8A9E', '#7CF0BC', '#79B8FF'][i % 3]; c.globalAlpha = 0.5; c.fillRect(left + i * 6 + 1, dispTop + 3, 4, dispBot - dispTop - 6); }
     c.globalAlpha = 1;
-    // glass
-    c.fillStyle = 'rgba(160,210,255,.18)'; c.fillRect(left, glassTop, span, glassBot - glassTop);
-    c.strokeStyle = 'rgba(190,230,255,.6)'; c.lineWidth = 1.5; c.strokeRect(left, glassTop, span, glassBot - glassTop);
+    c.strokeStyle = BP.line; c.lineWidth = 1.2; c.strokeRect(left + 0.5, dispTop + 0.5, span - 1, dispBot - dispTop);
+    // glass, in section: outlined and hatched
+    c.fillStyle = 'rgba(121,227,255,.06)'; c.fillRect(left, glassTop, span, glassBot - glassTop);
+    c.beginPath(); c.rect(left, glassTop, span, glassBot - glassTop); bpHatch(c, 9, 'rgba(159,198,242,.3)');
+    c.strokeStyle = BP.line; c.lineWidth = 1.4; c.strokeRect(left + 0.5, glassTop + 0.5, span - 1, glassBot - glassTop);
     // row wire (runs along the slice) and column wires (cut ends)
-    c.fillStyle = '#FF8C42'; c.fillRect(left, gridY + 4, span, 3);
+    c.fillStyle = BP.amber; c.fillRect(left, gridY + 4, span, 2.5);
     var colX = []; for (var col = 0; col < COLS; col++) colX.push(left + (col + 0.5) / COLS * span);
     // contacts along this slice
     var contacts = [];
     ids.forEach(function (id) { var p = pointers[id]; if (Math.abs(p.y - sliceY) < 0.06) contacts.push({ x: left + p.x * span, t: p.tool }); });
     drops.forEach(function (d) { if (Math.abs(d.y - sliceY) < 0.06) contacts.push({ x: left + d.x * span, t: 'water' }); });
-    // field arcs: from each column crossing up through the glass and back down to the row wire
+    // field lines: from each crossing up through the glass and back down to the wires
     dash += dt * (slow ? 6 : 24);
     c.setLineDash([4, 4]); c.lineDashOffset = -dash;
     colX.forEach(function (x, k) {
-      var v = nodes[rowNear * COLS + k], stolen = 1 - v;
+      var v = nodes[rowNear * COLS + k];
       var near = contacts.filter(function (ct) { return Math.abs(ct.x - x) < span / COLS * 1.3; })[0];
       for (var a = 0; a < 3; a++) {
         var hgt = (glassBot - glassTop) * (0.9 + a * 0.55), wid = span / COLS * (0.28 + a * 0.12);
         var reach = near && TOOLS[near.t].k > 0.1;
         if (reach && a >= 1) {
-          // this field line bends up into whatever is touching the glass
-          c.strokeStyle = 'rgba(255,77,61,.9)'; c.lineWidth = 1.6;
+          // this field line bends up into whatever is touching the glass: the touch signal
+          c.strokeStyle = BP.warn; c.lineWidth = 1.7;
           c.beginPath(); c.moveTo(x, gridY); c.bezierCurveTo(x, glassTop - 6, near.x - (x - near.x) * 0.2, glassTop - 10, near.x + (x < near.x ? -4 : 4), glassTop - 14); c.stroke();
         } else {
-          c.strokeStyle = 'rgba(255,214,120,' + (0.35 + 0.5 * v) + ')'; c.lineWidth = 1.4;
+          c.strokeStyle = 'rgba(255,201,74,' + (0.3 + 0.6 * v) + ')'; c.lineWidth = 1.3;
           c.beginPath(); c.moveTo(x - wid, gridY); c.bezierCurveTo(x - wid, gridY - hgt, x + wid, gridY - hgt, x + wid, gridY); c.stroke();
         }
       }
     });
-    c.setLineDash([]);
-    colX.forEach(function (x) { c.fillStyle = '#5AA0FF'; c.fillRect(x - 4, gridY - 1, 8, 8); });
-    // the object touching the glass
+    c.setLineDash([]); c.lineDashOffset = 0;
+    colX.forEach(function (x) { c.fillStyle = BP.deep; c.fillRect(x - 4, gridY - 1, 8, 7); c.strokeStyle = BP.air; c.lineWidth = 1.4; c.strokeRect(x - 3.5, gridY - 0.5, 7, 6); });
+    var fs = narrow ? 9 : 10.5;
+    if (narrow) bpText(c, 'charge field ↑', left, 18, { size: fs, col: BP.amber }); else bpText(c, 'the charge reaches up through the glass ↑', left, h - 9, { size: fs, col: BP.amber });
+    // the object touching the glass, drawn as an outline
     contacts.forEach(function (ct) {
-      var y0 = glassTop - 2;
+      var y0 = glassTop - 1;
+      c.lineWidth = 1.5; c.strokeStyle = BP.line; c.fillStyle = BP.deep;
       if (ct.t === 'finger' || ct.t === 'glove') {
-        var gl = ct.t === 'glove';
-        c.fillStyle = '#F2C3A0'; c.strokeStyle = '#A8705A'; c.lineWidth = 2;
-        var lift = gl ? 12 : 0;
-        c.beginPath(); c.ellipse(ct.x, y0 - 22 - lift, 18, 24, 0, 0, 6.3); c.fill(); c.stroke();
-        c.fillRect(ct.x - 18, 0, 36, y0 - 22 - lift);
-        if (gl) { c.fillStyle = '#4C74D6'; c.strokeStyle = '#22397A'; c.beginPath(); c.ellipse(ct.x, y0 - 24, 26, 26, 0, 0, Math.PI); c.lineTo(ct.x - 26, 0); c.lineTo(ct.x + 26, 0); c.closePath(); c.fill(); c.stroke(); }
+        var gl = ct.t === 'glove', lift = gl ? 12 : 0;
+        // fingertip: a rounded end on a straight finger
+        c.beginPath(); c.moveTo(ct.x - 18, 0); c.lineTo(ct.x - 18, y0 - 22 - lift); c.quadraticCurveTo(ct.x - 18, y0 - lift, ct.x, y0 - lift); c.quadraticCurveTo(ct.x + 18, y0 - lift, ct.x + 18, y0 - 22 - lift); c.lineTo(ct.x + 18, 0);
+        c.fillStyle = BP.deep; c.fill(); c.fillStyle = 'rgba(255,214,190,.12)'; c.fill(); c.stroke();
+        if (gl) {
+          // the woolly glove wraps the finger: hatched, so you can see it's a different material
+          c.beginPath(); c.moveTo(ct.x - 26, 0); c.lineTo(ct.x - 26, y0 - 22); c.quadraticCurveTo(ct.x - 26, y0, ct.x, y0); c.quadraticCurveTo(ct.x + 26, y0, ct.x + 26, y0 - 22); c.lineTo(ct.x + 26, 0);
+          c.lineTo(ct.x + 18, 0); c.lineTo(ct.x + 18, y0 - 22 - lift); c.quadraticCurveTo(ct.x + 18, y0 - lift, ct.x, y0 - lift); c.quadraticCurveTo(ct.x - 18, y0 - lift, ct.x - 18, y0 - 22 - lift); c.lineTo(ct.x - 18, 0); c.closePath();
+          c.fillStyle = BP.deep; c.fill(); c.strokeStyle = BP.line; c.stroke(); bpHatch(c, 4, BP.dim);
+        }
       } else if (ct.t === 'pencil') {
-        c.fillStyle = '#F6C445'; c.strokeStyle = '#7A5A12'; c.lineWidth = 2;
         c.beginPath(); c.moveTo(ct.x, y0); c.lineTo(ct.x + 9, y0 - 18); c.lineTo(ct.x + 9, 0); c.lineTo(ct.x - 9, 0); c.lineTo(ct.x - 9, y0 - 18); c.closePath(); c.fill(); c.stroke();
+        bpHatch(c, 5, 'rgba(255,201,74,.55)');
+        bpLine(c, [ct.x - 9, y0 - 18, ct.x + 9, y0 - 18], BP.line, 1.2);
+        c.fillStyle = BP.dim; c.beginPath(); c.moveTo(ct.x, y0); c.lineTo(ct.x + 3, y0 - 6); c.lineTo(ct.x - 3, y0 - 6); c.closePath(); c.fill();
       } else if (ct.t === 'sausage') {
-        c.fillStyle = '#B5523B'; c.strokeStyle = '#5E2618'; c.lineWidth = 2;
-        c.beginPath(); c.ellipse(ct.x, y0 - 26, 22, 28, 0, 0, 6.3); c.fill(); c.stroke(); c.fillRect(ct.x - 22, 0, 44, y0 - 26);
+        c.beginPath(); c.moveTo(ct.x - 22, 0); c.lineTo(ct.x - 22, y0 - 24); c.quadraticCurveTo(ct.x - 22, y0, ct.x, y0); c.quadraticCurveTo(ct.x + 22, y0, ct.x + 22, y0 - 24); c.lineTo(ct.x + 22, 0);
+        c.fillStyle = BP.deep; c.fill(); c.fillStyle = 'rgba(255,138,122,.16)'; c.fill(); c.stroke();
+        bpLine(c, [ct.x - 10, 6, ct.x - 12, y0 - 18], 'rgba(238,245,255,.4)', 1);
       } else if (ct.t === 'water') {
-        c.fillStyle = 'rgba(120,185,255,.75)'; c.strokeStyle = '#3E8EF7'; c.lineWidth = 1.5;
-        c.beginPath(); c.ellipse(ct.x, y0 - 6, 18, 8, 0, Math.PI, 0); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(121,227,255,.3)'; c.strokeStyle = BP.air;
+        c.beginPath(); c.ellipse(ct.x, y0, 18, 8, 0, Math.PI, 0); c.closePath(); c.fill(); c.stroke();
       }
     });
     // labels
-    c.font = '600 ' + (w < 560 ? 9 : 10.5) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'left';
-    if (w >= 560) {
-      c.fillStyle = '#BEE6FF'; c.fillText('GLASS', 14, (glassTop + glassBot) / 2 + 4);
-      c.fillStyle = '#FFB27A'; c.fillText('HIDDEN WIRES', 14, gridY + 8);
-      c.fillStyle = '#E8A0C0'; c.fillText('PICTURE', 14, (dispTop + dispBot) / 2 + 4);
+    if (!narrow) {
+      bpText(c, 'GLASS', 14, (glassTop + glassBot) / 2 - 2, { size: fs, col: BP.line });
+      bpText(c, '≈ 0.6 mm', 14, (glassTop + glassBot) / 2 + 10, { size: 8.5, col: BP.dim });
+      bpText(c, 'HIDDEN WIRES', 14, gridY + 8, { size: fs, col: BP.amber });
+      bpText(c, 'PICTURE', 14, (dispTop + dispBot) / 2 + 4, { size: fs, col: BP.dim });
+      [[(glassTop + glassBot) / 2 - 5, BP.faint], [gridY + 5, BP.faint], [(dispTop + dispBot) / 2, BP.faint]].forEach(function (l) { bpLine(c, [100, l[0], left - 4, l[0]], l[1], 0.7, [2, 3]); });
+      bpText(c, 'FIG 5.B · SECTION', 14, 20, { size: 9.5, col: BP.line });
     } else {
-      c.fillStyle = 'rgba(233,228,245,.85)'; c.fillText('glass', left + 4, glassTop + 12);
-      c.fillText('wires', left + 4, gridY - 4); c.fillText('picture', left + 4, dispBot + 12);
+      c.fillStyle = BP.deep; c.fillRect(left + 2, glassTop + 3, 38, 13);
+      bpText(c, 'glass', left + 5, glassTop + 13, { size: fs, col: BP.line });
+      bpText(c, 'yellow line = wires', left, 31, { size: fs, col: BP.amber });
+      c.fillStyle = BP.deep; c.fillRect(left + 2, dispTop + 3, 50, dispBot - dispTop - 5);
+      bpText(c, 'picture', left + 6, (dispTop + dispBot) / 2 + 3, { size: fs, col: BP.line });
     }
-    c.fillStyle = '#FFD678'; c.textAlign = 'right'; c.fillText(w < 560 ? 'charge field ↑' : 'the charge reaches up through the glass ↑', right, 14);
     var any = contacts.length ? contacts[0] : null;
     if (any) {
-      var msg = TOOLS[any.t].k > 0.1 ? (any.t === 'water' ? 'Water soaks up charge too!' : 'Charge flows into the ' + TOOLS[any.t].name + '!') : (any.t === 'glove' ? 'The glove blocks it. No charge flows.' : 'Wood doesn\'t conduct. No charge flows.');
-      c.fillStyle = TOOLS[any.t].k > 0.1 ? '#FF8F7A' : '#9EA3C4'; c.font = '700 ' + (w < 560 ? 11.5 : 13) + 'px Nunito, sans-serif'; c.textAlign = 'right';
-      c.fillText(msg, right, h - 8);
+      var flows = TOOLS[any.t].k > 0.1;
+      var msg = flows ? (any.t === 'water' ? 'Water soaks up charge too!' : 'Charge flows into the ' + TOOLS[any.t].name + '!') : (any.t === 'glove' ? 'The glove blocks it. No charge flows.' : 'Wood doesn\'t conduct. No charge flows.');
+      c.font = '700 ' + (narrow ? 11.5 : 13) + 'px Nunito, sans-serif'; c.textAlign = 'right';
+      var tw = c.measureText(msg).width; c.fillStyle = BP.bg; c.fillRect(right - tw - 6, h - 22, tw + 10, 18);
+      c.fillStyle = flows ? BP.warn : BP.dim; c.fillText(msg, right, h - 8);
     }
   }
 
   // ===================== Gauges =====================
   function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
   function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
-  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark) {
-    var el = document.getElementById(id), d0 = -125, d1 = 125;
-    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
-    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
-    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
-    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
-    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="#6FD3A8" stroke-width="2.5" stroke-linecap="round"/>'; }
-    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark, fmtTick) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125, nc = needleCol || BP.amber;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true">';
+    html += '<path d="' + arc(50, 52, 40, d0, d1) + '" fill="none" stroke="' + BP.line + '" stroke-width="1"/>';
+    html += '<path d="' + arc(50, 52, 33, d0, d1) + '" fill="none" stroke="' + BP.faint + '" stroke-width=".7"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 36.5, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + (zoneCol || BP.warn) + '" stroke-opacity=".45" stroke-width="6.5"/>';
+    html += '<path class="fill" d="" fill="none" stroke="' + nc + '" stroke-opacity=".6" stroke-width="3"/>';
+    for (var i = 0; i <= 20; i++) {
+      var dd = d0 + (d1 - d0) * i / 20, maj = i % 5 === 0, a1 = polar(50, 52, 40, dd), a2 = polar(50, 52, maj ? 33 : 36.5, dd);
+      html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="' + (maj ? BP.line : BP.dim) + '" stroke-width="' + (maj ? 1.1 : 0.7) + '"/>';
+      if (i % 10 === 0) { var tp = polar(50, 52, 25, dd), tv = max * i / 20; html += '<text x="' + tp[0].toFixed(1) + '" y="' + (tp[1] + 2.4).toFixed(1) + '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6.5" fill="' + BP.dim + '">' + (fmtTick ? fmtTick(tv) : tv) + '</text>'; }
+    }
+    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="' + BP.ok + '" stroke-width="2" stroke-linecap="round"/>'; }
+    html += '<g class="needle"><line x1="50" y1="60" x2="50" y2="14" stroke="' + nc + '" stroke-width="1.6" stroke-linecap="round"/></g><circle cx="50" cy="52" r="3.5" fill="' + BP.bg + '" stroke="' + BP.line + '" stroke-width="1.2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
     el.innerHTML = html;
     return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
   }
-  var gSig = makeGauge('gSignal', 'SIGNAL', 100, null, null, '#FF4D3D', THRESH);
-  var gTouch = makeGauge('gTouches', 'TOUCHES', 5, null, null, '#6FD3A8');
-  var gScan = makeGauge('gScan', 'SCANS/SEC', 200, null, null, '#FFC845');
+  // signal: the green tick is the "counts as a touch" line
+  var gSig = makeGauge('gSignal', 'SIGNAL', 100, [THRESH, 1], BP.warn, BP.warn, THRESH, function (t) { return t + '%'; });
+  var gTouch = makeGauge('gTouches', 'TOUCHES', 5, null, null, BP.ok, null, function (t) { return t % 1 ? '' : t; });
+  var gScan = makeGauge('gScan', 'SCANS/SEC', 200, null, null, BP.amber);
   function setGauge(g, v, fmt, dt) {
     g.shown += (v - g.shown) * Math.min(1, dt * 10);
     var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
     g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
-    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 36.5, g.d0, deg) : '');
     g.val.textContent = fmt(g.shown);
   }
 
