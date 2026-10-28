@@ -156,6 +156,165 @@
       .form-box { margin-top: 0; }
     }
   </style>
+  <style>
+    /* ===== Ari blueprint system =====
+       1. Blueprint sheet (white on blue): explainer canvases, cutaways.
+       2. Instrument panel (blueprint rig): gauges, sliders, tests, controls.
+       3. Graph-paper figures (ink on squared paper): the explanation cards below the rig. */
+    :root {
+      --bp: #0D3B6E; --bp-deep: #082A4F; --bp-grid: rgba(170,210,255,.07); --bp-grid2: rgba(170,210,255,.16);
+      --bp-line: #EEF5FF; --bp-dim: #9FC6F2; --bp-faint: rgba(159,198,242,.42);
+      --bp-amber: #FFC94A; --bp-air: #79E3FF; --bp-warn: #FF8A7A; --bp-ok: #7CF0BC;
+      --gp: #F4F8FC; --gp-grid: rgba(52,124,190,.12); --gp-grid2: rgba(52,124,190,.24); --gp-rule: #B7CCE0;
+      --gp-ink: #17324F; --gp-dim: #5B7A99; --gp-red: #D4452F; --gp-blue: #1F86C7;
+    }
+    /* 2. Instrument panel */
+    .rig { background-color: var(--bp-deep); border-radius: 12px; box-shadow: 0 30px 70px rgba(20,40,80,.3);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -5px; }
+    .rig::before { border-radius: 12px; }
+    .screen { border-radius: 4px; background: var(--bp); box-shadow: 0 0 0 1px var(--bp-faint); }
+    .screen-bar { background: var(--bp-deep); border-bottom: 1px solid var(--bp-faint); }
+    .screen-tag { color: var(--bp-dim); }
+    .clock small { color: var(--bp-dim); }
+    .tool { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); }
+    .tool[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-line); }
+    .gauge, .panel-box { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; }
+    .gauge { padding: 8px 6px 7px; }
+    .g-val { display: inline-block; margin-top: 2px; padding: 1px 7px; background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 2px; font-size: 14px; color: var(--bp-line); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .g-lbl { color: var(--bp-dim); margin-top: 5px; }
+    .box-head { color: var(--bp-dim); }
+    .box-head b { color: var(--bp-line); }
+    .box-head b.good { color: var(--bp-ok); }
+    .box-foot { color: var(--bp-dim); }
+    .app { border-radius: 3px; background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); color: var(--bp-line); box-shadow: 0 3px 0 rgba(4,22,44,.9); }
+    .app:active { box-shadow: 0 1px 0 rgba(4,22,44,.9); }
+    .app small { color: var(--bp-dim); }
+    .app.on { background: var(--bp-amber); border-color: var(--bp-amber); color: #2A1E02; box-shadow: 0 3px 0 #B88A1A; }
+    .app.on small { color: #5A4308; }
+    .app .bar { background: #2A1E02; }
+    .app.nudge { animation: bpNudge 1.4s ease-in-out infinite; }
+    @keyframes bpNudge { 0%,100% { box-shadow: 0 3px 0 rgba(4,22,44,.9); } 50% { box-shadow: 0 0 0 4px rgba(255,201,74,.45); } }
+    .ari { border-radius: 6px; }
+    .mission { border-radius: 2px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-dim); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+    .mission i::before { content: 'TEST '; }
+    .mission.now { background: rgba(255,201,74,.12); border-color: var(--bp-amber); color: var(--bp-line); }
+    .mission.done { background: rgba(124,240,188,.1); border-color: var(--bp-ok); color: var(--bp-ok); }
+    .mission.done i::after { content: ' ✓'; }
+    .experiments span { color: var(--bp-dim); }
+    .chip { border-radius: 3px; border: 1px dashed var(--bp-faint); color: var(--bp-line); }
+    .chip[aria-pressed="true"] { background: var(--bp-warn); border-color: var(--bp-warn); color: #2A0E08; }
+    .chip.fix[aria-pressed="true"] { background: var(--bp-ok); border-color: var(--bp-ok); color: #0B2A1D; }
+    .chip.nudge { border-color: var(--bp-amber); }
+    input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-moz-range-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-webkit-slider-thumb { width: 16px; height: 28px; margin-top: -7px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); box-shadow: 0 0 0 1px var(--bp-amber); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 26px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); }
+    input[type=range]:focus-visible { outline: 2px solid var(--bp-amber); outline-offset: 2px; }
+
+    /* 3. Graph-paper figures */
+    .stage { background-color: var(--gp); border: 1px solid var(--gp-rule); border-radius: 4px; box-shadow: none; color: var(--gp-dim);
+      background-image: linear-gradient(var(--gp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gp-grid) 1px, transparent 1px); background-size: 10px 10px; }
+    .stage .k { color: var(--gp-red); }
+    .stage h3 { color: var(--gp-ink); }
+    .stage p { color: #3E5875; }
+    .dwg { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gp-rule); overflow: visible; }
+    .dwg text { font-family: var(--mono); font-size: 8px; font-weight: 600; fill: var(--gp-ink); letter-spacing: .03em; }
+    .dwg .tr { fill: var(--gp-red); } .dwg .tb { fill: var(--gp-blue); } .dwg .td { fill: var(--gp-dim); }
+    .dwg .ink { stroke: var(--gp-ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .inkf { stroke: var(--gp-ink); stroke-width: 1.4; fill: #fff; stroke-linejoin: round; }
+    .dwg .inkh { fill: var(--gp-ink); }
+    .dwg .hatchf { fill: url(#gpHatch); stroke: var(--gp-ink); stroke-width: 1.5; }
+    .dwg .dimln { stroke: var(--gp-dim); stroke-width: .8; fill: none; }
+    .dwg .dsh { stroke-dasharray: 4 3; }
+    .dwg .ctrln { stroke: var(--gp-dim); stroke-width: .7; fill: none; stroke-dasharray: 9 2 2 2; }
+    .dwg .red { stroke: var(--gp-red); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .redw { stroke: var(--gp-red); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .redf { fill: var(--gp-red); }
+    .dwg .blu { stroke: var(--gp-blue); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .bluso { stroke: var(--gp-blue); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .bluf { fill: var(--gp-blue); }
+    .dwg .atom { fill: #fff; stroke: var(--gp-dim); stroke-width: 1; }
+    .dwg .bond { stroke: var(--gp-rule); stroke-width: 1.2; }
+    @keyframes figflow { to { stroke-dashoffset: -18; } }
+    .stages > p.big-idea { color: #3E5875; }
+    .big-idea { background: var(--gp); border: 1.5px solid var(--gp-ink); border-radius: 4px; color: #3E5875; position: relative; padding-top: 26px; }
+    .big-idea::before { content: 'NOTE 1'; position: absolute; top: 0; left: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--bp-line); background: var(--gp-ink); padding: 3px 9px; }
+    .big-idea b { color: var(--gp-ink); }
+    @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .dwg .blu { animation: none; } }
+
+    /* ===== Fig 3.C: take it apart + drawing sheet ===== */
+    .xsec { margin: 40px 0 6px; }
+    .xhead { max-width: 760px; margin-bottom: 14px; }
+    .xhead h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin: 4px 0 6px; }
+    .xhead p { color: var(--brown-mid); font-size: 16px; }
+    .xrig .screen { overflow: hidden; }
+    #xvSolar { display: block; width: 100%; cursor: pointer; touch-action: manipulation; }
+    .xctl { display: grid; gap: 8px; padding: 10px 12px 12px; background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .xctl .box-head { margin: 0; }
+    .xctl .btns { display: flex; gap: 8px; }
+    .xctl .btn { flex: 1; min-height: 48px; border: none; border-radius: 4px; font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 18px; cursor: pointer; background: var(--bp-amber); color: #2A1E02; box-shadow: 0 4px 0 #B88A1A, inset 0 0 0 1.5px rgba(255,255,255,.6); }
+    .xctl .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #B88A1A; }
+    .part-card { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; padding: 12px 14px; min-height: 118px; }
+    .pc-k { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--bp-amber); }
+    .part-card h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--bp-line); margin: 3px 0 4px; }
+    .part-card p { font-size: 14.5px; line-height: 1.45; color: #C6DCF5; }
+    .plist-wrap { overflow-x: auto; }
+    .plist { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; color: var(--bp-line); }
+    .plist th { text-align: left; font-weight: 600; font-size: 10.5px; letter-spacing: .08em; color: var(--bp-dim); padding: 0 8px 6px 0; border-bottom: 1px solid var(--bp-line); }
+    .plist td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--bp-faint); cursor: pointer; vertical-align: top; }
+    .plist td:first-child { width: 2.4em; font-weight: 600; color: var(--bp-amber); }
+    .plist td small { display: block; color: var(--bp-dim); font-size: 10.5px; letter-spacing: .02em; }
+    .plist tr.on td { color: var(--bp-amber); }
+    .plist tr:hover td { background: rgba(255,255,255,.04); }
+
+    .sheet { display: grid; gap: 10px; margin-top: 10px; }
+    .sheet-card { margin: 0; background-color: var(--bp); border: 1px solid var(--bp-faint); border-radius: 4px; padding: 12px; color: var(--bp-line);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -6px; }
+    .sheet-card svg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+    .sheet-card figcaption { margin-top: 8px; border-top: 1px solid var(--bp-line); padding-top: 8px; font-size: 14px; line-height: 1.45; color: #C6DCF5; }
+    .sheet-card figcaption b { display: block; font-family: var(--mono); font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--bp-line); margin-bottom: 2px; }
+    .sheet-card figcaption span { display: block; }
+    .bpg text { font-family: var(--mono); font-size: 9px; font-weight: 600; fill: var(--bp-line); letter-spacing: .04em; }
+    .bpg text.dimt { fill: var(--bp-dim); font-weight: 500; font-size: 8.5px; }
+    .bpg text.amber { fill: var(--bp-amber); }
+    .bpg .ln { fill: none; stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .ln.dim { stroke: var(--bp-dim); stroke-width: .8; }
+    .bpg .ln.thin { stroke-width: .5; stroke: var(--bp-faint); }
+    .bpg .lnf { fill: var(--bp-deep); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .cl { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 10 3 2 3; fill: none; }
+    .bpg .dl { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .ext { stroke: var(--bp-faint); stroke-width: .7; stroke-dasharray: 2 3; fill: none; }
+    .bpg .dh { fill: var(--bp-dim); }
+    .bpg .lead { stroke: var(--bp-dim); stroke-width: .8; fill: none; }
+    .bpg .amberl { stroke: var(--bp-amber); stroke-width: 1.4; fill: none; } .bpg .amberf { fill: var(--bp-amber); }
+    .bpg .glass { fill: rgba(121,227,255,.16); stroke: var(--bp-air); stroke-width: 1; }
+    .bpg .eva { fill: rgba(238,245,255,.08); stroke: var(--bp-dim); stroke-width: .8; stroke-dasharray: 3 2; }
+    .bpg .cellf { fill: rgba(255,201,74,.35); stroke: var(--bp-amber); stroke-width: .9; }
+    .bpg .back { fill: var(--bp-line); stroke: var(--bp-line); stroke-width: .8; }
+    .bpg .alu { fill: url(#bpHatch); stroke: var(--bp-line); stroke-width: 1.2; }
+    .bpg .seal { fill: rgba(159,198,242,.25); stroke: var(--bp-dim); stroke-width: .6; }
+    .spec, .tblock { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12px; color: var(--bp-line); }
+    .spec th { text-align: left; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 0 7px; border-bottom: 1px solid var(--bp-line); }
+    .spec td { padding: 6px 0; border-bottom: 1px solid var(--bp-faint); }
+    .spec td:first-child { color: var(--bp-dim); padding-right: 10px; }
+    .spec td:last-child { text-align: right; font-weight: 600; }
+    .tblock { margin-top: 14px; border: 1.5px solid var(--bp-line); }
+    .tblock td { border: 1px solid var(--bp-faint); padding: 6px 7px; font-size: 11.5px; }
+    .tblock td:nth-child(odd) { color: var(--bp-dim); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; width: 1%; white-space: nowrap; }
+    .tblock td[colspan] { font-weight: 600; letter-spacing: .05em; }
+    .nts { margin-top: 8px; font-size: 12.5px; color: var(--bp-dim); line-height: 1.4; }
+    @media (min-width: 900px) {
+      .xrig { grid-template-columns: 1.75fr 1fr; }
+      .sheet { grid-template-columns: 1fr 1fr 1fr; }
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -183,7 +342,7 @@
           <canvas id="scene" aria-label="A house with a solar panel and battery. Touch the sky to point the panel."></canvas>
         </div>
         <div class="screen">
-          <div class="screen-bar"><div class="screen-tag">Zoom: inside one solar cell</div></div>
+          <div class="screen-bar"><div class="screen-tag">Fig 3.B · Inside one solar cell</div></div>
           <canvas id="cell" aria-label="Cross-section of a solar cell: sunlight knocks electrons loose, and they flow out through a wire."></canvas>
         </div>
       </div>
@@ -227,14 +386,190 @@
       </div>
     </section>
 
+    <section class="xsec" id="takeApart">
+      <div class="xhead">
+        <div class="eyebrow">Fig. 3.C · General arrangement</div>
+        <h2>Take the solar panel apart</h2>
+        <p>A rooftop solar panel is a sandwich of seven parts. Pull it apart, then tap a part to find out what it does.</p>
+      </div>
+      <div class="rig xrig" aria-label="An exploded drawing of a rooftop solar panel">
+        <div class="screen">
+          <canvas id="xvSolar" aria-label="A rooftop solar panel drawn at an angle as a blueprint. Explode it to see its seven layers: aluminium frame, front glass, top EVA sheet, solar cells, bottom EVA sheet, backsheet and junction boxes."></canvas>
+          <div class="xctl">
+            <div class="box-head"><span>ASSEMBLED</span><b id="xsVal">0%</b><span>EXPLODED</span></div>
+            <input type="range" id="xs" min="0" max="100" value="0" aria-label="How far apart the layers are">
+            <div class="btns"><button class="btn go" id="xsBtn">Take it apart</button></div>
+          </div>
+        </div>
+        <div class="cockpit">
+          <div class="part-card">
+            <div class="pc-k" id="xsK">TAP A PART</div>
+            <h3 id="xsName">Tap any part of the drawing</h3>
+            <p id="xsNote">Take the panel apart first, then tap a part or its number to find out what it does.</p>
+          </div>
+          <div class="plist-wrap"><table class="plist" id="xsList"></table></div>
+        </div>
+      </div>
+
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="bpHatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="#082A4F"/><line x1="0" y1="0" x2="0" y2="4" stroke="#9FC6F2" stroke-width=".8"/></pattern></defs></svg>
+      <div class="sheet">
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 270" role="img" aria-label="Detail A: one half-cell seen from the front, 166 millimetres wide and 83 millimetres tall. Nine busbars run from top to bottom, and dozens of very thin fingers run across them.">
+            <g class="bpg" id="cellG">
+              <path class="ext" d="M26 54V30M275 54V30M281 62H296M281 186.5H296"/>
+              <path class="dl" d="M26 36H275"/><path class="dh" d="M26 36l6 -3v6zM275 36l-6 -3v6z"/>
+              <rect x="133" y="29" width="34" height="13" fill="#0D3B6E"/><text x="150" y="39" text-anchor="middle">166</text>
+              <path class="dl" d="M290 62V186.5"/><path class="dh" d="M290 62l-3 6h6zM290 186.5l-3 -6h6z"/>
+              <rect x="283" y="112" width="14" height="26" fill="#0D3B6E"/><text x="294" y="125" text-anchor="middle" transform="rotate(-90 290 125)">83</text>
+            </g>
+          </svg>
+          <figcaption><b>Detail A · one half-cell</b><span>Sizes in mm. Each cell starts as a 166 mm square of silicon, then gets cut in half. Thin silver fingers collect the loose electrons from all over the cell and pass them to the 9 busbars, which carry them to the next cell.</span></figcaption>
+        </figure>
+
+        <figure class="sheet-card">
+          <svg viewBox="0 0 300 270" role="img" aria-label="Section through the edge of the panel. The aluminium frame is 35 millimetres tall and grips a sandwich of layers: 3.2 millimetre glass, 0.45 millimetre EVA, 0.17 millimetre solar cell, 0.45 millimetre EVA and 0.3 millimetre backsheet, about 4.6 millimetres in all.">
+            <g class="bpg">
+              <!-- frame, cut through (hatched) -->
+              <rect class="alu" x="30" y="40" width="8" height="198"/><rect class="alu" x="38" y="40" width="40" height="8"/><rect class="alu" x="38" y="100" width="48" height="8"/><rect class="alu" x="78" y="108" width="8" height="76"/><rect class="alu" x="38" y="176" width="40" height="8"/><rect class="alu" x="38" y="230" width="58" height="8"/>
+              <path class="seal" d="M38 48H46V100H38Z"/>
+              <!-- the laminate, layers enlarged -->
+              <rect class="glass" x="46" y="48" width="160" height="20"/>
+              <rect class="eva" x="46" y="68" width="160" height="8"/>
+              <rect class="cellf" x="62" y="76" width="144" height="6"/>
+              <rect class="eva" x="46" y="82" width="160" height="8"/>
+              <rect class="eva" x="46" y="76" width="16" height="6" style="stroke:none"/>
+              <rect class="back" x="46" y="90" width="160" height="10"/>
+              <path class="ln" d="M206 44l-6 8 10 8 -8 8 10 8 -8 8 10 8 -8 8 6 4" style="stroke-width:.9"/>
+              <!-- layer callouts -->
+              <path class="lead" d="M170 58H214L222 24H230"/><circle class="hubf" cx="170" cy="58" r="1.8" style="fill:#EEF5FF"/>
+              <text x="232" y="22">GLASS</text><text class="dimt" x="232" y="33">3.2 mm</text>
+              <path class="lead" d="M150 72H214L222 50H230"/><circle cx="150" cy="72" r="1.8" style="fill:#EEF5FF"/>
+              <text x="232" y="48">EVA</text><text class="dimt" x="232" y="59">0.45 mm</text>
+              <path class="lead" d="M130 79H214L222 76H230"/><circle cx="130" cy="79" r="1.8" style="fill:#EEF5FF"/>
+              <text class="amber" x="232" y="74">CELL</text><text class="dimt" x="232" y="85">0.17 mm</text>
+              <path class="lead" d="M110 86H214L222 102H230"/><circle cx="110" cy="86" r="1.8" style="fill:#EEF5FF"/>
+              <text x="232" y="100">EVA</text><text class="dimt" x="232" y="111">0.45 mm</text>
+              <path class="lead" d="M90 95H214L222 128H230"/><circle cx="90" cy="95" r="1.8" style="fill:#EEF5FF"/>
+              <text x="232" y="126">BACKSHEET</text><text class="dimt" x="232" y="137">0.3 mm</text>
+              <path class="ln dim" d="M230 146H296"/>
+              <text class="amber" x="232" y="158">≈ 4.6 mm</text><text class="dimt" x="232" y="169">ALL 5 LAYERS</text>
+              <!-- frame callouts -->
+              <path class="lead" d="M82 150L108 196H128"/><text x="130" y="194">ALUMINIUM FRAME</text><text class="dimt" x="130" y="205">(HOLLOW, LIGHT, STIFF)</text>
+              <path class="lead" d="M42 74L112 226H128"/><text x="130" y="224">SEALANT</text><text class="dimt" x="130" y="235">(KEEPS RAIN OUT)</text>
+              <!-- frame height -->
+              <path class="ext" d="M28 40H10M28 238H10"/>
+              <path class="dl" d="M16 40V238"/><path class="dh" d="M16 40l-3 6h6zM16 238l-3 -6h6z"/>
+              <rect x="10" y="126" width="12" height="24" fill="#0D3B6E"/><text x="16" y="141" text-anchor="middle" transform="rotate(-90 16 138)">35</text>
+              <text class="dimt" x="10" y="258">LAYERS DRAWN THICKER · NTS</text>
+            </g>
+          </svg>
+          <figcaption><b>Section · the panel edge, cut through</b><span>Sizes in mm. All five layers together are about 4.6 mm thick, and most of that is glass. The solar cell itself is only 0.17 mm, about as thick as two sheets of paper.</span></figcaption>
+        </figure>
+
+        <div class="sheet-card tb">
+          <table class="spec">
+            <thead><tr><th colspan="2">Specifications</th></tr></thead>
+            <tbody>
+              <tr><td>Size</td><td>1755 × 1038 × 35 mm</td></tr>
+              <tr><td>Weight</td><td>about 20 kg</td></tr>
+              <tr><td>Cells</td><td>120 half-cells</td></tr>
+              <tr><td>Each half-cell</td><td>166 × 83 mm</td></tr>
+              <tr><td>Power in full sun</td><td>370 W</td></tr>
+              <tr><td>Full sun means</td><td>1,000 W/m² of light</td></tr>
+              <tr><td>Turns light into electricity</td><td>about 20%</td></tr>
+              <tr><td>Voltage</td><td>about 34 V</td></tr>
+              <tr><td>Bypass diodes</td><td>3</td></tr>
+              <tr><td>In the game</td><td>600 W ≈ 1½ panels</td></tr>
+            </tbody>
+          </table>
+          <table class="tblock">
+            <tr><td>Model</td><td colspan="3">ARI SP-370 · ROOFTOP PANEL</td></tr>
+            <tr><td>Drawn by</td><td>Ari 🦉</td><td>Fig.</td><td>3.C</td></tr>
+            <tr><td>Units</td><td>mm</td><td>Scale</td><td>NTS</td></tr>
+            <tr><td>Sheet</td><td>1 of 1</td><td>Rev.</td><td>A</td></tr>
+          </table>
+          <p class="nts">NTS: not to scale. A typical 370 W home solar panel, rounded so the numbers are easy to remember.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="stages">
       <h2>From sunshine to a cup of tea</h2>
       <p>What's happening inside the panel, step by step.</p>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="gpHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#17324F" stroke-width=".9"/></pattern></defs></svg>
       <div class="stage-grid">
-        <div class="stage"><div class="k">01 · LIGHT</div><h3>Sunlight lands</h3><p>Light arrives in tiny packets of energy called photons. Point the panel straight at the sun and the most packets land on it.</p></div>
-        <div class="stage"><div class="k">02 · SILICON</div><h3>Electrons shake loose</h3><p>A photon can knock an electron free inside the silicon, like one snooker ball knocking another. Tap the zoomed-in cell to try it.</p></div>
-        <div class="stage"><div class="k">03 · JUNCTION</div><h3>A one-way push</h3><p>The cell is made of two layers of silicon. Where they meet, the electrons get pushed in one direction only, towards the top.</p></div>
-        <div class="stage"><div class="k">04 · CIRCUIT</div><h3>Out through the wire</h3><p>The electrons flow out through a wire, through your kettle or lights, and back into the bottom of the cell. That flow is electricity.</p></div>
+        <div class="stage">
+          <div class="k">FIG 3.1 · LIGHT</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="Sunlight arriving as parallel rays. A panel facing the sun catches four rays. A panel tilted away catches only one.">
+            <circle class="inkf" cx="20" cy="20" r="11"/>
+            <path class="ink" d="M20 3V0M20 37V40M3 20H0M37 20H40M8 8L6 6M32 32L34 34M32 8L34 6M8 32L6 34" style="stroke-width:1.1"/>
+            <path class="blu" d="M49.9 27.7L101.3 58.6M43.7 38L95.1 68.9M37.5 48.2L88.9 79.1M31.3 58.5L82.7 89.4"/>
+            <path class="blu" d="M120.6 63.1L172 94M126.8 52.8L214 105.2M114.4 73.4L176 110.4"/>
+            <g transform="translate(92 74) rotate(-59)"><rect class="hatchf" x="-26" y="0" width="52" height="5"/></g>
+            <g transform="translate(172 94) rotate(15)"><rect class="hatchf" x="-26" y="0" width="52" height="5"/></g>
+            <path class="dimln dsh" d="M92 74L62 56"/>
+            <text class="tb" x="44" y="12">LIGHT</text>
+            <text x="72" y="108" text-anchor="middle">FACES THE SUN</text><text class="tr" x="72" y="117" text-anchor="middle">4 RAYS HIT</text>
+            <text x="182" y="40" text-anchor="middle">TILTED AWAY</text><text class="tr" x="182" y="49" text-anchor="middle">1 RAY HITS</text>
+          </svg>
+          <h3>Sunlight lands</h3><p>Light arrives in tiny packets of energy called photons. Point the panel straight at the sun and the most packets land on it.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 3.2 · SILICON</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="Silicon atoms in a grid. A photon hits one atom and knocks an electron free, leaving a hole behind.">
+            <path class="bond" d="M20 32H140M20 64H140M20 96H140M20 32V96M50 32V96M80 32V96M110 32V96M140 32V96"/>
+            <g><circle class="atom" cx="20" cy="32" r="6"/><circle class="atom" cx="50" cy="32" r="6"/><circle class="atom" cx="80" cy="32" r="6"/><circle class="atom" cx="110" cy="32" r="6"/><circle class="atom" cx="140" cy="32" r="6"/>
+            <circle class="atom" cx="20" cy="64" r="6"/><circle class="atom" cx="50" cy="64" r="6"/><circle class="atom" cx="80" cy="64" r="6" style="stroke:#D4452F;stroke-width:1.6"/><circle class="atom" cx="110" cy="64" r="6"/><circle class="atom" cx="140" cy="64" r="6"/>
+            <circle class="atom" cx="20" cy="96" r="6"/><circle class="atom" cx="50" cy="96" r="6"/><circle class="atom" cx="80" cy="96" r="6"/><circle class="atom" cx="110" cy="96" r="6"/><circle class="atom" cx="140" cy="96" r="6"/></g>
+            <path class="redw" d="M36 0q8 2 6 8t6 8t6 8t6 8t6 8t6 8"/><path class="redf" d="M80 59L73 55.5L78.6 51.3Z"/>
+            <circle cx="95" cy="64" r="3.5" fill="#fff" stroke="#1F86C7" stroke-width="1.3" stroke-dasharray="2 1.5"/>
+            <path class="bluso" d="M88 57L116 42" style="stroke-width:1.4"/><path class="bluf" d="M122 39L112.8 39.2L116.3 45.4Z"/>
+            <circle class="bluf" cx="126" cy="37" r="4"/>
+            <text class="tr" x="4" y="10">PHOTON</text>
+            <text class="tb" x="150" y="12">ELECTRON</text><text class="tb" x="150" y="21">SET FREE</text>
+            <path class="dimln" d="M95 68V104L100 110"/><text class="td" x="102" y="114">HOLE LEFT BEHIND</text>
+            <text class="td" x="152" y="67">SILICON</text><text class="td" x="152" y="76">ATOMS</text>
+          </svg>
+          <h3>Electrons shake loose</h3><p>A photon can knock an electron free inside the silicon, like one snooker ball knocking another. Tap the zoomed-in cell to try it.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 3.3 · JUNCTION</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="Two layers of silicon, n-type on top and p-type underneath. Where they meet, electrons are pushed up and holes are pushed down.">
+            <rect class="inkf" x="8" y="20" width="150" height="34"/>
+            <rect class="hatchf" x="8" y="54" width="150" height="50"/>
+            <path class="red" d="M8 54H158" style="stroke-dasharray:6 4;stroke-width:1.6"/>
+            <g><path class="bluso" d="M38 70V38" style="stroke-width:1.5"/><path class="bluf" d="M38 31L34 39H42Z"/><circle class="bluf" cx="38" cy="74" r="3.5"/>
+            <path class="bluso" d="M88 70V38" style="stroke-width:1.5"/><path class="bluf" d="M88 31L84 39H92Z"/><circle class="bluf" cx="88" cy="74" r="3.5"/>
+            <path class="bluso" d="M138 70V38" style="stroke-width:1.5"/><path class="bluf" d="M138 31L134 39H142Z"/><circle class="bluf" cx="138" cy="74" r="3.5"/></g>
+            <g><path class="ink" d="M58 40V84" style="stroke-width:1.2"/><path class="inkh" d="M58 91L54 83H62Z"/><circle cx="58" cy="36" r="3.5" fill="#fff" stroke="#17324F" stroke-width="1.2"/>
+            <path class="ink" d="M112 40V84" style="stroke-width:1.2"/><path class="inkh" d="M112 91L108 83H116Z"/><circle cx="112" cy="36" r="3.5" fill="#fff" stroke="#17324F" stroke-width="1.2"/></g>
+            <text x="164" y="36">N-TYPE</text><text class="td" x="164" y="45">TOP</text>
+            <text class="tr" x="164" y="58">JUNCTION</text>
+            <text x="164" y="80">P-TYPE</text><text class="td" x="164" y="89">BOTTOM</text>
+            <text class="tb" x="8" y="12">● ELECTRONS GO UP</text>
+            <text class="td" x="8" y="116">○ HOLES GO DOWN</text>
+          </svg>
+          <h3>A one-way push</h3><p>The cell is made of two layers of silicon. Where they meet, the electrons get pushed in one direction only, towards the top.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 3.4 · CIRCUIT</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="A loop of wire from the top of the cell, through a lamp, and back into the bottom of the cell. Electrons flow round and round the loop.">
+            <path class="ink" d="M60 70V24H180V40M180 60V108H62V100"/>
+            <path class="blu" d="M60 70V24H180V40M180 60V108H62V100"/>
+            <rect class="inkf" x="14" y="70" width="96" height="30"/>
+            <path class="dimln dsh" d="M14 82H110"/>
+            <path class="ink" d="M30 70V67M48 70V67M66 70V67M84 70V67M102 70V67" style="stroke-width:2"/>
+            <circle class="inkf" cx="180" cy="50" r="10"/><path class="ink" d="M175 53Q177.5 44 180 53T185 53" style="stroke-width:1"/>
+            <path class="redw" d="M194 40L200 35M196 50H204M194 60L200 65M166 40L160 35M166 60L160 65"/>
+            <path class="inkh" d="M124 24L117 20.5V27.5Z"/><path class="inkh" d="M120 108L127 104.5V111.5Z"/>
+            <circle class="bluf" r="3"><animateMotion dur="3s" repeatCount="indefinite" path="M60 70V24H180V108H62V100"/></circle>
+            <text x="20" y="92">CELL</text>
+            <text x="64" y="17">OUT OF THE TOP</text>
+            <text x="148" y="54" text-anchor="end">LAMP</text>
+            <text x="64" y="119">BACK IN AT THE BOTTOM</text>
+          </svg>
+          <h3>Out through the wire</h3><p>The electrons flow out through a wire, through your kettle or lights, and back into the bottom of the cell. That flow is electricity.</p>
+        </div>
       </div>
       <p class="big-idea"><b>The big idea:</b> a solar cell doesn't store anything. It only makes electricity while light is landing on it, which is why houses with solar panels use batteries, and why it's smart to run the washing machine at lunchtime.</p>
     </section>
@@ -303,7 +638,7 @@
   io.observe(document.getElementById('signup'));
 
   // ===================== Model =====================
-  // Numbers: 800 W of panels, 5 kWh battery. Loads in kW.
+  // Numbers: 600 W of panels, 3.5 kWh battery. Loads in kW.
   var PANEL_W = 600, BATT_KWH = 3.5;
   var LOAD = { fridge: 0.10, lights: 0.20, tv: 0.15, wash: 0.8, kettle: 3.0 };
   var DAY_SECONDS = 120;               // one 24 h day at normal speed
@@ -443,6 +778,22 @@
   // ===================== Particles =====================
   var photons = [], sparks = [], flowA = 0, flowB = 0, stars = [];
   function seedStars() { stars = []; for (var i = 0; i < 60; i++) stars.push([Math.random() * W, Math.random() * groundY * 0.9, Math.random()]); }
+
+  // ===================== Blueprint drawing kit =====================
+  var BP = { bg: '#0D3B6E', deep: '#082A4F', grid: 'rgba(170,210,255,.07)', grid2: 'rgba(170,210,255,.16)', line: '#EEF5FF', dim: '#9FC6F2',
+    faint: 'rgba(159,198,242,.42)', amber: '#FFC94A', air: '#79E3FF', warn: '#FF8A7A', ok: '#7CF0BC', orange: '#FF9A4D' };
+  var MONO = '"IBM Plex Mono", ui-monospace, monospace';
+  function bpSheet(c, w, h) {
+    c.fillStyle = BP.bg; c.fillRect(0, 0, w, h); c.lineWidth = 1;
+    for (var x = 0; x < w; x += 12) { c.strokeStyle = x % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); c.stroke(); }
+    for (var y = 0; y < h; y += 12) { c.strokeStyle = y % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(0, y + 0.5); c.lineTo(w, y + 0.5); c.stroke(); }
+    c.strokeStyle = BP.faint; c.strokeRect(4.5, 4.5, w - 9, h - 9);
+  }
+  function bpHatch(c, gap, col) {   // hatches inside the current path
+    c.save(); c.clip(); c.strokeStyle = col; c.lineWidth = 0.8; c.beginPath();
+    for (var k = -700; k < 2400; k += gap) { c.moveTo(k, -700); c.lineTo(k - 1400, 700); }
+    c.stroke(); c.restore();
+  }
 
   // ===================== Colour helpers =====================
   function mix(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
@@ -745,43 +1096,47 @@
     c.clearRect(0, 0, w, h);
     var bulbX = w - Math.max(46, w * 0.09), cx1 = bulbX - 34;
     var yGlass = 34, yN = 46, yBack = h - 22, yJ = yN + (yBack - yN) * 0.3;
-    // background
-    c.fillStyle = '#14172A'; c.fillRect(0, 0, w, h);
+    // background: blueprint sheet
+    bpSheet(c, w, h);
     // light from above
     var bright = Math.min(1, S.G / 1000);
     var sky = c.createLinearGradient(0, 0, 0, yGlass);
-    sky.addColorStop(0, 'rgba(255,220,120,' + (0.05 + 0.25 * bright) + ')'); sky.addColorStop(1, 'rgba(255,220,120,0)');
-    c.fillStyle = sky; c.fillRect(10, 0, cx1 - 10, yGlass);
-    // layers
-    c.fillStyle = '#4F7BD9'; c.fillRect(10, yGlass, cx1 - 10, yN - yGlass);                 // anti-reflective coating
-    c.fillStyle = '#7AA7F0'; c.fillRect(10, yN, cx1 - 10, yJ - yN);                           // n-type
-    c.fillStyle = '#3550A8'; c.fillRect(10, yJ, cx1 - 10, yBack - yJ);                         // p-type
-    c.fillStyle = '#B9C0D8'; c.fillRect(10, yBack, cx1 - 10, 8);                               // back contact
-    c.strokeStyle = 'rgba(255,255,255,.75)'; c.setLineDash([5, 4]); c.lineWidth = 1.5;
+    sky.addColorStop(0, 'rgba(255,201,74,' + (0.04 + 0.2 * bright) + ')'); sky.addColorStop(1, 'rgba(255,201,74,0)');
+    c.fillStyle = sky; c.fillRect(10, 6, cx1 - 10, yGlass - 6);
+    // layers, drawn as a section: coating, n-type, p-type (hatched), back contact
+    c.fillStyle = 'rgba(121,227,255,.16)'; c.fillRect(10, yGlass, cx1 - 10, yN - yGlass);    // anti-reflective coating
+    c.fillStyle = 'rgba(159,198,242,.1)'; c.fillRect(10, yN, cx1 - 10, yJ - yN);              // n-type
+    c.fillStyle = BP.deep; c.fillRect(10, yJ, cx1 - 10, yBack - yJ);                           // p-type
+    c.beginPath(); c.rect(10, yJ, cx1 - 10, yBack - yJ); bpHatch(c, 7, 'rgba(159,198,242,.22)');
+    c.fillStyle = BP.dim; c.fillRect(10, yBack, cx1 - 10, 8);                                  // back contact
+    c.strokeStyle = BP.line; c.lineWidth = 1.2; c.strokeRect(10.5, yGlass + 0.5, cx1 - 10, yBack + 8 - yGlass);
+    c.strokeStyle = BP.faint; c.lineWidth = 0.8; c.beginPath(); c.moveTo(10, yN + 0.5); c.lineTo(cx1, yN + 0.5); c.stroke();
+    c.strokeStyle = BP.amber; c.setLineDash([5, 4]); c.lineWidth = 1.4;
     c.beginPath(); c.moveTo(10, yJ); c.lineTo(cx1, yJ); c.stroke(); c.setLineDash([]);
     // junction field arrows (push electrons up)
-    c.fillStyle = 'rgba(255,255,255,.4)';
+    c.fillStyle = 'rgba(255,201,74,.55)';
     for (var ax = 30; ax < cx1 - 20; ax += 46) { c.beginPath(); c.moveTo(ax, yJ - 7); c.lineTo(ax - 4, yJ + 1); c.lineTo(ax + 4, yJ + 1); c.closePath(); c.fill(); }
     // finger contacts on top
     var fingers = [];
     for (var fx = 40; fx < cx1 - 10; fx += Math.max(70, (cx1 - 40) / 4)) fingers.push(fx);
-    c.fillStyle = '#DDE2EF'; c.strokeStyle = '#11132A'; c.lineWidth = 1.5;
-    fingers.forEach(function (f) { c.fillRect(f - 5, yGlass - 6, 10, 8); c.strokeRect(f - 5, yGlass - 6, 10, 8); });
+    c.fillStyle = BP.deep; c.strokeStyle = BP.line; c.lineWidth = 1.2;
+    fingers.forEach(function (f) { c.fillRect(f - 5, yGlass - 6, 10, 8); c.strokeRect(f - 4.5, yGlass - 5.5, 9, 7); });
     // circuit wire: top busbar → bulb → back contact
-    c.strokeStyle = '#DDE2EF'; c.lineWidth = 3;
+    c.strokeStyle = BP.line; c.lineWidth = 2;
     c.beginPath(); c.moveTo(fingers[0], yGlass - 10); c.lineTo(bulbX, yGlass - 10); c.lineTo(bulbX, h / 2 - 14); c.moveTo(bulbX, h / 2 + 14); c.lineTo(bulbX, yBack + 4); c.lineTo(cx1, yBack + 4); c.stroke();
     // bulb
     var out = S.pv / PANEL_W;
     if (out > 0.02) {
       c.globalCompositeOperation = 'lighter';
       var bg = c.createRadialGradient(bulbX, h / 2, 0, bulbX, h / 2, 40);
-      bg.addColorStop(0, 'rgba(255,230,140,' + Math.min(0.9, out * 1.2) + ')'); bg.addColorStop(1, 'rgba(255,200,100,0)');
+      bg.addColorStop(0, 'rgba(255,201,74,' + Math.min(0.8, out * 1.1) + ')'); bg.addColorStop(1, 'rgba(255,201,74,0)');
       c.fillStyle = bg; c.beginPath(); c.arc(bulbX, h / 2, 40, 0, 6.3); c.fill();
       c.globalCompositeOperation = 'source-over';
     }
-    c.fillStyle = out > 0.02 ? '#FFF2B0' : '#5A6080'; c.strokeStyle = '#11132A'; c.lineWidth = 2;
+    c.fillStyle = out > 0.02 ? BP.amber : BP.deep; c.strokeStyle = out > 0.02 ? BP.amber : BP.line; c.lineWidth = 1.4;
     c.beginPath(); c.arc(bulbX, h / 2 - 2, 12, 0, 6.3); c.fill(); c.stroke();
-    c.fillStyle = '#B9C0D8'; c.fillRect(bulbX - 6, h / 2 + 9, 12, 7); c.strokeRect(bulbX - 6, h / 2 + 9, 12, 7);
+    c.strokeStyle = out > 0.02 ? '#5A4308' : BP.dim; c.lineWidth = 1; c.beginPath(); c.moveTo(bulbX - 5, h / 2 + 2); c.quadraticCurveTo(bulbX - 2.5, h / 2 - 9, bulbX, h / 2 + 2); c.quadraticCurveTo(bulbX + 2.5, h / 2 - 9, bulbX + 5, h / 2 + 2); c.stroke();
+    c.fillStyle = BP.deep; c.strokeStyle = BP.line; c.lineWidth = 1.2; c.fillRect(bulbX - 6, h / 2 + 9, 12, 7); c.strokeRect(bulbX - 6, h / 2 + 9, 12, 7);
 
     // photons arriving
     var shadeCell = S.leaf && S.leafDrop >= 1;
@@ -789,7 +1144,7 @@
     if (!S.paused && Math.random() < rate * dt) cPhotons.push({ x: 20 + Math.random() * (cx1 - 40), y: -6, depth: yN + Math.random() * (yBack - yN - 6) });
     cellGeom = { cx1: cx1, yN: yN, yBack: yBack };
     while (tapQueue.length) { var tx = Math.max(16, Math.min(cx1 - 8, tapQueue.shift())); cPhotons.push({ x: tx, y: -6, depth: yN + 8 + Math.random() * (yBack - yN - 20), mine: true }); }
-    c.strokeStyle = '#FFE27A'; c.lineWidth = 2;
+    c.strokeStyle = BP.amber; c.lineWidth = 2;
     for (var i = cPhotons.length - 1; i >= 0; i--) {
       var p = cPhotons[i];
       if (!S.paused) p.y += 240 * dt;
@@ -807,7 +1162,7 @@
         }
         continue;
       }
-      c.lineWidth = p.mine ? 3.5 : 2; c.strokeStyle = p.mine ? '#FFF3A8' : '#FFE27A';
+      c.lineWidth = p.mine ? 3 : 1.8; c.strokeStyle = p.mine ? '#FFF3A8' : BP.amber;
       c.beginPath();
       for (var s = 0; s < (p.mine ? 7 : 4); s++) { var yy = p.y - s * 4; c.lineTo(p.x + Math.sin(yy * 0.6) * 3, yy); }
       c.stroke();
@@ -818,12 +1173,12 @@
       var q = carriers[i]; q.life += spd;
       if (q.kind === 'h') {
         q.y += 45 * spd; if (q.y > yBack) { carriers.splice(i, 1); continue; }
-        c.strokeStyle = '#FFB27A'; c.lineWidth = 1.6; c.beginPath(); c.arc(q.x, q.y, 3.2, 0, 6.3); c.stroke();
+        c.strokeStyle = BP.orange; c.lineWidth = 1.5; c.beginPath(); c.arc(q.x, q.y, 3.2, 0, 6.3); c.stroke();
         continue;
       }
       if (q.kind === 'stuck') {
         if (q.life > 1.2) { carriers.splice(i, 1); continue; }
-        c.fillStyle = 'rgba(255,120,100,' + (1 - q.life / 1.2) + ')'; c.beginPath(); c.arc(q.x, q.y, 3, 0, 6.3); c.fill();
+        c.fillStyle = 'rgba(255,138,122,' + (1 - q.life / 1.2) + ')'; c.beginPath(); c.arc(q.x, q.y, 3, 0, 6.3); c.fill();
         continue;
       }
       // electron: up through the junction, to the finger, along the wire, through the bulb, back in
@@ -832,8 +1187,8 @@
       else if (q.stage === 2) { q.x += 160 * spd; if (q.x >= bulbX) { q.x = bulbX; q.stage = 3; } }
       else if (q.stage === 3) { q.y += 120 * spd; if (q.y >= yBack + 4) { q.y = yBack + 4; q.stage = 4; } }
       else { q.x -= 140 * spd; if (q.x < cx1 - 30) { carriers.splice(i, 1); continue; } }
-      c.fillStyle = '#E8F6FF'; c.beginPath(); c.arc(q.x, q.y, q.mine ? 4.5 : 3, 0, 6.3); c.fill();
-      if (q.mine) { c.strokeStyle = '#FFE27A'; c.lineWidth = 1.5; c.beginPath(); c.arc(q.x, q.y, 7, 0, 6.3); c.stroke(); }
+      c.fillStyle = BP.air; c.beginPath(); c.arc(q.x, q.y, q.mine ? 4.5 : 3, 0, 6.3); c.fill();
+      if (q.mine) { c.strokeStyle = BP.amber; c.lineWidth = 1.5; c.beginPath(); c.arc(q.x, q.y, 7, 0, 6.3); c.stroke(); }
     }
     if (carriers.length > 400) carriers.splice(0, carriers.length - 400);
     for (i = bursts.length - 1; i >= 0; i--) {
@@ -842,7 +1197,7 @@
       c.beginPath(); c.arc(bb.x, bb.y, (0.6 - bb.life) * 40 + 4, 0, 6.3); c.stroke();
     }
     c.font = '700 ' + (w < 560 ? 10 : 11) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'right';
-    c.fillStyle = 'rgba(255,243,168,' + (0.55 + 0.35 * Math.sin(clockT * 3)) + ')';
+    c.fillStyle = 'rgba(255,201,74,' + (0.6 + 0.35 * Math.sin(clockT * 3)) + ')';
     c.fillText('TAP TO FIRE A PHOTON', cx1 - 6, yJ - 8);
 
     // labels
@@ -851,19 +1206,19 @@
     function tag(t, x, y, col, align) {
       c.textAlign = align || 'left';
       var tw = c.measureText(t).width, bx = align === 'right' ? x - tw - 4 : x - 4;
-      c.fillStyle = 'rgba(14,16,34,.72)'; c.fillRect(bx, y - 10, tw + 8, 14);
+      c.fillStyle = 'rgba(8,42,79,.88)'; c.fillRect(bx, y - 10, tw + 8, 14);
       c.fillStyle = col; c.fillText(t, x, y);
     }
-    tag('n-type silicon', 16, yN + 13, '#FFFFFF');
-    tag('junction: pushes electrons up ↑', 16, yJ + 15, '#FFFFFF');
-    tag('p-type silicon', 16, yBack - 6, '#FFFFFF');
-    tag('sunlight ↓', 16, 14, '#FFE27A');
-    tag('● electron', cx1 - (small ? 62 : 110), 14, '#E8F6FF');
-    if (!small) tag('○ hole', cx1 - 40, 14, '#FFB27A');
+    tag('n-type silicon', 16, yN + 13, BP.line);
+    tag('junction: pushes electrons up ↑', 16, yJ + 15, BP.amber);
+    tag('p-type silicon', 16, yBack - 6, BP.line);
+    tag('sunlight ↓', 16, 18, BP.amber);
+    tag('● electron', cx1 - (small ? 62 : 110), 18, BP.air);
+    if (!small) tag('○ hole', cx1 - 40, 18, BP.orange);
     c.textAlign = 'center';
     if (shadeCell && !S.diodes) {
-      c.fillStyle = 'rgba(20,10,10,.55)'; c.fillRect(10, yGlass, cx1 - 10, yBack - yGlass);
-      c.font = '700 ' + (small ? 12 : 14) + 'px Nunito, sans-serif'; c.fillStyle = '#FFB0A0';
+      c.fillStyle = 'rgba(8,20,40,.62)'; c.fillRect(10, yGlass, cx1 - 10, yBack - yGlass);
+      c.font = '700 ' + (small ? 12 : 14) + 'px Nunito, sans-serif'; c.fillStyle = BP.warn;
       c.fillText('A shaded cell in the chain blocks the flow', (10 + cx1) / 2, (yJ + yBack) / 2 + 4);
     }
   }
@@ -884,24 +1239,30 @@
   // ===================== Gauges =====================
   function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
   function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
-  function makeGauge(id, label, max, zone, zoneCol, needleCol) {
-    var el = document.getElementById(id), d0 = -125, d1 = 125;
-    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
-    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
-    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
-    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
-    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+  function makeGauge(id, label, max, zone, zoneCol, needleCol) {   // engineering dial face
+    var el = document.getElementById(id), d0 = -125, d1 = 125, nc = needleCol || BP.amber;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true">';
+    html += '<path d="' + arc(50, 52, 40, d0, d1) + '" fill="none" stroke="' + BP.line + '" stroke-width="1"/>';
+    html += '<path d="' + arc(50, 52, 33, d0, d1) + '" fill="none" stroke="' + BP.faint + '" stroke-width=".7"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 36.5, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + (zoneCol || BP.warn) + '" stroke-opacity=".4" stroke-width="6.5"/>';
+    html += '<path class="fill" d="" fill="none" stroke="' + nc + '" stroke-opacity=".6" stroke-width="3"/>';
+    for (var i = 0; i <= 20; i++) {
+      var dd = d0 + (d1 - d0) * i / 20, maj = i % 5 === 0, a1 = polar(50, 52, 40, dd), a2 = polar(50, 52, maj ? 33 : 36.5, dd);
+      html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="' + (maj ? BP.line : BP.dim) + '" stroke-width="' + (maj ? 1.1 : 0.7) + '"/>';
+      if (i % 10 === 0) { var tp = polar(50, 52, 25, dd); html += '<text x="' + tp[0].toFixed(1) + '" y="' + (tp[1] + 2.4).toFixed(1) + '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6.5" fill="' + BP.dim + '">' + (max * i / 20) + '</text>'; }
+    }
+    html += '<g class="needle"><line x1="50" y1="60" x2="50" y2="14" stroke="' + nc + '" stroke-width="1.6" stroke-linecap="round"/></g><circle cx="50" cy="52" r="3.5" fill="' + BP.bg + '" stroke="' + BP.line + '" stroke-width="1.2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
     el.innerHTML = html;
     return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
   }
-  var gSun = makeGauge('gSun', 'SUNLIGHT', 1100, null, null, '#FFC845');
-  var gPanel = makeGauge('gPanel', 'PANEL', PANEL_W, null, null, '#FFC845');
-  var gBatt = makeGauge('gBatt', 'BATTERY', 100, [0, 0.15], '#FF4D3D', '#6FD3A8');
+  var gSun = makeGauge('gSun', 'SUNLIGHT', 1100, null, null, BP.amber);
+  var gPanel = makeGauge('gPanel', 'PANEL', PANEL_W, null, null, BP.amber);
+  var gBatt = makeGauge('gBatt', 'BATTERY', 100, [0, 0.15], BP.warn, BP.ok);
   function setGauge(g, v, fmt, dt) {
     g.shown += (v - g.shown) * Math.min(1, dt * 8);
     var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
     g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
-    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 36.5, g.d0, deg) : '');
     g.val.textContent = fmt(g.shown);
   }
 
@@ -1060,6 +1421,181 @@
   resize(); renderMissions(); washRender(); tvRender();
   requestAnimationFrame(frame);
   window.__ari = { state: function () { return S; }, sun: function () { return sunPos(S.h); }, pc: panelCentre };
+})();
+</script>
+<script src="exploded.js"></script>
+<script>
+(function () {
+  'use strict';
+  // ===================== Fig 3.C: the solar panel, taken apart (sizes in mm, oblique view from above the front) =====================
+  // A typical 370 W home panel: 1755 × 1038 × 35 mm, 120 half-cells of 166 × 83 mm, 3 bypass diodes.
+  if (!window.AriExploded) return;
+  var K = AriExploded.kit, BP = K.BP;
+  var LH = 877.5, DP = 1038, KZ = 0.42, SK = 280, D = DP * KZ, G = 230;   // half length, depth, depth foreshortening, skew, drawn depth, explode gap
+  var XL = LH + SK / 2;
+  function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'solar-panel' }); } catch (e) {} }
+  // point on a layer: x along the length (centre 0), z from the back edge (0) to the front edge (1038), dy straight down
+  function P(u, x, z, dy) { return [(x + SK * (0.5 - z / DP)) * u, (z * KZ + (dy || 0)) * u]; }
+  function quad(c, a, b, cc, d) { c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.lineTo(cc[0], cc[1]); c.lineTo(d[0], d[1]); c.closePath(); }
+  // a flat slab: top face, plus the front edge and right edge showing its thickness T
+  function slab(c, u, xa, xb, za, zb, T, o) {
+    o = o || {};
+    if (T > 0) {
+      K.shape(c, function () { quad(c, P(u, xa, zb), P(u, xb, zb), P(u, xb, zb, T), P(u, xa, zb, T)); }, { fill: o.side || BP.deep, stroke: o.stroke, lw: o.lw || 1, dash: o.dash, hatch: o.sideHatch });
+      K.shape(c, function () { quad(c, P(u, xb, za), P(u, xb, zb), P(u, xb, zb, T), P(u, xb, za, T)); }, { fill: o.side || BP.deep, stroke: o.stroke, lw: o.lw || 1, dash: o.dash });
+    }
+    K.shape(c, function () { quad(c, P(u, xa, za), P(u, xb, za), P(u, xb, zb), P(u, xa, zb)); }, { fill: o.fill, stroke: o.stroke, lw: o.lw || 1.3, dash: o.dash, hatch: o.hatch, hatchCol: o.hatchCol });
+  }
+  function seg(c, u, x0, z0, x1, z1, col, wd, dash) { var a = P(u, x0, z0), b = P(u, x1, z1); K.line(c, [a[0], a[1], b[0], b[1]], col, wd, dash); }
+
+  // half-cells: 2 halves × 10 along the length, 6 rows across, 166 × 83 mm each (83 along the length)
+  var CX = [], CZ = [];
+  (function () { var gap = 12, edge = 18, slot = (2 * LH - 2 * edge - gap) / 20; for (var i = 0; i < 20; i++) { var x = -LH + edge + i * slot + (i >= 10 ? gap : 0); CX.push([x + 1, x + slot - 1.3]); } var ez = (DP - 6 * 166 - 5 * 1.6) / 2; for (var j = 0; j < 6; j++) { var z = ez + j * (166 + 1.6); CZ.push([z, z + 166]); } })();
+
+  var PANEL = {
+    title: 'FIG 3.C · SOLAR PANEL · OBLIQUE VIEW', width: 2 * XL, reserve: [20, 150], stagger: 0.3, narrowBalloons: true,
+    height: function (W) { return Math.round(W < 560 ? clamp(W * 1.12, 380, 520) : clamp(W * 0.68, 420, 520)); },
+    span: { x0: -XL, x1: LH - SK / 2, y: D + 95, label: '1755 LONG' },
+    overlay: function (c, info) {
+      var a = clamp(1 - info.t / 0.3, 0, 1); if (a <= 0) return;
+      c.save(); c.globalAlpha = a; c.translate(info.cx, info.cy);
+      var u = info.u, off = 70, p0 = P(u, -LH, DP), p1 = P(u, -LH, 0);   // the receding left edge, front to back
+      var dx = p1[0] - p0[0], dy = p1[1] - p0[1], l = Math.hypot(dx, dy), nx = dy / l, ny = -dx / l;   // outward normal (up and to the left)
+      var o = off * u, q0 = [p0[0] + nx * o, p0[1] + ny * o], q1 = [p1[0] + nx * o, p1[1] + ny * o];
+      K.line(c, [p0[0] + nx * 4, p0[1] + ny * 4, q0[0] + nx * 5, q0[1] + ny * 5], BP.faint, 0.7, [2, 3]);
+      K.line(c, [p1[0] + nx * 4, p1[1] + ny * 4, q1[0] + nx * 5, q1[1] + ny * 5], BP.faint, 0.7, [2, 3]);
+      K.line(c, [q0[0], q0[1], q1[0], q1[1]], BP.dim, 0.9); K.head(c, q0[0], q0[1], -dx / l, -dy / l, BP.dim, 5); K.head(c, q1[0], q1[1], dx / l, dy / l, BP.dim, 5);
+      var ang = Math.atan2(dy, dx); if (Math.cos(ang) < 0) ang += Math.PI;
+      c.translate((q0[0] + q1[0]) / 2 + nx * 7, (q0[1] + q1[1]) / 2 + ny * 7); c.rotate(ang);
+      K.text(c, '1038 WIDE', 0, 3, { align: 'center', size: info.W < 420 ? 8.5 : 9.5, col: BP.line });
+      c.restore();
+    },
+    parts: [
+      { id: 'frame', name: 'Aluminium frame', sub: '35 mm deep', y: 0, h: D + 35, x0: -XL, x1: XL, dy: -3 * G, z: 6, anchor: 0,
+        note: 'A light, hollow aluminium frame that grips the edges and makes the panel stiff. Real panels are tested with heavy weights pressed on them, as much as a thick layer of wet snow, and must not crack.',
+        draw: function (c, u) {
+          var w = 32, T = 35;
+          // outer edges (front and right) showing the 35 mm depth
+          K.shape(c, function () { quad(c, P(u, -LH, DP), P(u, LH, DP), P(u, LH, DP, T), P(u, -LH, DP, T)); }, { fill: BP.deep, lw: 1.1 });
+          K.shape(c, function () { quad(c, P(u, LH, 0), P(u, LH, DP), P(u, LH, DP, T), P(u, LH, 0, T)); }, { fill: BP.deep, lw: 1.1 });
+          // engraving lines along the front face (the frame's grooves)
+          seg(c, u, -LH + 4, DP, LH - 4, DP, BP.faint, 0.6); var g1 = P(u, -LH, DP, 8), g2 = P(u, LH, DP, 8); K.line(c, [g1[0], g1[1], g2[0], g2[1]], BP.faint, 0.6);
+          // the ring on top: outer outline minus the opening
+          c.beginPath(); var o = [P(u, -LH, 0), P(u, LH, 0), P(u, LH, DP), P(u, -LH, DP)], i = [P(u, -LH + w, w), P(u, LH - w, w), P(u, LH - w, DP - w), P(u, -LH + w, DP - w)];
+          c.moveTo(o[0][0], o[0][1]); for (var k = 1; k < 4; k++) c.lineTo(o[k][0], o[k][1]); c.closePath();
+          c.moveTo(i[0][0], i[0][1]); for (k = 3; k >= 1; k--) c.lineTo(i[k][0], i[k][1]); c.closePath();
+          c.fillStyle = BP.deep; c.fill('evenodd');
+          c.strokeStyle = BP.line; c.lineWidth = 1.3; c.stroke();
+          // inside walls you can see through the opening (back and left), dashed where hidden
+          var b0 = P(u, -LH + w, w, 12), b1 = P(u, LH - w, w, 12); K.line(c, [b0[0], b0[1], b1[0], b1[1]], BP.faint, 0.7);
+          var l0 = P(u, -LH + w, DP - w, 12); K.line(c, [b0[0], b0[1], l0[0], l0[1]], BP.faint, 0.7);
+          // corner joints (mitred)
+          [[-LH, 0, -LH + w, w], [LH, 0, LH - w, w], [LH, DP, LH - w, DP - w], [-LH, DP, -LH + w, DP - w]].forEach(function (q) { seg(c, u, q[0], q[1], q[2], q[3], BP.dim, 0.7); });
+        } },
+      { id: 'glass', name: 'Front glass', sub: '3.2 mm toughened', y: 2, h: D + 12, x0: -XL, x1: XL, dy: -2 * G, z: 5, anchor: 0,
+        note: 'Extra-clear toughened glass with a coating that stops it reflecting, so about 94% of the sunlight gets through. It is tested by firing 25 mm hailstones at it at over 80 km/h.',
+        draw: function (c, u) {
+          slab(c, u, -LH + 6, LH - 6, 6, DP - 6, 12, { fill: 'rgba(121,227,255,.07)', side: 'rgba(121,227,255,.22)', stroke: BP.air, lw: 1.1 });
+          // reflections
+          [[-560, -380], [-470, -330], [240, 330]].forEach(function (r) { seg(c, u, r[0] + 120, 60, r[0] - 40, DP - 60, 'rgba(121,227,255,.45)', 0.8); seg(c, u, r[1] + 120, 60, r[1] - 40, DP - 60, 'rgba(121,227,255,.25)', 0.6); });
+        } },
+      { id: 'eva1', name: 'Top EVA sheet', sub: 'clear glue · 0.45 mm', y: 4, h: D + 6, x0: -XL, x1: XL, dy: -G, z: 4, anchor: 0,
+        note: 'A soft, clear plastic sheet. In the factory the whole sandwich is heated to about 150 °C, the EVA melts like cheese on toast, and it glues every layer together so no water can get in.',
+        draw: function (c, u) { slab(c, u, -LH + 6, LH - 6, 6, DP - 6, 6, { fill: 'rgba(238,245,255,.05)', side: 'rgba(238,245,255,.12)', stroke: BP.dim, lw: 1, dash: [5, 3] }); } },
+      { id: 'cells', name: 'Solar cells', sub: '120 half-cells · 166 × 83', y: 6, h: D + 4, x0: -XL, x1: XL, dy: 0, z: 3, anchor: 0,
+        note: 'The part that makes electricity. Each cell only makes about half a volt, so they are joined in long chains by thin wires. Together they add up to about 34 volts. See Detail A to look closely at one.',
+        draw: function (c, u, k, s) {
+          var lit = 'rgba(255,201,74,' + (0.08 + 0.06 * Math.sin(s.clock * 2)) + ')';
+          CX.forEach(function (cx) { CZ.forEach(function (cz) { K.shape(c, function () { quad(c, P(u, cx[0], cz[0]), P(u, cx[1], cz[0]), P(u, cx[1], cz[1]), P(u, cx[0], cz[1])); }, { fill: BP.deep, stroke: BP.line, lw: 0.6 }); }); });
+          c.globalCompositeOperation = 'lighter'; K.shape(c, function () { quad(c, P(u, -LH + 18, CZ[0][0]), P(u, LH - 18, CZ[0][0]), P(u, LH - 18, CZ[5][1]), P(u, -LH + 18, CZ[5][1])); }, { fill: lit, stroke: 'rgba(0,0,0,0)', lw: 0.1 }); c.globalCompositeOperation = 'source-over';
+          // busbar wires run along each chain of cells (3 of 9 drawn)
+          CZ.forEach(function (cz) { [0.25, 0.5, 0.75].forEach(function (f) { var z = cz[0] + 166 * f; seg(c, u, -LH + 14, z, -6, z, 'rgba(238,245,255,.55)', 0.5); seg(c, u, 6, z, LH - 14, z, 'rgba(238,245,255,.55)', 0.5); }); });
+          // the chains join at the middle, where the junction boxes sit underneath
+          seg(c, u, 0, CZ[0][0] - 6, 0, CZ[5][1] + 6, BP.amber, 0.9, [4, 3]);
+          slab(c, u, -LH + 6, LH - 6, 6, DP - 6, 4, { fill: 'rgba(0,0,0,0)', side: BP.deep, stroke: BP.line, lw: 1.1 });
+        } },
+      { id: 'eva2', name: 'Bottom EVA sheet', sub: 'clear glue · 0.45 mm', y: 8, h: D + 6, x0: -XL, x1: XL, dy: G, z: 2, anchor: 0,
+        note: 'A second sheet of the same glue underneath. The cells are fragile, about as thick as two sheets of paper, so they sit cushioned between two soft layers like a sandwich filling.',
+        draw: function (c, u) { slab(c, u, -LH + 6, LH - 6, 6, DP - 6, 6, { fill: 'rgba(238,245,255,.05)', side: 'rgba(238,245,255,.12)', stroke: BP.dim, lw: 1, dash: [5, 3] }); } },
+      { id: 'back', name: 'Backsheet', sub: 'white plastic · 0.3 mm', y: 10, h: D + 6, x0: -XL, x1: XL, dy: 2 * G, z: 1, anchor: 0,
+        note: 'A tough white plastic skin on the back. It keeps out damp and stops anyone getting a shock. Being white, it bounces light that slips between the cells back up for another go.',
+        draw: function (c, u) {
+          slab(c, u, -LH + 6, LH - 6, 6, DP - 6, 6, { fill: BP.deep, side: BP.bg, lw: 1.2, hatch: 7, hatchCol: 'rgba(238,245,255,.16)' });
+          [210, 519, 828].forEach(function (z) { var p = P(u, 0, z); c.fillStyle = BP.line; c.beginPath(); c.arc(p[0], p[1], 1.6, 0, 6.3); c.fill(); });   // holes for the wires
+        } },
+      { id: 'jbox', name: 'Junction boxes', sub: '3 bypass diodes + cables', y: 22, h: D + 40, x0: -560, x1: 200, dy: 2 * G + D + 40, z: 0, anchor: 0.3,
+        note: 'Three small boxes where the wires come out. Each holds a bypass diode, a one-way gate that lets the electricity skip a shaded group of cells. That is the trick you tried with the leaf in the game.',
+        draw: function (c, u) {
+          // cables (4 mm²) from the outer boxes, ending in plug-together connectors
+          [[210, -1], [828, 1]].forEach(function (q) {
+            var a = P(u, 0, q[0], 10), b = P(u, q[1] * 420, q[0] + q[1] * 40, 26);
+            c.strokeStyle = BP.line; c.lineWidth = Math.max(1.4, 9 * u); c.lineCap = 'round'; c.beginPath(); c.moveTo(a[0], a[1]); c.bezierCurveTo(a[0] + q[1] * 60 * u, a[1] + 30 * u, b[0] - q[1] * 120 * u, b[1], b[0], b[1]); c.stroke();
+            c.strokeStyle = BP.deep; c.lineWidth = Math.max(0.5, 4 * u); c.stroke(); c.lineCap = 'butt';
+            var e = P(u, q[1] * 420, q[0] + q[1] * 40, 26); K.rect(c, e[0] - (q[1] > 0 ? 0 : 110 * u), e[1] - 13 * u, 110 * u, 26 * u, { fill: BP.deep, stroke: BP.amber, lw: 1 });
+          });
+          [210, 519, 828].forEach(function (z) {
+            slab(c, u, -110, 110, z - 80, z + 80, 40, { fill: BP.deep, side: BP.bg, lw: 1.1 });
+            // diode symbol on the lid
+            var m = P(u, 0, z, 0), s = Math.max(2.4, 26 * u);
+            c.fillStyle = BP.amber; c.beginPath(); c.moveTo(m[0] - s, m[1] - s * 0.6); c.lineTo(m[0] + s * 0.6, m[1]); c.lineTo(m[0] - s, m[1] + s * 0.6); c.closePath(); c.fill();
+            K.line(c, [m[0] + s * 0.7, m[1] - s * 0.7, m[0] + s * 0.7, m[1] + s * 0.7], BP.amber, 1.1);
+          });
+        } }
+    ]
+  };
+
+  var cv = document.getElementById('xvSolar'); if (!cv) return;
+  var view = AriExploded.create(cv, PANEL);
+  var xs = document.getElementById('xs'), xsVal = document.getElementById('xsVal'), btn = document.getElementById('xsBtn');
+  var K1 = document.getElementById('xsK'), N1 = document.getElementById('xsName'), T1 = document.getElementById('xsNote'), list = document.getElementById('xsList');
+  function show(p) {
+    Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) { tr.classList.toggle('on', !!p && tr.dataset.id === p.id); });
+    if (!p) { K1.textContent = 'TAP A PART'; N1.textContent = 'Tap any part of the drawing'; T1.textContent = 'Take the panel apart first, then tap a part or its number to find out what it does.'; return; }
+    K1.textContent = 'PART ' + p.no + ' · ' + p.sub.toUpperCase(); N1.textContent = p.name; T1.textContent = p.note; track('spart_' + p.id);
+  }
+  list.innerHTML = '<thead><tr><th>No.</th><th>Part</th></tr></thead><tbody>' + PANEL.parts.map(function (p) { return '<tr data-id="' + p.id + '"><td>' + p.no + '</td><td>' + p.name + '<small>' + p.sub + '</small></td></tr>'; }).join('') + '</tbody>';
+  Array.prototype.forEach.call(list.querySelectorAll('tr[data-id]'), function (tr) {
+    tr.addEventListener('click', function () { var p = PANEL.parts.filter(function (q) { return q.id === tr.dataset.id; })[0]; view.select(p.id); show(p); if (view.t() < 0.9) view.animateTo(1, 1.4); });
+  });
+  view.onPick(show);
+  xs.addEventListener('input', function () { view.set(xs.value / 100); });
+  btn.addEventListener('click', function () { view.animateTo(view.t() > 0.5 ? 0 : 1, 1.6); track('sexplode'); });
+
+  // ===================== Detail A: one half-cell, front view (built here so the geometry stays exact) =====================
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(parent, tag, attrs, text) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; parent.appendChild(e); return e; }
+  var cg = document.getElementById('cellG');
+  if (cg) {
+    var S = 1.5, X0 = 26, Y0 = 62, Wc = 166 * S, Hc = 83 * S, ch = 6;   // 1.5 px per mm; chamfered corners on the uncut (top) edge
+    el(cg, 'path', { 'class': 'lnf', d: 'M' + (X0 + ch) + ' ' + Y0 + ' H' + (X0 + Wc - ch) + ' L' + (X0 + Wc) + ' ' + (Y0 + ch) + ' V' + (Y0 + Hc) + ' H' + X0 + ' V' + (Y0 + ch) + 'Z' });
+    // fingers: thin silver lines about 1.6 mm apart, running across the busbars
+    var fd = ''; for (var y = Y0 + 2.4; y < Y0 + Hc - 1; y += 1.6 * S) fd += 'M' + (X0 + 1.5) + ' ' + y.toFixed(1) + ' H' + (X0 + Wc - 1.5);
+    el(cg, 'path', { 'class': 'ln thin', d: fd });
+    // 9 busbars, 166 / 9 ≈ 18.4 mm apart
+    for (var i = 0; i < 9; i++) { var bx = X0 + (i + 0.5) * Wc / 9; el(cg, 'path', { 'class': 'amberl', d: 'M' + bx.toFixed(1) + ' ' + (Y0 - 4) + ' V' + (Y0 + Hc + 4) }); }
+    // the cut edge
+    el(cg, 'path', { 'class': 'ln', d: 'M' + X0 + ' ' + (Y0 + Hc) + ' H' + (X0 + Wc), style: 'stroke-dasharray:6 3;stroke:#FFC94A' });
+    // callouts
+    var by = X0 + 8.5 * Wc / 9;
+    el(cg, 'path', { 'class': 'lead', d: 'M' + by.toFixed(1) + ' ' + (Y0 + Hc + 4) + ' V214' }); el(cg, 'text', { x: by - 6, y: 224, 'text-anchor': 'end', 'class': 'amber' }, '9 BUSBARS'); el(cg, 'text', { x: by - 6, y: 235, 'text-anchor': 'end', 'class': 'dimt' }, '(CARRY CURRENT OUT)');
+    el(cg, 'path', { 'class': 'lead', d: 'M64 ' + (Y0 + 50) + ' L40 214' }); el(cg, 'text', { x: 26, y: 224 }, 'FINGERS'); el(cg, 'text', { x: 26, y: 235, 'class': 'dimt' }, '(THINNER THAN A HAIR)');
+    el(cg, 'text', { x: 150, y: 202, 'text-anchor': 'middle', 'class': 'dimt' }, '↑ CUT EDGE');
+    el(cg, 'text', { x: 26, y: 18, 'class': 'dimt' }, 'HALF-CELL · FRONT VIEW');
+  }
+
+  var on = false, last = 0;
+  function frame(ts) {
+    var dt = last ? Math.min(0.05, (ts - last) / 1000) : 0; last = ts;
+    view.tick(dt);
+    xsVal.textContent = Math.round(view.t() * 100) + '%'; if (view.busy()) xs.value = Math.round(view.t() * 100);
+    btn.textContent = view.t() > 0.5 ? 'Put it back together' : 'Take it apart';
+    if (on) requestAnimationFrame(frame); else last = 0;
+  }
+  var io = new IntersectionObserver(function (e) { var vis = e.some(function (x) { return x.isIntersecting; }); if (vis && !on) { on = true; requestAnimationFrame(frame); } else if (!vis) on = false; }, { rootMargin: '100px' });
+  io.observe(document.getElementById('takeApart'));
+  window.addEventListener('resize', function () { view.resize(); });
+  window.__ariX = { view: view };
 })();
 </script>
 </body>
