@@ -169,6 +169,100 @@
     .chip.fix.on { background: var(--mint); border-style: solid; border-color: var(--mint); color: #10251C; }
     .chip.hidden { display: none; }
   </style>
+  <style>
+    /* ===== Ari blueprint system =====
+       Three drawing styles, picked by job:
+       1. Blueprint sheet (white on blue): explainer canvases, cutaways, plan views.
+       2. Instrument panel (blueprint rig): gauges, sliders, tests, controls.
+       3. Graph-paper figures (ink on squared paper): the explanation cards below the rig. */
+    :root {
+      --bp: #0D3B6E; --bp-deep: #082A4F; --bp-grid: rgba(170,210,255,.07); --bp-grid2: rgba(170,210,255,.16);
+      --bp-line: #EEF5FF; --bp-dim: #9FC6F2; --bp-faint: rgba(159,198,242,.42);
+      --bp-amber: #FFC94A; --bp-air: #79E3FF; --bp-warn: #FF8A7A; --bp-ok: #7CF0BC;
+      --gp: #F4F8FC; --gp-grid: rgba(52,124,190,.12); --gp-grid2: rgba(52,124,190,.24); --gp-rule: #B7CCE0;
+      --gp-ink: #17324F; --gp-dim: #5B7A99; --gp-red: #D4452F; --gp-blue: #1F86C7;
+    }
+    /* 2. Instrument panel */
+    .rig { background-color: var(--bp-deep); border-radius: 12px; box-shadow: 0 30px 70px rgba(20,40,80,.3);
+      background-image: linear-gradient(var(--bp-grid2) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid2) 1px, transparent 1px),
+        linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px);
+      background-size: 60px 60px, 60px 60px, 12px 12px, 12px 12px; outline: 1px solid var(--bp-faint); outline-offset: -5px; }
+    .rig::before { border-radius: 12px; }
+    .screen { border-radius: 4px; background: var(--bp); box-shadow: 0 0 0 1px var(--bp-faint); }
+    .screen-bar { background: var(--bp-deep); border-bottom: 1px solid var(--bp-faint); }
+    .screen-tag { color: var(--bp-dim); }
+    .tool { border-radius: 3px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-line); }
+    .tool[aria-pressed="true"] { background: var(--bp-line); color: var(--bp-deep); border-color: var(--bp-line); }
+    .gauge, .panel-box, .stick-box { background: rgba(8,42,79,.78); border: 1px solid var(--bp-faint); border-radius: 3px; }
+    .gauge { padding: 8px 6px 7px; }
+    .g-val { display: inline-block; margin-top: 2px; padding: 1px 7px; background: var(--bp-deep); border: 1px solid var(--bp-faint); border-radius: 2px; font-size: 14px; color: var(--bp-line); font-variant-numeric: tabular-nums; }
+    .g-lbl { color: var(--bp-dim); margin-top: 5px; }
+    .ari { border-radius: 6px; }
+    .mission { border-radius: 2px; background: transparent; border: 1px solid var(--bp-faint); color: var(--bp-dim); font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; }
+    .mission i::before { content: 'TEST '; }
+    .mission.now { background: rgba(255,201,74,.12); border-color: var(--bp-amber); color: var(--bp-line); }
+    .mission.done { background: rgba(124,240,188,.1); border-color: var(--bp-ok); color: var(--bp-ok); }
+    .mission.done i::after { content: ' ✓'; }
+    .experiments span { color: var(--bp-dim); }
+    .chip { border-radius: 3px; border: 1px dashed var(--bp-faint); color: var(--bp-line); }
+    .chip[aria-pressed="true"] { background: var(--bp-warn); border-color: var(--bp-warn); color: #2A0E08; }
+    .chip.reset { border-style: solid; border-color: var(--bp-faint); }
+    .lab-controls { background: var(--bp); border-top: 1px solid var(--bp-faint); padding-top: 10px; }
+    .lab-controls label { color: var(--bp-dim); }
+    input[type=range]::-webkit-slider-runnable-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-moz-range-track { height: 14px; border-radius: 0;
+      background: linear-gradient(var(--bp-line), var(--bp-line)) 0 50% / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, var(--bp-dim) 0 1px, transparent 1px 10%); }
+    input[type=range]::-webkit-slider-thumb { width: 16px; height: 28px; margin-top: -7px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); box-shadow: 0 0 0 1px var(--bp-amber); }
+    input[type=range]::-moz-range-thumb { width: 14px; height: 26px; border-radius: 3px; background: var(--bp-amber); border: 2px solid var(--bp-deep); }
+    input[type=range]:focus-visible { outline: 2px solid var(--bp-amber); outline-offset: 2px; }
+    .screen.fly { background: var(--bp); }
+
+    /* 3. Graph-paper figures */
+    .stage { background-color: var(--gp); border: 1px solid var(--gp-rule); border-radius: 4px; box-shadow: none; color: var(--gp-dim);
+      background-image: linear-gradient(var(--gp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--gp-grid) 1px, transparent 1px); background-size: 10px 10px; }
+    .stage .k { color: var(--gp-red); }
+    .stage h3 { color: var(--gp-ink); }
+    .stage p { color: #3E5875; }
+    .dwg { display: block; width: 100%; max-width: 100%; height: auto; margin: 6px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--gp-rule); overflow: visible; }
+    .dwg text { font-family: var(--mono); font-size: 8px; font-weight: 600; fill: var(--gp-ink); letter-spacing: .03em; }
+    .dwg .tr { fill: var(--gp-red); } .dwg .tb { fill: var(--gp-blue); } .dwg .td { fill: var(--gp-dim); }
+    .dwg .ink { stroke: var(--gp-ink); stroke-width: 1.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .dwg .inkf { stroke: var(--gp-ink); stroke-width: 1.4; fill: #fff; stroke-linejoin: round; }
+    .dwg .inkh { fill: var(--gp-ink); }
+    .dwg .hatchf { fill: url(#gpHatch); stroke: var(--gp-ink); stroke-width: 1.5; }
+    .dwg .dimln { stroke: var(--gp-dim); stroke-width: .8; fill: none; }
+    .dwg .dsh { stroke-dasharray: 4 3; }
+    .dwg .ctrln { stroke: var(--gp-dim); stroke-width: .7; fill: none; stroke-dasharray: 9 2 2 2; }
+    .dwg .red { stroke: var(--gp-red); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .redf { fill: var(--gp-red); }
+    .dwg .blu { stroke: var(--gp-blue); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; animation: figflow 1.1s linear infinite; }
+    .dwg .bluso { stroke: var(--gp-blue); stroke-width: 2.2; fill: none; stroke-linecap: round; }
+    .dwg .bluf { fill: var(--gp-blue); }
+    .dwg .spin { transform-box: view-box; animation: figspin 2.6s linear infinite; }
+    .dwg .spin.acw { animation-direction: reverse; }
+    @keyframes figflow { to { stroke-dashoffset: -18; } }
+    @keyframes figspin { to { transform: rotate(360deg); } }
+    .stages > p.big-idea { color: #3E5875; }
+    .big-idea { background: var(--gp); border: 1.5px solid var(--gp-ink); border-radius: 4px; color: #3E5875; position: relative; padding-top: 26px; }
+    .big-idea::before { content: 'NOTE 1'; position: absolute; top: 0; left: 0; font-family: var(--mono); font-size: 10.5px; font-weight: 600; letter-spacing: .1em; color: var(--bp-line); background: var(--gp-ink); padding: 3px 9px; }
+    .big-idea b { color: var(--gp-ink); }
+    @media (max-width: 599px) { .stage-grid { grid-template-columns: 1fr; } }
+    @media (prefers-reduced-motion: reduce) { .dwg .blu, .dwg .spin { animation: none; } }
+    /* heart-specific blueprint bits */
+    .phase { border-radius: 2px; color: var(--bp-amber); background: rgba(255,201,74,.1); border: 1px solid var(--bp-amber); }
+    .ctl { background: var(--bp); border-top: 1px solid var(--bp-faint); }
+    .ctl .box-head { color: var(--bp-dim); }
+    .ctl .box-head b { color: var(--bp-amber); }
+    .chip.fix[aria-pressed="true"], .chip.fix.on { background: var(--bp-ok); border-style: solid; border-color: var(--bp-ok); color: #06261A; }
+    .chip.nudge { border-color: var(--bp-amber); border-style: solid; }
+    .ctl.nudge-rate .rate-row { animation: nudge 1.4s ease-in-out infinite; border-radius: 3px; }
+    .key { display: flex; gap: 10px; align-items: center; }
+    .key i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: -1px; }
+    .key .lo { background: #6CC6FF; } .key .hi { background: #FF6A5C; }
+    .dwg .bluso.flow, .dwg .red.flow { stroke-dasharray: 6 4; animation: figflow 1.1s linear infinite; }
+    @media (prefers-reduced-motion: reduce) { .dwg .flow { animation: none; } }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -201,7 +295,7 @@
           </div>
         </div>
         <div class="screen">
-          <div class="screen-bar"><div class="screen-tag">Round the body · sped up</div><div class="screen-tag">dark = low oxygen</div></div>
+          <div class="screen-bar"><div class="screen-tag">Round the body · sped up</div><div class="screen-tag key"><span><i class="lo"></i>LOW O₂</span><span><i class="hi"></i>FULL O₂</span></div></div>
           <canvas id="loop" aria-label="The loop blood takes: heart, lungs, heart, body, and back"></canvas>
         </div>
       </div>
@@ -236,11 +330,75 @@
     <section class="stages">
       <h2>Fill, squeeze, snap, repeat</h2>
       <p>What your heart does, roughly once every second, your whole life.</p>
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="gpHatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#fff"/><line x1="0" y1="0" x2="0" y2="5" stroke="#17324F" stroke-width=".9"/></pattern></defs></svg>
       <div class="stage-grid">
-        <div class="stage"><div class="k">01 · FILL</div><h3>The top rooms fill</h3><p>Blood coming back from your body and your lungs pours into the two top rooms, called the atria.</p></div>
-        <div class="stage"><div class="k">02 · SQUEEZE</div><h3>The pumps squeeze</h3><p>The bottom rooms, the ventricles, have thick walls of muscle. They squeeze hard and push the blood out.</p></div>
-        <div class="stage"><div class="k">03 · SNAP</div><h3>Valves snap shut</h3><p>One-way valves slam shut so blood can't go backwards. Lub is the first pair closing, dub is the second. That's the sound a doctor hears.</p></div>
-        <div class="stage"><div class="k">04 · TWO LOOPS</div><h3>Lungs, then body</h3><p>The right side sends blood to your lungs to pick up oxygen. The left side sends it all round your body.</p></div>
+        <div class="stage">
+          <div class="k">FIG 9.1 · FILL</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="The two top rooms filling. Blue blood from the body pours into the right atrium, red blood from the lungs pours into the left atrium, and both flow down through open valves.">
+            <rect class="dimln dsh" x="24" y="72" width="72" height="40" rx="12"/><rect class="dimln dsh" x="124" y="72" width="72" height="40" rx="12"/>
+            <path class="bluso flow" d="M60 2V22"/><path class="bluf" d="M60 26L55.5 17H64.5Z"/>
+            <path class="red flow" d="M218 41H198"/><path class="redf" d="M194 41L203 36.5V45.5Z"/>
+            <rect class="inkf" x="28" y="24" width="64" height="36" rx="9"/><rect class="inkf" x="128" y="24" width="64" height="36" rx="9"/>
+            <text x="60" y="40" text-anchor="middle">R. ATRIUM</text><text x="160" y="40" text-anchor="middle">L. ATRIUM</text>
+            <path class="bluso flow" d="M60 46V88"/><path class="bluf" d="M60 95L55.5 86H64.5Z"/>
+            <path class="red flow" d="M160 46V88"/><path class="redf" d="M160 95L155.5 86H164.5Z"/>
+            <path class="ink" d="M42 60L49 74M78 60L71 74M142 60L149 74M178 60L171 74"/>
+            <text class="tb" x="66" y="10">FROM BODY</text>
+            <text class="tr" x="216" y="22" text-anchor="end">FROM LUNGS</text>
+            <text class="td" x="110" y="66" text-anchor="middle">VALVES</text><text class="td" x="110" y="75" text-anchor="middle">OPEN</text>
+            <text class="td" x="60" y="108" text-anchor="middle">R. VENT.</text><text class="td" x="160" y="108" text-anchor="middle">L. VENT.</text>
+          </svg>
+          <h3>The top rooms fill</h3><p>Blood coming back from your body and your lungs pours into the two top rooms, called the atria.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 9.2 · SQUEEZE</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="The bottom of the heart cut in half. Its walls are thick muscle, and the left wall is the thickest. When it squeezes, blue blood goes up to the lungs and red blood goes up to the body.">
+            <path class="hatchf" d="M14 30H206C210 72 170 108 116 116C64 110 12 80 14 30Z"/>
+            <path class="inkf" d="M26 36H98V66C98 90 72 102 52 96C34 88 24 68 26 36Z"/>
+            <path class="inkf" d="M124 44H176C182 70 168 94 142 98C128 90 122 70 124 44Z"/>
+            <path class="bluso flow" d="M62 64V8"/><path class="bluf" d="M62 2L57.5 11H66.5Z"/>
+            <path class="red flow" d="M150 76V8"/><path class="redf" d="M150 2L145.5 11H154.5Z"/>
+            <path class="inkh" d="M34 64L27 60V68Z"/><path class="inkh" d="M90 64L97 60V68Z"/>
+            <path class="inkh" d="M131 70L124 66V74Z"/><path class="inkh" d="M169 70L176 66V74Z"/>
+            <text class="tb" x="68" y="12">TO LUNGS</text><text class="tr" x="156" y="12">TO BODY</text>
+            <path class="dimln" d="M194 80L204 94H218"/>
+            <text x="218" y="104" text-anchor="end">THICKEST</text><text x="218" y="113" text-anchor="end">WALL</text>
+            <text class="td" x="4" y="113">SQUEEZE →←</text>
+          </svg>
+          <h3>The pumps squeeze</h3><p>The bottom rooms, the ventricles, have thick walls of muscle. They squeeze hard and push the blood out.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 9.3 · SNAP</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="Two valves in a pipe. One is open and blood flows through. The other is shut and blood trying to go backwards is stopped. Below, the sound of one beat: lub, then dub.">
+            <path class="ink" d="M8 16H96M8 50H96M122 16H212M122 50H212"/>
+            <path class="ink" d="M44 16L58 26M44 50L58 40"/>
+            <path class="red flow" d="M12 33H82"/><path class="redf" d="M90 33L81 28.5V37.5Z"/>
+            <path class="ink" d="M158 16V50"/>
+            <path class="red" d="M208 33H172"/><path class="redf" d="M164 33L173 28.5V37.5Z"/>
+            <text x="52" y="10" text-anchor="middle">OPEN</text><text x="166" y="10" text-anchor="middle">SHUT</text>
+            <text class="td" x="166" y="62" text-anchor="middle">NO WAY BACK</text>
+            <path class="ink" d="M8 96H52L56 84L60 108L64 80L68 102L72 96H130L133 88L136 104L139 90L142 96H212"/>
+            <text class="tr" x="62" y="76" text-anchor="middle">LUB</text><text class="tr" x="136" y="82" text-anchor="middle">DUB</text>
+            <text class="td" x="8" y="118">ONE BEAT</text>
+          </svg>
+          <h3>Valves snap shut</h3><p>One-way valves slam shut so blood can't go backwards. Lub is the first pair closing, dub is the second. That's the sound a doctor hears.</p>
+        </div>
+        <div class="stage">
+          <div class="k">FIG 9.4 · TWO LOOPS</div>
+          <svg class="dwg" viewBox="0 0 220 120" role="img" aria-label="Blood goes round in a figure of eight. The right side of the heart sends blue blood to the lungs. It comes back red to the left side, which sends it round the body. It comes back blue to the right side.">
+            <path class="bluso flow" d="M97 48V40H40V15H76"/><path class="bluf" d="M80 15L71 10.5V19.5Z"/>
+            <path class="red flow" d="M140 15H180V40H123V44"/><path class="redf" d="M123 48L118.5 39H127.5Z"/>
+            <path class="red flow" d="M123 72V80H180V105H144"/><path class="redf" d="M140 105L149 100.5V109.5Z"/>
+            <path class="bluso flow" d="M80 105H40V80H97V76"/><path class="bluf" d="M97 72L92.5 81H101.5Z"/>
+            <rect class="inkf" x="80" y="4" width="60" height="22" rx="10"/><text x="110" y="18" text-anchor="middle">LUNGS</text>
+            <rect class="inkf" x="80" y="94" width="60" height="22" rx="3"/><text x="110" y="108" text-anchor="middle">BODY</text>
+            <rect class="inkf" x="86" y="48" width="23" height="24" rx="3"/><rect class="inkf" x="111" y="48" width="23" height="24" rx="3"/>
+            <text class="tb" x="97.5" y="63" text-anchor="middle">R</text><text class="tr" x="122.5" y="63" text-anchor="middle">L</text>
+            <text class="tb" x="4" y="63">RIGHT</text><text class="tr" x="216" y="63" text-anchor="end">LEFT</text>
+            <circle r="3.4" fill="#1F86C7"><animateMotion dur="5s" repeatCount="indefinite" path="M97 60V40H40V15H180V40H123V80H180V105H40V80H97Z"/><animate attributeName="fill" dur="5s" repeatCount="indefinite" calcMode="discrete" values="#1F86C7;#D4452F;#1F86C7" keyTimes="0;0.25;0.75"/></circle>
+          </svg>
+          <h3>Lungs, then body</h3><p>The right side sends blood to your lungs to pick up oxygen. The left side sends it all round your body.</p>
+        </div>
       </div>
       <p class="big-idea"><b>The big idea:</b> your heart is two pumps side by side, and the valves make sure blood only ever goes one way. It's about the size of your fist, and it beats about 100,000 times a day.</p>
     </section>
@@ -345,7 +503,7 @@
   var EXIT_U = [.9, .06];
   function exitOk(side, u) { return side ? u < .2 : u > .78; }
   var PW = .075;
-  var CAV = ['#3A1530', '#64121D'], CELL = ['#A2548E', '#FF5B4F'], PIPE_IN = ['#4A1C3D', '#7A1622'];
+  var CELL = ['#6CC6FF', '#FF6A5C'];   // blue = low on oxygen, red = full of oxygen
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function scaleRect(r, s, ay) { var cx = r.x + r.w / 2, cy = r.y + r.h * ay; return { x: cx - r.w * s / 2, y: cy - r.h * ay * s, w: r.w * s, h: r.h * s }; }
@@ -412,6 +570,41 @@
     });
   }
 
+  // ===================== Blueprint drawing kit =====================
+  var BP = { bg: '#0D3B6E', deep: '#082A4F', grid: 'rgba(170,210,255,.07)', grid2: 'rgba(170,210,255,.16)', line: '#EEF5FF', dim: '#9FC6F2',
+    faint: 'rgba(159,198,242,.42)', amber: '#FFC94A', air: '#79E3FF', warn: '#FF8A7A', ok: '#7CF0BC' };
+  // blood colours carry meaning: blue = low on oxygen, red = full of oxygen
+  var LO = [108, 198, 255], HI = [255, 106, 92];
+  var MONO = '"IBM Plex Mono", ui-monospace, monospace', DASHDOT = [10, 3, 2, 3];
+  function bpSheet(c, w, h) {
+    c.fillStyle = BP.bg; c.fillRect(0, 0, w, h); c.lineWidth = 1;
+    for (var x = 0; x < w; x += 12) { c.strokeStyle = x % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, h); c.stroke(); }
+    for (var y = 0; y < h; y += 12) { c.strokeStyle = y % 60 === 0 ? BP.grid2 : BP.grid; c.beginPath(); c.moveTo(0, y + 0.5); c.lineTo(w, y + 0.5); c.stroke(); }
+    c.strokeStyle = BP.faint; c.strokeRect(4.5, 4.5, w - 9, h - 9);
+  }
+  function bpText(c, t, x, y, o) {
+    o = o || {}; c.font = (o.weight || 600) + ' ' + (o.size || 9.5) + 'px ' + MONO; c.fillStyle = o.col || BP.dim; c.textAlign = o.align || 'left'; c.fillText(t, x, y);
+  }
+  function bpLine(c, pts, col, wd, dash) {
+    c.strokeStyle = col; c.lineWidth = wd || 1; c.setLineDash(dash || []); c.beginPath();
+    for (var i = 0; i < pts.length; i += 2) { if (i) c.lineTo(pts[i], pts[i + 1]); else c.moveTo(pts[i], pts[i + 1]); }
+    c.stroke(); c.setLineDash([]);
+  }
+  function bpHatch(c, gap, col) {
+    c.save(); c.clip(); c.strokeStyle = col; c.lineWidth = 0.8; c.beginPath();
+    for (var k = -900; k < 2400; k += gap) { c.moveTo(k, -900); c.lineTo(k - 1800, 900); }
+    c.stroke(); c.restore();
+  }
+  function bpCorners(c, x, y, w, h) {
+    var k = 9; c.strokeStyle = BP.line; c.lineWidth = 1.4; c.beginPath();
+    c.moveTo(x, y + k); c.lineTo(x, y); c.lineTo(x + k, y); c.moveTo(x + w - k, y); c.lineTo(x + w, y); c.lineTo(x + w, y + k);
+    c.moveTo(x + w, y + h - k); c.lineTo(x + w, y + h); c.lineTo(x + w - k, y + h); c.moveTo(x + k, y + h); c.lineTo(x, y + h); c.lineTo(x, y + h - k); c.stroke();
+  }
+  function bpHead(c, x, y, ux, uy, col, s) {
+    s = s || 6; c.fillStyle = col; c.beginPath(); c.moveTo(x, y); c.lineTo(x - ux * s - uy * s * 0.45, y - uy * s + ux * s * 0.45); c.lineTo(x - ux * s + uy * s * 0.45, y - uy * s - ux * s * 0.45); c.closePath(); c.fill();
+  }
+  function rgb(a, al) { return 'rgba(' + a[0] + ',' + a[1] + ',' + a[2] + ',' + (al == null ? 1 : al) + ')'; }
+
   // ===================== Canvas setup =====================
   var cv = document.getElementById('heart'), ctx = cv.getContext('2d');
   var lc = document.getElementById('loop'), lctx = lc.getContext('2d');
@@ -439,73 +632,91 @@
     c.lineTo(x, y + r[0]); c.arcTo(x, y, x + r[0], y, r[0]); c.closePath();
   }
   function rectPx(r) { return { x: bx + r.x * bw, y: by + r.y * bh, w: r.w * bw, h: r.h * bh }; }
-  function pill(c, text, x, y, align, fg, bg, fs) {
+  function pill(c, text, x, y, align, fg, bg, fs, bd) {
     c.font = '600 ' + fs + 'px "IBM Plex Mono", monospace'; var tw = c.measureText(text).width, ph = fs + 8, pw = tw + 12;
     var x0 = align === 'right' ? x - pw : align === 'center' ? x - pw / 2 : x;
     x0 = clamp(x0, 2, W - pw - 2);
-    c.fillStyle = bg; rr(c, x0, y - ph / 2, pw, ph, ph / 2); c.fill();
+    c.fillStyle = bg; rr(c, x0, y - ph / 2, pw, ph, 3); c.fill();
+    if (bd) { c.strokeStyle = bd; c.lineWidth = 1.2; c.stroke(); }
     c.fillStyle = fg; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText(text, x0 + 6, y + .5); c.textBaseline = 'alphabetic';
   }
 
   // ===================== Drawing the heart =====================
   var vo = { av: [1, 1], ex: [0, 0] }, cavA = [ATR[0], ATR[1]], cavV = [VEN[0], VEN[1]], tapGlow = 0;
+  function polyPath(c, poly) { c.beginPath(); poly.forEach(function (p, i) { var q = U(p); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); }); }
   function drawPipe(c, poly, side, w) {
-    c.lineCap = 'round'; c.lineJoin = 'round';
-    c.beginPath(); poly.forEach(function (p, i) { var q = U(p); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); });
-    c.strokeStyle = '#B9505F'; c.lineWidth = w + 7; c.stroke();
-    c.strokeStyle = PIPE_IN[side]; c.lineWidth = w; c.stroke();
+    // a blood vessel drawn as a hollow tube: two white walls with the dark inside showing through
+    c.lineCap = 'butt'; c.lineJoin = 'round';
+    polyPath(c, poly); c.strokeStyle = BP.line; c.lineWidth = w + 3; c.stroke();
+    c.strokeStyle = BP.deep; c.lineWidth = w; c.stroke();
+    polyPath(c, poly); c.strokeStyle = rgb(side ? HI : LO, .5); c.lineWidth = 1; c.setLineDash(DASHDOT); c.stroke(); c.setLineDash([]);
   }
   function flap(c, hx, hy, dirx, len, ang, up) {
     var ex = hx + dirx * len * Math.cos(ang), ey = hy + (up ? -1 : 1) * len * Math.sin(ang);
     c.beginPath(); c.moveTo(hx, hy); c.lineTo(ex, ey); c.stroke();
   }
-  function drawHeart(dt) {
-    var c = ctx;
-    c.clearRect(0, 0, W, H);
-    var bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#1C2038'); bg.addColorStop(1, '#14172A');
-    c.fillStyle = bg; c.fillRect(0, 0, W, H);
-    var as = atrSq(), vs = ventSq(), breathe = auto ? 0 : Math.sin(clock * 2.2) * 0.006;
-    var pw = PW * bw;
-    // blood vessels (behind the muscle)
-    drawPipe(c, ART[0], 0, pw); drawPipe(c, ART[1], 1, pw);
-    drawPipe(c, VEIN[0], 0, pw); drawPipe(c, VEIN[1], 1, pw);
-    // muscle: the two pumps share one thick wall
-    var mg = c.createLinearGradient(0, by + bh * .45, 0, by + bh);
-    mg.addColorStop(0, '#F09AA0'); mg.addColorStop(1, '#D9606C');
-    c.save();
-    var sv = 1 - 0.05 * vs + breathe, cx0 = bx + .5 * bw, cy0 = by + .55 * bh;
-    c.translate(cx0, cy0); c.scale(sv, sv); c.translate(-cx0, -cy0);
-    var P = function (x, y) { return [bx + x * bw, by + y * bh]; };
+  function heartOutline(c, P) {
     c.beginPath();
     var a = P(.03, .49), b = P(.97, .49); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]);
     var c1 = P(.99, .80), c2 = P(.80, .96), ap = P(.60, .995); c.bezierCurveTo(c1[0], c1[1], c2[0], c2[1], ap[0], ap[1]);
     var c3 = P(.38, .975), c4 = P(.02, .84); c.bezierCurveTo(c3[0], c3[1], c4[0], c4[1], a[0], a[1]); c.closePath();
-    c.fillStyle = mg; c.fill(); c.strokeStyle = '#7E2534'; c.lineWidth = 2.5; c.stroke();
+  }
+  function drawHeart(dt) {
+    var c = ctx;
+    c.clearRect(0, 0, W, H);
+    bpSheet(c, W, H);
+    var as = atrSq(), vs = ventSq(), breathe = auto ? 0 : Math.sin(clock * 2.2) * 0.006;
+    var pw = PW * bw, s;
+    // blood vessels (behind the muscle)
+    drawPipe(c, ART[0], 0, pw); drawPipe(c, ART[1], 1, pw);
+    drawPipe(c, VEIN[0], 0, pw); drawPipe(c, VEIN[1], 1, pw);
+    // muscle, cut through and hatched: the two pumps share one thick wall
+    c.save();
+    var sv = 1 - 0.05 * vs + breathe, cx0 = bx + .5 * bw, cy0 = by + .55 * bh;
+    c.translate(cx0, cy0); c.scale(sv, sv); c.translate(-cx0, -cy0);
+    var P = function (x, y) { return [bx + x * bw, by + y * bh]; };
+    heartOutline(c, P); c.fillStyle = BP.bg; c.fill();
+    heartOutline(c, P); bpHatch(c, 7, BP.faint);
+    heartOutline(c, P); c.strokeStyle = BP.line; c.lineWidth = 1.8; c.stroke();
     c.restore();
-    // atria muscle
-    for (var s = 0; s < 2; s++) {
+    // atria muscle (thinner walls, lighter hatching)
+    for (s = 0; s < 2; s++) {
       var sh = rectPx(scaleRect(ATR[s], 1 - 0.09 * as + breathe, .85));
-      c.fillStyle = '#F2A3A8'; rr(c, sh.x - .03 * bw, sh.y - .03 * bh, sh.w + .06 * bw, sh.h + .05 * bh, .07 * bw); c.fill();
-      c.strokeStyle = '#7E2534'; c.lineWidth = 2.5; c.stroke();
+      rr(c, sh.x - .03 * bw, sh.y - .03 * bh, sh.w + .06 * bw, sh.h + .05 * bh, .07 * bw); c.fillStyle = BP.bg; c.fill();
+      rr(c, sh.x - .03 * bw, sh.y - .03 * bh, sh.w + .06 * bw, sh.h + .05 * bh, .07 * bw); bpHatch(c, 11, BP.faint);
+      rr(c, sh.x - .03 * bw, sh.y - .03 * bh, sh.w + .06 * bw, sh.h + .05 * bh, .07 * bw); c.strokeStyle = BP.line; c.lineWidth = 1.6; c.stroke();
     }
     // cavities squeeze smaller than the muscle around them
     cavA = [scaleRect(ATR[0], 1 - 0.22 * as + breathe, .85), scaleRect(ATR[1], 1 - 0.22 * as + breathe, .85)];
     cavV = [scaleRect(VEN[0], 1 - 0.30 * vs + breathe, .12), scaleRect(VEN[1], 1 - 0.30 * vs + breathe, .12)];
+    function cavPath(s, which) {
+      if (which === 'a') { var ra = rectPx(cavA[s]); rr(c, ra.x, ra.y, ra.w, ra.h, Math.min(ra.w, ra.h) * .35); }
+      else { var rv = rectPx(cavV[s]); rr4(c, rv.x, rv.y, rv.w, rv.h, s ? [rv.w * .12, rv.w * .2, rv.w * .45, rv.w * .7] : [rv.w * .12, rv.w * .12, rv.w * .7, rv.w * .4]); }
+    }
+    var necks = [];
     for (s = 0; s < 2; s++) {
-      c.fillStyle = CAV[s];
-      // necks: openings between rooms and into the pipes
+      // openings between rooms, and into the pipes
       var n1 = U([AVX[s][0], cavA[s].y + cavA[s].h - .01]), n2 = U([AVX[s][1], cavV[s].y + .01]);
-      c.fillRect(n1[0], n1[1], n2[0] - n1[0], n2[1] - n1[1]);
       var e1 = U([EXX[s][0], EXY[s] - .03]), e2 = U([EXX[s][1], cavV[s].y + .015]);
-      c.fillStyle = PIPE_IN[s]; c.fillRect(e1[0], e1[1], e2[0] - e1[0], e2[1] - e1[1]);
       var vx0 = s ? cavA[s].x + cavA[s].w - .01 : .07, vx1 = s ? .93 : cavA[s].x + .01;
       var v1 = U([vx0, .34 - PW / 2]), v2 = U([vx1, .34 + PW / 2]);
-      c.fillRect(Math.min(v1[0], v2[0]), v1[1], Math.abs(v2[0] - v1[0]), v2[1] - v1[1]);
-      c.fillStyle = CAV[s];
-      var ra = rectPx(cavA[s]); rr(c, ra.x, ra.y, ra.w, ra.h, Math.min(ra.w, ra.h) * .35); c.fill();
-      var rv = rectPx(cavV[s]);
-      rr4(c, rv.x, rv.y, rv.w, rv.h, s ? [rv.w * .12, rv.w * .2, rv.w * .45, rv.w * .7] : [rv.w * .12, rv.w * .12, rv.w * .7, rv.w * .4]); c.fill();
+      necks.push([n1[0], n1[1], n2[0] - n1[0], n2[1] - n1[1], 1], [e1[0], e1[1], e2[0] - e1[0], e2[1] - e1[1], 1], [Math.min(v1[0], v2[0]), v1[1], Math.abs(v2[0] - v1[0]), v2[1] - v1[1], 0]);
+      c.fillStyle = BP.deep; cavPath(s, 'a'); c.fill(); cavPath(s, 'v'); c.fill();
+      c.strokeStyle = BP.line; c.lineWidth = 1.3; cavPath(s, 'a'); c.stroke(); cavPath(s, 'v'); c.stroke();
     }
+    // cut the openings through the walls, then draw their side walls
+    c.fillStyle = BP.deep;
+    necks.forEach(function (n) { c.fillRect(n[0], n[1], n[2], n[3]); });
+    c.strokeStyle = BP.line; c.lineWidth = 1.3;
+    necks.forEach(function (n) {
+      c.beginPath();
+      if (n[4]) { c.moveTo(n[0], n[1]); c.lineTo(n[0], n[1] + n[3]); c.moveTo(n[0] + n[2], n[1]); c.lineTo(n[0] + n[2], n[1] + n[3]); }
+      else { c.moveTo(n[0], n[1]); c.lineTo(n[0] + n[2], n[1]); c.moveTo(n[0], n[1] + n[3]); c.lineTo(n[0] + n[2], n[1] + n[3]); }
+      c.stroke();
+    });
+    // septum centre line: the shared wall between the two pumps
+    var sp0 = U([.5, .5]), sp1 = U([.5, .985]);
+    bpLine(c, [sp0[0], sp0[1], sp1[0], sp1[1]], BP.dim, .8, DASHDOT);
     // blood cells
     var pr = Math.max(2.4, bw * 0.0125);
     parts.forEach(function (p) {
@@ -517,61 +728,76 @@
         q = U([r.x + r.w * (pad + (1 - 2 * pad) * p.u), r.y + r.h * (pad + (1 - 2 * pad) * p.v)]);
       }
       if (p.back > 0) {
-        c.strokeStyle = 'rgba(255,200,69,' + Math.min(1, p.back * 3) + ')'; c.lineWidth = 2;
+        c.strokeStyle = 'rgba(255,201,74,' + Math.min(1, p.back * 3) + ')'; c.lineWidth = 2;
         c.beginPath(); c.moveTo(q[0], q[1]); c.lineTo(q[0], q[1] + bh * .05); c.stroke();
       }
       c.fillStyle = CELL[p.side]; c.beginPath(); c.arc(q[0], q[1], pr, 0, 6.3); c.fill();
-      c.strokeStyle = p.back > 0 ? '#FFC845' : 'rgba(255,255,255,.25)'; c.lineWidth = p.back > 0 ? 1.6 : 1; c.stroke();
+      c.strokeStyle = p.back > 0 ? BP.amber : BP.deep; c.lineWidth = p.back > 0 ? 1.6 : 1; c.stroke();
     });
     // valves: one-way flaps
     var k = Math.min(1, dt * 30), avT = avOpen() ? 1 : 0, exT = exOpen() ? 1 : 0;
-    c.lineCap = 'round'; c.strokeStyle = '#FFF4EA'; c.lineWidth = Math.max(3, bw * .012);
+    c.lineCap = 'round'; c.lineWidth = Math.max(3, bw * .012);
     for (s = 0; s < 2; s++) {
       vo.av[s] += (avT - vo.av[s]) * (avT > vo.av[s] ? k * .45 : k);
       vo.ex[s] += (exT - vo.ex[s]) * (exT > vo.ex[s] ? k * .6 : k);
       var leaky = leak && s === 1;
       var h0 = U([AVX[s][0], AVY[s]]), h1 = U([AVX[s][1], AVY[s]]), L = (h1[0] - h0[0]) / 2 * (leaky ? .72 : .98);
       var closedA = leaky ? .35 : 0, aA = closedA + vo.av[s] * (1.25 - closedA);
-      c.strokeStyle = leaky ? '#FFC845' : '#FFF4EA';
+      c.strokeStyle = leaky ? BP.amber : BP.line;
       flap(c, h0[0], h0[1], 1, L, aA, false); flap(c, h1[0], h1[1], -1, L, aA, false);
-      c.strokeStyle = '#FFF4EA';
+      c.strokeStyle = BP.line;
       var e0 = U([EXX[s][0], EXY[s]]), e1b = U([EXX[s][1], EXY[s]]), Le = (e1b[0] - e0[0]) / 2 * .98, aE = vo.ex[s] * 1.25;
       flap(c, e0[0], e0[1], 1, Le, aE, true); flap(c, e1b[0], e1b[1], -1, Le, aE, true);
+      // hinge pins
+      c.fillStyle = BP.bg; c.lineWidth = 1.2;
+      [h0, h1, e0, e1b].forEach(function (h) { c.beginPath(); c.arc(h[0], h[1], 2.2, 0, 6.3); c.fill(); c.stroke(); });
+      c.lineWidth = Math.max(3, bw * .012);
     }
+    c.lineCap = 'butt';
     // backwards jet through the leaky valve
     if (leak && vs > .1) {
       var j = U([(AVX[1][0] + AVX[1][1]) / 2, AVY[1]]);
-      pill(c, '↑ backwards!', j[0], j[1] + bh * .1, 'center', '#3A2A06', '#FFC845', Math.max(9, Math.round(bw * .028)));
+      pill(c, '↑ backwards!', j[0], j[1] + bh * .1, 'center', '#2A1E02', BP.amber, Math.max(9, Math.round(bw * .028)));
     }
     // labels
     var fs = Math.max(8.5, Math.round(bw * .026));
-    c.font = '600 ' + fs + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center'; c.fillStyle = 'rgba(255,240,235,.75)';
-    var lab = function (r, t, bot) { var q = rectPx(r); c.fillText(t, q.x + q.w / 2, bot ? q.y + q.h - (t.indexOf('VENT') > 0 ? q.h * .12 : 5) : q.y + fs + 3); };
-    lab(cavA[0], 'R. ATRIUM', true); lab(cavA[1], 'L. ATRIUM', true); lab(cavV[0], 'R. VENTRICLE', true); lab(cavV[1], 'L. VENTRICLE', true);
-    var pf = Math.max(9, Math.round(bw * .027));
-    pill(c, '← to lungs', bx + .01 * bw, by + .065 * bh, 'left', '#E9E4F5', 'rgba(74,28,61,.92)', pf);
-    pill(c, 'to body →', bx + .99 * bw, by + .02 * bh, 'right', '#FFE1DC', 'rgba(122,22,34,.92)', pf);
-    pill(c, 'from body →', bx + .0 * bw, by + .265 * bh, 'left', '#E9E4F5', 'rgba(74,28,61,.92)', pf);
-    pill(c, '← from lungs', bx + 1 * bw, by + .265 * bh, 'right', '#FFE1DC', 'rgba(122,22,34,.92)', pf);
-    c.font = '700 ' + Math.max(10, Math.round(bw * .03)) + 'px "IBM Plex Mono", monospace'; c.textAlign = 'center';
-    c.fillStyle = '#C9A2D6'; c.fillText('RIGHT SIDE', bx + .26 * bw, H - 10);
-    c.fillStyle = '#FF8F84'; c.fillText('LEFT SIDE', bx + .74 * bw, H - 10);
+    var lab = function (r, t) { var q = rectPx(r); bpText(c, t, q.x + q.w / 2, q.y + q.h - (t.indexOf('VENT') > 0 ? q.h * .12 : 5), { size: fs, align: 'center', col: BP.line }); };
+    lab(cavA[0], 'R. ATRIUM'); lab(cavA[1], 'L. ATRIUM'); lab(cavV[0], 'R. VENTRICLE'); lab(cavV[1], 'L. VENTRICLE');
+    var pf = Math.max(9, Math.round(bw * .027)), lo = rgb(LO), hi = rgb(HI);
+    pill(c, '← to lungs', bx + .01 * bw, by + .065 * bh, 'left', lo, BP.deep, pf, lo);
+    pill(c, 'to body →', bx + .99 * bw, by + .02 * bh, 'right', hi, BP.deep, pf, hi);
+    pill(c, 'from body →', bx + .0 * bw, by + .265 * bh, 'left', lo, BP.deep, pf, lo);
+    pill(c, '← from lungs', bx + 1 * bw, by + .265 * bh, 'right', hi, BP.deep, pf, hi);
+    var bf = Math.max(10, Math.round(bw * .03));
+    bpText(c, 'RIGHT SIDE', bx + .26 * bw, H - 10, { size: bf, weight: 700, align: 'center', col: lo });
+    bpText(c, 'LEFT SIDE', bx + .74 * bw, H - 10, { size: bf, weight: 700, align: 'center', col: hi });
+    bpText(c, 'SEPTUM', bx + .5 * bw, H - 10, { size: Math.max(8, bf - 2), align: 'center', col: BP.dim });
+    bpCorners(c, bx - 4, by - 8, bw + 8, bh + 12);
     // tap hint
     if (!M[0]) {
       tapGlow += dt;
       var tp = U([.5, .72]), pulse = 1 + Math.sin(tapGlow * 4) * .06;
       c.save(); c.translate(tp[0], tp[1]); c.scale(pulse, pulse);
-      pill(c, tapCount ? 'Tap again! ' + tapCount + ' / 5' : '👆 Tap the heart', 0, 0, 'center', '#3A2A06', '#FFC845', Math.max(12, Math.round(bw * .04)));
+      pill(c, tapCount ? 'Tap again! ' + tapCount + ' / 5' : '👆 Tap the heart', 0, 0, 'center', '#2A1E02', BP.amber, Math.max(12, Math.round(bw * .04)));
       c.restore();
     }
     // side notes on wide screens
     if (W >= 640) {
       var lx = bx + bw + 30; c.textAlign = 'left';
-      c.font = '600 11px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.fillText('ONE BEAT', lx, by + 24);
+      bpText(c, 'ONE BEAT', lx, by + 24, { size: 11, col: BP.dim });
+      bpLine(c, [lx, by + 31, lx + 200, by + 31], BP.faint, 1);
       var steps = [['1  Top rooms squeeze', as > 0], ['2  Bottom rooms squeeze', vs > 0], ['    lub: top doors shut', vs > 0 && phase < .3], ['    dub: pipe doors shut', phase >= .45 && phase < .6], ['3  Everything fills up', !as && !vs]];
-      steps.forEach(function (st, i) { c.font = (st[1] ? '800 ' : '700 ') + '14px Nunito, sans-serif'; c.fillStyle = st[1] ? '#FFC845' : '#E9E4F5'; c.fillText(st[0], lx, by + 52 + i * 22); });
-      c.font = '700 13px Nunito, sans-serif'; c.fillStyle = '#9EA3C4';
+      steps.forEach(function (st, i) { c.font = (st[1] ? '800 ' : '700 ') + '14px Nunito, sans-serif'; c.fillStyle = st[1] ? BP.amber : BP.line; c.fillText(st[0], lx, by + 52 + i * 22); });
+      c.font = '700 13px Nunito, sans-serif'; c.fillStyle = BP.dim;
       ['The valves are the white flaps.', 'They only open one way.'].forEach(function (l, i) { c.fillText(l, lx, by + 52 + 5 * 22 + 14 + i * 19); });
+      var ky = by + 52 + 5 * 22 + 14 + 2 * 19 + 16;
+      bpText(c, 'KEY', lx, ky, { size: 11, col: BP.dim });
+      bpLine(c, [lx, ky + 7, lx + 200, ky + 7], BP.faint, 1);
+      [[lo, 'low on oxygen'], [hi, 'full of oxygen']].forEach(function (kk, i) {
+        var yy = ky + 26 + i * 20; c.fillStyle = kk[0]; c.beginPath(); c.arc(lx + 5, yy - 4, 5, 0, 6.3); c.fill();
+        c.font = '700 13px Nunito, sans-serif'; c.fillStyle = BP.line; c.fillText(kk[1], lx + 18, yy);
+      });
+      bpText(c, 'Hatched = muscle, cut through', lx, ky + 72, { size: 10.5, col: BP.dim });
     }
   }
 
@@ -612,28 +838,38 @@
     if (s < sL[0]) return 0; if (s < sL[1]) return (s - sL[0]) / (sL[1] - sL[0]);
     if (s < sB[0]) return 1; if (s < sB[1]) return 1 - (s - sB[0]) / (sB[1] - sB[0]); return 0;
   }
-  function dimCol(o) { return 'rgb(' + Math.round(70 + 40 * o) + ',' + Math.round(40 - 6 * o) + ',' + Math.round(72 - 30 * o) + ')'; }
-  function mixCol(o, a) { var r = Math.round(162 + (255 - 162) * o), g = Math.round(84 + (91 - 84) * o), b = Math.round(142 + (79 - 142) * o); return 'rgba(' + r + ',' + g + ',' + b + ',' + (a == null ? 1 : a) + ')'; }
+  function mixRGB(o) { return [0, 1, 2].map(function (i) { return Math.round(LO[i] + (HI[i] - LO[i]) * o); }); }
+  function mixCol(o, a) { return rgb(mixRGB(o), a); }
   function drawLoop(dt) {
     var c = lctx, G = buildLoop.geo; if (!G) return;
-    c.clearRect(0, 0, LW, LH); c.fillStyle = '#14172A'; c.fillRect(0, 0, LW, LH);
-    // lungs
-    c.fillStyle = 'rgba(240,150,170,.22)'; c.strokeStyle = 'rgba(240,150,170,.55)'; c.lineWidth = 1.5;
-    [-1, 1].forEach(function (sd) { c.beginPath(); c.ellipse(G.hx + sd * G.half * .3, G.Ty + 2, G.half * .26, 22, 0, 0, 6.3); c.fill(); c.stroke(); });
+    c.clearRect(0, 0, LW, LH); bpSheet(c, LW, LH);
+    // lungs: two lobes with their airways
+    [-1, 1].forEach(function (sd) {
+      var lx = G.hx + sd * G.half * .3, ly = G.Ty + 2, rx = G.half * .26;
+      c.beginPath(); c.ellipse(lx, ly, rx, 22, 0, 0, 6.3); c.fillStyle = BP.deep; c.fill();
+      c.beginPath(); c.ellipse(lx, ly, rx, 22, 0, 0, 6.3); bpHatch(c, 9, 'rgba(159,198,242,.18)');
+      c.beginPath(); c.ellipse(lx, ly, rx, 22, 0, 0, 6.3); c.strokeStyle = BP.line; c.lineWidth = 1.3; c.stroke();
+      bpLine(c, [lx - sd * rx * .9, ly - 12, lx - sd * rx * .2, ly, lx + sd * rx * .4, ly - 8], BP.dim, .8);
+      bpLine(c, [lx - sd * rx * .2, ly, lx + sd * rx * .3, ly + 10], BP.dim, .8);
+    });
     // body
     var run = exercise, bt = clock * (run ? 9 : 0), fx = G.hx, fy = G.By - 6;
-    c.strokeStyle = 'rgba(233,228,245,.35)'; c.lineWidth = 5; c.lineCap = 'round';
-    c.beginPath(); c.arc(fx, fy - 34, 8, 0, 6.3); c.stroke();
+    c.strokeStyle = BP.line; c.lineWidth = 2.2; c.lineCap = 'round';
+    c.fillStyle = BP.bg; c.beginPath(); c.arc(fx, fy - 34, 8, 0, 6.3); c.fill(); c.stroke();
     c.beginPath(); c.moveTo(fx, fy - 25); c.lineTo(fx + (run ? 3 : 0), fy + 2);
     c.moveTo(fx, fy - 18); c.lineTo(fx - 12 * Math.cos(bt), fy - 6 + (run ? 4 * Math.sin(bt) : 6));
     c.moveTo(fx, fy - 18); c.lineTo(fx + 12 * Math.cos(bt), fy - 6 - (run ? 4 * Math.sin(bt) : -6));
     c.moveTo(fx + (run ? 3 : 0), fy + 2); c.lineTo(fx - 10 * Math.sin(bt) - (run ? 0 : 5), fy + 22);
     c.moveTo(fx + (run ? 3 : 0), fy + 2); c.lineTo(fx + 10 * Math.sin(bt) + (run ? 0 : 5), fy + 22); c.stroke();
-    // the path, coloured by oxygen
-    c.lineWidth = 12; c.lineCap = 'round';
-    for (var i = 0; i < loopPts.length; i++) {
+    // the path: a tube, tinted by how much oxygen the blood carries
+    var i;
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    c.beginPath(); loopPts.forEach(function (p, k) { if (k) c.lineTo(p.x, p.y); else c.moveTo(p.x, p.y); }); c.closePath();
+    c.strokeStyle = BP.line; c.lineWidth = 15; c.stroke(); c.strokeStyle = BP.deep; c.lineWidth = 12; c.stroke();
+    c.lineCap = 'butt'; c.lineWidth = 12;
+    for (i = 0; i < loopPts.length; i++) {
       var a = loopPts[i], b = loopPts[(i + 1) % loopPts.length];
-      c.strokeStyle = dimCol(oxyAt(a.s)); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
+      c.strokeStyle = mixCol(oxyAt(a.s), .22); c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x, b.y); c.stroke();
     }
     // flow: dots pushed along in pulses
     var out = output(), tS = slow ? .3 : 1;
@@ -641,19 +877,19 @@
     var N = 34;
     for (i = 0; i < N; i++) {
       var s = ((i / N + flowOff) % 1 + 1) % 1, q = atS(s);
-      c.fillStyle = mixCol(oxyAt(s)); c.beginPath(); c.arc(q[0], q[1], 4, 0, 6.3); c.fill();
+      c.fillStyle = mixCol(oxyAt(s)); c.beginPath(); c.arc(q[0], q[1], 3.6, 0, 6.3); c.fill();
     }
     // arrows
-    c.fillStyle = 'rgba(233,228,245,.7)';
     [.08, .4, .58, .9].forEach(function (s) {
       var p = atS(s), p2 = atS(s + .01), ang = Math.atan2(p2[1] - p[1], p2[0] - p[0]);
-      c.save(); c.translate(p[0], p[1]); c.rotate(ang); c.beginPath(); c.moveTo(7, 0); c.lineTo(-4, -6); c.lineTo(-4, 6); c.closePath(); c.fill(); c.restore();
+      c.save(); c.translate(p[0], p[1]); c.rotate(ang); c.fillStyle = BP.line; c.strokeStyle = BP.deep; c.lineWidth = 1.5;
+      c.beginPath(); c.moveTo(7, 0); c.lineTo(-4, -6); c.lineTo(-4, 6); c.closePath(); c.stroke(); c.fill(); c.restore();
     });
-    // the heart in the middle: two pumps
+    // the heart in the middle: two pumps side by side
     var hs = 1 + .08 * ventSq();
-    c.save(); c.translate(G.hx, G.hy); c.scale(hs, hs);
-    c.fillStyle = '#7A3A6A'; c.beginPath(); c.moveTo(0, -12); c.bezierCurveTo(-10, -26, -34, -16, -26, 2); c.lineTo(0, 24); c.closePath(); c.fill();
-    c.fillStyle = '#E2453D'; c.beginPath(); c.moveTo(0, -12); c.bezierCurveTo(10, -26, 34, -16, 26, 2); c.lineTo(0, 24); c.closePath(); c.fill();
+    c.save(); c.translate(G.hx, G.hy); c.scale(hs, hs); c.lineWidth = 1.4; c.strokeStyle = BP.line; c.lineJoin = 'round';
+    c.fillStyle = rgb(LO); c.beginPath(); c.moveTo(0, -12); c.bezierCurveTo(-10, -26, -34, -16, -26, 2); c.lineTo(0, 24); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = rgb(HI); c.beginPath(); c.moveTo(0, -12); c.bezierCurveTo(10, -26, 34, -16, 26, 2); c.lineTo(0, 24); c.closePath(); c.fill(); c.stroke();
     c.restore();
     // gold cell
     if (gold.on) {
@@ -669,42 +905,47 @@
       if (gold.on) {
         var g = atS(gold.s);
         c.fillStyle = mixCol(oxyAt(gold.s)); c.beginPath(); c.arc(g[0], g[1], 7, 0, 6.3); c.fill();
-        c.strokeStyle = '#FFC845'; c.lineWidth = 3; c.beginPath(); c.arc(g[0], g[1], 10 + Math.sin(clock * 6) * 1.5, 0, 6.3); c.stroke();
+        c.strokeStyle = BP.amber; c.lineWidth = 2.5; c.beginPath(); c.arc(g[0], g[1], 10 + Math.sin(clock * 6) * 1.5, 0, 6.3); c.stroke();
       }
     }
     // labels
-    c.textAlign = 'center'; c.font = '700 11px "IBM Plex Mono", monospace';
-    c.fillStyle = '#F2B8C6'; c.fillText('LUNGS', G.hx, 16);
-    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('blood picks up oxygen', G.hx, 31);
-    c.font = '700 11px "IBM Plex Mono", monospace'; c.fillStyle = '#C9C4E0';
-    c.fillText(exercise ? 'BODY · RUNNING' : 'BODY', G.hx, LH - 22);
-    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#E9E4F5'; c.fillText('muscles take the oxygen', G.hx, LH - 7);
-    c.font = '600 10px "IBM Plex Mono", monospace'; c.fillStyle = '#9EA3C4'; c.textAlign = 'left';
-    c.fillText('RIGHT', 8, G.hy + 4); c.textAlign = 'right'; c.fillText('LEFT', LW - 8, G.hy + 4);
+    bpText(c, 'LUNGS', G.hx, 18, { size: 11, weight: 700, align: 'center', col: BP.line });
+    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#C6DCF5'; c.textAlign = 'center'; c.fillText('blood picks up oxygen', G.hx, 33);
+    bpText(c, exercise ? 'BODY · RUNNING' : 'BODY', G.hx, LH - 22, { size: 11, weight: 700, align: 'center', col: BP.line });
+    c.font = '700 12.5px Nunito, sans-serif'; c.fillStyle = '#C6DCF5'; c.textAlign = 'center'; c.fillText('muscles take the oxygen', G.hx, LH - 8);
+    bpText(c, 'RIGHT', 12, G.hy + 4, { size: 10, col: rgb(LO) });
+    bpText(c, 'LEFT', LW - 12, G.hy + 4, { size: 10, col: rgb(HI), align: 'right' });
   }
 
   // ===================== Gauges =====================
   function polar(cx, cy, r, deg) { var a = (deg - 90) * Math.PI / 180; return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; }
   function arc(cx, cy, r, d0, d1) { var p0 = polar(cx, cy, r, d0), p1 = polar(cx, cy, r, d1); return 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 ' + (d1 - d0 > 180 ? 1 : 0) + ' 1 ' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
-  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark) {
-    var el = document.getElementById(id), d0 = -125, d1 = 125;
-    var html = '<svg viewBox="0 0 100 74" aria-hidden="true"><path d="' + arc(50, 52, 38, d0, d1) + '" fill="none" stroke="#3B4268" stroke-width="7" stroke-linecap="round"/>';
-    if (zone) html += '<path d="' + arc(50, 52, 38, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + zoneCol + '" stroke-width="7"/>';
-    html += '<path class="fill" d="" fill="none" stroke="#E9E4F5" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
-    for (var i = 0; i <= 10; i++) { var dd = d0 + (d1 - d0) * i / 10, a1 = polar(50, 52, 29, dd), a2 = polar(50, 52, i % 5 ? 32 : 26, dd); html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="#9EA3C4" stroke-width="1.2"/>'; }
-    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="#6FD3A8" stroke-width="2.5" stroke-linecap="round"/>'; }
-    html += '<g class="needle"><line x1="50" y1="52" x2="50" y2="20" stroke="' + (needleCol || '#FF8C42') + '" stroke-width="3" stroke-linecap="round"/></g><circle cx="50" cy="52" r="5" fill="#E9E4F5" stroke="#191C30" stroke-width="2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
+  function makeGauge(id, label, max, zone, zoneCol, needleCol, mark, fmtTick) {
+    var el = document.getElementById(id), d0 = -125, d1 = 125, nc = needleCol || BP.amber;
+    var html = '<svg viewBox="0 0 100 74" aria-hidden="true">';
+    html += '<path d="' + arc(50, 52, 40, d0, d1) + '" fill="none" stroke="' + BP.line + '" stroke-width="1"/>';
+    html += '<path d="' + arc(50, 52, 33, d0, d1) + '" fill="none" stroke="' + BP.faint + '" stroke-width=".7"/>';
+    if (zone) html += '<path d="' + arc(50, 52, 36.5, d0 + (d1 - d0) * zone[0], d0 + (d1 - d0) * zone[1]) + '" fill="none" stroke="' + (zoneCol || BP.warn) + '" stroke-opacity=".45" stroke-width="6.5"/>';
+    html += '<path class="fill" d="" fill="none" stroke="' + nc + '" stroke-opacity=".6" stroke-width="3"/>';
+    for (var i = 0; i <= 20; i++) {
+      var dd = d0 + (d1 - d0) * i / 20, maj = i % 5 === 0, a1 = polar(50, 52, 40, dd), a2 = polar(50, 52, maj ? 33 : 36.5, dd);
+      html += '<line x1="' + a1[0].toFixed(1) + '" y1="' + a1[1].toFixed(1) + '" x2="' + a2[0].toFixed(1) + '" y2="' + a2[1].toFixed(1) + '" stroke="' + (maj ? BP.line : BP.dim) + '" stroke-width="' + (maj ? 1.1 : 0.7) + '"/>';
+      if (i % 10 === 0) { var tp = polar(50, 52, 25, dd), tv = max * i / 20; html += '<text x="' + tp[0].toFixed(1) + '" y="' + (tp[1] + 2.4).toFixed(1) + '" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="6.5" fill="' + BP.dim + '">' + (fmtTick ? fmtTick(tv) : tv) + '</text>'; }
+    }
+    if (mark != null) { var md = d0 + (d1 - d0) * mark, m1 = polar(50, 52, 31, md), m2 = polar(50, 52, 45, md); html += '<line x1="' + m1[0].toFixed(1) + '" y1="' + m1[1].toFixed(1) + '" x2="' + m2[0].toFixed(1) + '" y2="' + m2[1].toFixed(1) + '" stroke="' + BP.ok + '" stroke-width="2" stroke-linecap="round"/>'; }
+    html += '<g class="needle"><line x1="50" y1="60" x2="50" y2="14" stroke="' + nc + '" stroke-width="1.6" stroke-linecap="round"/></g><circle cx="50" cy="52" r="3.5" fill="' + BP.bg + '" stroke="' + BP.line + '" stroke-width="1.2"/></svg><div class="g-val">0</div><div class="g-lbl">' + label + '</div>';
     el.innerHTML = html;
     return { needle: el.querySelector('.needle'), val: el.querySelector('.g-val'), fill: el.querySelector('.fill'), max: max, d0: d0, d1: d1, shown: 0 };
   }
-  var gRate = makeGauge('gRate', 'BEATS/MIN', 180, [70 / 180, 110 / 180], 'rgba(111,211,168,.35)', '#FF4D3D');
-  var gPump = makeGauge('gPump', 'LITRES/MIN', 12, null, null, '#FF8C42');
-  var gOx = makeGauge('gOx', 'OXYGEN', 150, null, null, '#FFC845', 100 / 150);
+  // green band: a typical resting heart rate for a child of 7 to 12 is roughly 70 to 110 beats a minute
+  var gRate = makeGauge('gRate', 'BEATS/MIN', 180, [70 / 180, 110 / 180], BP.ok, BP.warn);
+  var gPump = makeGauge('gPump', 'LITRES/MIN', 12, null, null, BP.amber);
+  var gOx = makeGauge('gOx', 'OXYGEN', 150, null, null, BP.air, 100 / 150, function (t) { return t + '%'; });
   function setGauge(g, v, fmt, dt) {
     g.shown += (v - g.shown) * Math.min(1, dt * 8);
     var f = Math.max(0, Math.min(1, g.shown / g.max)), deg = g.d0 + (g.d1 - g.d0) * f;
     g.needle.setAttribute('transform', 'rotate(' + deg.toFixed(1) + ' 50 52)');
-    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 38, g.d0, deg) : '');
+    g.fill.setAttribute('d', f > 0.005 ? arc(50, 52, 36.5, g.d0, deg) : '');
     g.val.textContent = fmt(g.shown);
   }
 
@@ -748,8 +989,8 @@
     var k = lastEvent.kind, recent = clock - lastEvent.t < 7, ox = oxygen();
     if (!M[0]) return say(tapCount ? 'Squeeze! The top rooms push blood down, then the big bottom rooms push it out. <b>Tap again</b> (' + tapCount + ' of 5).' : 'This is a heart, like the one in your chest. It\'s a pump made of muscle. <b>Tap it</b> to make it squeeze.');
     if (recent && k === 'started') return say('Now it beats by itself, just like yours. The white flaps are <b>valves</b>: doors that only open one way. Watch them snap shut on every beat. That snap is the <b>lub-dub</b> you can hear.');
-    if (recent && k === 'lungs') return say('In the <b>lungs</b> the blood picks up oxygen from the air you breathe in, and turns <b>bright red</b>.');
-    if (recent && k === 'body') return say('Your body takes the oxygen, so the blood turns a <b>darker red</b>. We colour it purple so you can see it. Real blood is always red, never blue.');
+    if (recent && k === 'lungs') return say('In the <b>lungs</b> the blood picks up oxygen from the air you breathe in, and turns <b>bright red</b>. On the drawing it goes from blue to red.');
+    if (recent && k === 'body') return say('Your body takes the oxygen, so the blood turns a <b>darker red</b>. On this drawing we colour it <b>blue</b> so you can see it. Real blood is always red, never blue.');
     if (recent && k === 'loop') return say('All the way round! It went through the heart <b>twice</b>: once to the lungs, once to the body. That\'s why your heart is two pumps side by side.');
     if (recent && k === 'fixed') return say('Valve fixed. Every drop goes the right way again, and the body gets enough oxygen.');
     if (gold.on) return say('Follow the cell with the <b>gold ring</b>. Where does it go after the right side of the heart?');
