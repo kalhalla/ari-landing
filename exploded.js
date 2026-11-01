@@ -176,7 +176,7 @@
           c.fillStyle = BP.deep; c.strokeStyle = col; c.lineWidth = 1.2; c.beginPath(); c.arc(bx, it.ly, L.bo ? 9 : 10, 0, 6.3); c.fill(); c.stroke();
           kit.text(c, String(it.p.no), bx, it.ly + 3.5, { align: 'center', size: 10, col: col, weight: 700 });
           if (!L.bo) kit.text(c, it.p.name.toUpperCase(), bx + 15, it.ly + 3.5, { size: W < 420 ? 9.5 : 10.5, col: col });
-          if (it.p.sub && !L.bo) kit.text(c, '(' + it.p.sub.toUpperCase() + ')', bx + 15, it.ly + 16, { size: W < 420 ? 8 : 9, col: on ? BP.amber : BP.dim, weight: 500 });
+          if (it.p.sub && !L.bo) { var st = '(' + it.p.sub.toUpperCase() + ')', ss = W < 420 ? 8 : 9; c.font = '500 ' + ss + 'px ' + MONO; if (bx + 15 + c.measureText(st).width < W - 6) kit.text(c, st, bx + 15, it.ly + 16, { size: ss, col: on ? BP.amber : BP.dim, weight: 500 }); }
           hits.push({ p: it.p, x0: bx - 12, x1: L.bo ? bx + 12 : W, y0: it.ly - 13, y1: it.ly + (it.p.sub ? 20 : 13), label: true });
         });
         c.globalAlpha = 1;
