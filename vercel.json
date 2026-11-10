@@ -11,6 +11,16 @@
       "permanent": false
     },
     {
+      "source": "/join",
+      "destination": "/join.html?utm_source=instagram&utm_medium=social&utm_content=join",
+      "permanent": false
+    },
+    {
+      "source": "/rocket",
+      "destination": "/rocket.html?utm_source=instagram&utm_medium=social&utm_content=rocket",
+      "permanent": false
+    },
+    {
       "source": "/solar",
       "destination": "/solar.html?utm_source=instagram&utm_medium=social&utm_content=solar",
       "permanent": false
