@@ -1,0 +1,15 @@
+# Short links. Mirrors vercel.json so both hosts behave the same during the move.
+# Home page: html_handling is "none", so serve index.html at / explicitly.
+/ /index.html 200
+/ig /?utm_source=instagram&utm_medium=social&utm_content=bio 302
+/fb /solar.html?utm_source=facebook&utm_medium=social&utm_content=group 302
+/join /join.html?utm_source=instagram&utm_medium=social&utm_content=join 302
+/rocket /rocket.html?utm_source=instagram&utm_medium=social&utm_content=rocket 302
+/solar /solar.html?utm_source=instagram&utm_medium=social&utm_content=solar 302
+/drone /drone.html?utm_source=instagram&utm_medium=social&utm_content=drone 302
+/touch /touch.html?utm_source=instagram&utm_medium=social&utm_content=touch 302
+/f1 /f1.html?utm_source=instagram&utm_medium=social&utm_content=f1 302
+/orbit /orbit.html?utm_source=instagram&utm_medium=social&utm_content=orbit 302
+/speaker /speaker.html?utm_source=instagram&utm_medium=social&utm_content=speaker 302
+/heart /heart.html?utm_source=instagram&utm_medium=social&utm_content=heart 302
+/all /machines.html?utm_source=instagram&utm_medium=social&utm_content=bio_all 302

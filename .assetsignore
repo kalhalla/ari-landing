@@ -1,0 +1,10 @@
+.git
+.gitignore
+.assetsignore
+README.md
+vercel.json
+wrangler.jsonc
+node_modules
+.wrangler
+package.json
+package-lock.json
