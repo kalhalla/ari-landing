@@ -142,9 +142,9 @@
         '<span class="ariw-topic">Matches ' + m.topic + '</span>' +
         '<p>Your ' + CONFIG.freeMachines + ' free machines are used up. Join to open all <b>' + TOTAL + ' machines</b>, and every new one we add.</p>' +
         '<p>Each machine is matched to a science topic your child meets at school in Years 3 to 6.</p>' +
-        '<a class="ariw-opt main" data-plan="monthly" href="' + payLink(CONFIG.monthlyLink, id) + '"><strong>' + CONFIG.monthlyPrice + ' a month</strong><span>Cancel any time.</span></a>' +
-        '<a class="ariw-opt" data-plan="lifetime" href="' + payLink(CONFIG.lifetimeLink, id) + '"><strong>' + CONFIG.lifetimePrice + ' once, founding family</strong><span>Pay once, keep Ari for good. First ' + CONFIG.lifetimeCap + ' families only.</span></a>' +
-        '<div class="ariw-foot"><a href="/join.html">What your child learns</a> · <a href="/">Back to the free machine</a></div>' +
+        '<a class="ariw-opt main" data-plan="monthly" href="' + payLink(CONFIG.monthlyLink, id) + '"><strong>' + CONFIG.monthlyPrice + ' a month</strong><span>Cancel any time. 14-day refund.</span></a>' +
+        '<a class="ariw-opt" data-plan="lifetime" href="' + payLink(CONFIG.lifetimeLink, id) + '"><strong>' + CONFIG.lifetimePrice + ' once, founding family</strong><span>Pay once, keep Ari for good. First ' + CONFIG.lifetimeCap + ' families only. 14-day refund.</span></a>' +
+        '<div class="ariw-foot"><a href="/join.html">What your child learns</a> · <a href="/terms.html">Terms</a> · <a href="/">Back to the free machine</a></div>' +
       '</div>';
 
     var mount = function () {
