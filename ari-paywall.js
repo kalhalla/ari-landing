@@ -20,8 +20,8 @@
   'use strict';
 
   var CONFIG = {
-    monthlyLink: '',            // Stripe Payment Link: £5 a month
-    lifetimeLink: '',           // Stripe Payment Link: £49 once (limit it to 50 payments in Stripe)
+    monthlyLink: 'https://buy.stripe.com/6oUaEZ2Dr7SG79vaYN4gg01',   // Stripe Payment Link: £5 a month
+    lifetimeLink: 'https://buy.stripe.com/6oU7sN5PDeh42Tf8QF4gg00',  // Stripe Payment Link: £49 once, capped at 50 in Stripe
     testMonthlyLink: 'https://buy.stripe.com/test_cNidRbdhz7yc5GBa8Yfbq02',    // sandbox only
     testLifetimeLink: 'https://buy.stripe.com/test_eVqaEZ0uN4m08SN6WMfbq03',   // sandbox only
     monthlyPrice: '£5',
