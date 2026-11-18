@@ -7,7 +7,10 @@
    1. Create two Stripe Payment Links and paste them below.
    2. In each link's "After payment" setting, redirect to:
       https://learnwithari.co.uk/welcome.html?key=<unlockKey>
-   Preview it without Stripe by adding ?paywall=test to any machine URL.
+   Rehearse it before going live by adding ?paywall=test to any machine URL,
+   or ?paywall=test&wall=1 to see the wall straight away. In test mode the
+   buttons open Stripe's sandbox checkout (testMonthlyLink, testLifetimeLink),
+   which takes the test card 4242 4242 4242 4242 and no real money.
 
    This is not real access control. The key lives in this file, so anyone
    determined can get past it. It is enough to find the first paying families;
@@ -19,6 +22,8 @@
   var CONFIG = {
     monthlyLink: '',            // Stripe Payment Link: £5 a month
     lifetimeLink: '',           // Stripe Payment Link: £49 once (limit it to 50 payments in Stripe)
+    testMonthlyLink: 'https://buy.stripe.com/test_cNidRbdhz7yc5GBa8Yfbq02',    // sandbox only
+    testLifetimeLink: 'https://buy.stripe.com/test_eVqaEZ0uN4m08SN6WMfbq03',   // sandbox only
     monthlyPrice: '£5',
     lifetimePrice: '£49',
     lifetimeCap: 50,
@@ -49,7 +54,12 @@
 
   var params = new URLSearchParams(window.location.search);
   var testMode = params.get('paywall') === 'test';
+  var forceWall = testMode && params.get('wall') === '1';
   var configured = !!(CONFIG.monthlyLink && CONFIG.lifetimeLink);
+  // The links the buttons use: sandbox ones in test mode, the real ones otherwise.
+  var LINKS = testMode
+    ? { monthly: CONFIG.testMonthlyLink, lifetime: CONFIG.testLifetimeLink }
+    : { monthly: CONFIG.monthlyLink, lifetime: CONFIG.lifetimeLink };
 
   function isMember() { return store.get('ari_member') === '1'; }
 
@@ -76,6 +86,8 @@
   // Public hooks for welcome.html and join.html
   window.AriPaywall = {
     config: CONFIG,
+    links: LINKS,
+    testMode: testMode,
     machines: MACHINES,
     total: TOTAL,
     isMember: isMember,
@@ -89,6 +101,7 @@
   var id = machineId();
   if (!id) return;                         // not a metered machine page
   if (!configured && !testMode) return;    // wall is switched off
+  if (forceWall) { showWall(id); return; } // rehearsal: show the wall whatever has been played
   if (isMember()) return;
 
   var list = played();
@@ -137,13 +150,13 @@
     back.setAttribute('aria-labelledby', 'ariw-title');
     back.innerHTML =
       '<div class="ariw">' +
-        '<div class="ariw-eye">One for the grown-up</div>' +
+        '<div class="ariw-eye">One for the grown-up' + (testMode ? ' · TEST MODE, no real money' : '') + '</div>' +
         '<h2 id="ariw-title">Unlock ' + m.name + ', and every other machine</h2>' +
         '<span class="ariw-topic">Matches ' + m.topic + '</span>' +
         '<p>Your ' + CONFIG.freeMachines + ' free machines are used up. Join to open all <b>' + TOTAL + ' machines</b>, and every new one we add.</p>' +
         '<p>Each machine is matched to a science topic your child meets at school in Years 3 to 6.</p>' +
-        '<a class="ariw-opt main" data-plan="monthly" href="' + payLink(CONFIG.monthlyLink, id) + '"><strong>' + CONFIG.monthlyPrice + ' a month</strong><span>Cancel any time. 14-day refund.</span></a>' +
-        '<a class="ariw-opt" data-plan="lifetime" href="' + payLink(CONFIG.lifetimeLink, id) + '"><strong>' + CONFIG.lifetimePrice + ' once, founding family</strong><span>Pay once, keep Ari for good. First ' + CONFIG.lifetimeCap + ' families only. 14-day refund.</span></a>' +
+        '<a class="ariw-opt main" data-plan="monthly" href="' + payLink(LINKS.monthly, id) + '"><strong>' + CONFIG.monthlyPrice + ' a month</strong><span>Cancel any time. 14-day refund.</span></a>' +
+        '<a class="ariw-opt" data-plan="lifetime" href="' + payLink(LINKS.lifetime, id) + '"><strong>' + CONFIG.lifetimePrice + ' once, founding family</strong><span>Pay once, keep Ari for good. First ' + CONFIG.lifetimeCap + ' families only. 14-day refund.</span></a>' +
         '<div class="ariw-foot"><a href="/join.html">What your child learns</a> · <a href="/terms.html">Terms</a> · <a href="/">Back to the free machine</a></div>' +
       '</div>';
 

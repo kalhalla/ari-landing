@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Ari – How does a drone fly with no wings?</title>
-  <meta name="description" content="Take off, turn round and land a drone, then find out why two of its propellers spin backwards. Playable science for children aged 7–12.">
+  <meta name="description" content="Take off, turn round and land a drone, then find out why two of its propellers spin backwards. Playable science for children aged 7–11.">
   <meta property="og:title" content="How does a drone fly with no wings?">
   <meta property="og:description" content="Fly it, land it, then make all four propellers spin the same way and see what happens.">
   <meta name="theme-color" content="#FFF8F3">
@@ -357,6 +357,53 @@
       .sheet { grid-template-columns: 1fr 1fr 1fr; }
     }
 </style>
+<style>
+  /* ===== Case file: spot the problem, investigate, catch Ari out ===== */
+  .case-flag { display: flex; gap: 12px; align-items: center; background: white; border: 1.5px solid var(--peach-warm); border-left: 6px solid var(--orange-dark); border-radius: 12px; padding: 12px 14px; margin: 0 0 16px; color: var(--brown-mid); font-size: 15.5px; line-height: 1.45; text-decoration: none; }
+  .case-flag b { color: var(--ink); }
+  .case-flag .go { margin-left: auto; white-space: nowrap; font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--orange-dark); }
+  .case { margin: 30px 0 8px; }
+  .case h2 { font-family: 'Fredoka', sans-serif; font-size: clamp(24px, 5.5vw, 32px); color: var(--ink); margin: 2px 0 6px; }
+  .case > p { color: var(--brown-mid); font-size: 16px; line-height: 1.5; max-width: 720px; }
+  .case .report { margin: 12px 0 14px; background: var(--peach-mid); border-radius: 14px; padding: 12px 16px; font-size: 17px; color: var(--ink); line-height: 1.45; max-width: 720px; }
+  .case .report span { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .08em; color: var(--brown-mid); margin-bottom: 3px; }
+  .case-steps { display: grid; gap: 10px; }
+  .cstep { background: white; border-radius: 18px; padding: 16px; box-shadow: 0 6px 18px rgba(120,80,50,.07); color: var(--brown-mid); transition: opacity .2s; }
+  .cstep.locked { opacity: .45; }
+  .cstep.locked .copts, .cstep.locked .cbtn, .cstep.locked .pick { pointer-events: none; }
+  .cstep .k { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--brown-light); }
+  .cstep.done .k { color: var(--mint-dark); }
+  .cstep h3 { font-family: 'Fredoka', sans-serif; font-size: 21px; color: var(--ink); margin: 2px 0 4px; }
+  .cstep p { font-size: 15px; line-height: 1.5; }
+  .cstep p b { color: var(--ink); }
+  .copts { display: grid; gap: 8px; margin-top: 10px; }
+  .copt { text-align: left; font: inherit; font-size: 15.5px; font-weight: 700; color: var(--ink); background: var(--peach-light); border: 1.5px solid var(--peach-warm); border-radius: 12px; padding: 12px 14px; min-height: 48px; cursor: pointer; line-height: 1.4; }
+  .copt:hover { border-color: var(--orange); }
+  .copt:focus-visible, .cbtn:focus-visible, .pick button:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+  .copt.right { background: #E4F6EE; border-color: var(--mint-dark); }
+  .copt.wrong { background: #FFECE8; border-color: var(--hot); }
+  .copt[disabled] { cursor: default; }
+  .cbtn { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 15.5px; border: none; border-radius: 999px; padding: 12px 18px; min-height: 48px; background: var(--orange-dark); color: white; cursor: pointer; margin-top: 10px; }
+  .cbtn.ghost { background: transparent; color: var(--orange-dark); border: 1.5px solid var(--orange-dark); }
+  .cfb { margin-top: 10px; font-size: 15px; line-height: 1.5; border-radius: 12px; padding: 10px 12px; background: var(--peach-light); color: var(--brown-dark); }
+  .cfb:empty { display: none; }
+  .cfb.ok { background: #E4F6EE; color: #17483A; }
+  .cfb b { color: inherit; }
+  .clues { margin: 8px 0 0 18px; font-size: 15px; line-height: 1.6; }
+  .pick { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; position: relative; padding: 22px 0; }
+  .pick::before { content: 'FRONT ▲'; position: absolute; top: 2px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--brown-light); }
+  .pick::after { content: 'BACK'; position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; color: var(--brown-light); }
+  .pick button { font: inherit; font-size: 14.5px; font-weight: 800; color: var(--ink); background: var(--peach-light); border: 1.5px dashed var(--brown-light); border-radius: 50%; width: 104px; height: 104px; cursor: pointer; line-height: 1.2; }
+  .pick button.right { background: #E4F6EE; border: 2px solid var(--mint-dark); }
+  .pick button.wrong { background: #FFECE8; border: 2px solid var(--hot); }
+  .ariquote { display: flex; gap: 10px; align-items: flex-start; margin-top: 10px; }
+  .ariquote .owl { font-size: 26px; line-height: 1; }
+  .case-done { display: none; margin-top: 10px; background: #1F3B33; color: #DFF5EC; border-radius: 18px; padding: 16px; font-size: 16px; line-height: 1.5; }
+  .case-done.show { display: block; }
+  .case-done h3 { font-family: 'Fredoka', sans-serif; font-size: 22px; color: white; margin-bottom: 4px; }
+  .case-done b { color: var(--mint); }
+  @media (min-width: 820px) { .case-steps { grid-template-columns: repeat(3, 1fr); align-items: start; } .case-done { grid-column: 1 / -1; } }
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -370,6 +417,8 @@
       <h1>How does a drone fly with <em>no wings</em>?</h1>
       <p class="lede">Four spinning propellers, and that's it. <b>Look inside a propeller, find out how it pushes, then fly the real thing and break it.</b></p>
     </header>
+
+    <a class="case-flag" href="#case"><span><b>Case 04: a drone that won't hover still.</b> One propeller is damaged. Learn to fly this one first, then find the fault.</span><span class="go">OPEN THE CASE ↓</span></a>
 
     <section class="rig" aria-label="A playable drone">
       <div class="screens">
@@ -437,6 +486,63 @@
           <button class="chip" id="sameBtn" aria-pressed="false">Spin all props the same way</button>
           <button class="chip" id="cutBtn" aria-pressed="false">Cut one motor</button>
           <button class="chip reset" id="resetBtn">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="case" id="case" aria-label="Case 04: the drone that won't hover still">
+      <div class="eyebrow">Case 04 · Fault report</div>
+      <h2>The drone that won't hover still</h2>
+      <p>Nobody is going to hand you the question this time. You get a problem, a drone and a drawing. Work out what's wrong.</p>
+      <div class="report"><span>THE PILOT SAYS</span>"Something's wrong with my drone. When I let go of the sticks it won't stay put."</div>
+
+      <div class="case-steps">
+        <div class="cstep" id="cs1">
+          <div class="k">STEP 1 · SPOT THE PROBLEM</div>
+          <h3>What do you ask first?</h3>
+          <p>That report is a muddle. A good question turns a muddle into something you can test. Pick the best one.</p>
+          <div class="copts" id="q1">
+            <button class="copt" data-a="fast">How fast can it go?</button>
+            <button class="copt" data-a="way">Which way does it slide when you let go?</button>
+            <button class="copt" data-a="batt">Is the battery running low?</button>
+          </div>
+          <div class="cfb" id="fb1" aria-live="polite"></div>
+        </div>
+
+        <div class="cstep locked" id="cs2">
+          <div class="k">STEP 2 · INVESTIGATE</div>
+          <h3>Find the damaged propeller</h3>
+          <p>One of the four propellers has a chip out of it. It looks just like the others. Fly the drone and collect two clues:</p>
+          <ol class="clues">
+            <li>Let go of the right stick. <b>Which way does it slide?</b></li>
+            <li>Open <b>Top view</b>. <b>Which propeller is spinning fastest?</b></li>
+          </ol>
+          <button class="cbtn" id="faultBtn">Load the faulty drone</button>
+          <p style="margin-top:12px"><b>Which propeller is damaged?</b></p>
+          <div class="pick" id="pick" role="group" aria-label="Choose the damaged propeller. The front of the drone is at the top.">
+            <button data-i="0">Front left</button>
+            <button data-i="1">Front right</button>
+            <button data-i="3">Back left</button>
+            <button data-i="2">Back right</button>
+          </div>
+          <div class="cfb" id="fb2" aria-live="polite"></div>
+        </div>
+
+        <div class="cstep locked" id="cs3">
+          <div class="k">STEP 3 · CATCH ARI OUT</div>
+          <h3>Ari explains. One part is wrong.</h3>
+          <div class="ariquote"><div class="owl">🦉</div><p>"Easy! I know exactly what happened." Ari sounds very sure. <b>Tap the sentence that is wrong.</b></p></div>
+          <div class="copts" id="q3">
+            <button class="copt" data-a="less">"The chipped propeller throws less air down, so its corner gets less push up."</button>
+            <button class="copt" data-a="away">"So the drone tips away from the damaged corner, and slides the opposite way."</button>
+            <button class="copt" data-a="fc">"The flight controller spins the damaged propeller faster to try to keep the drone level."</button>
+          </div>
+          <div class="cfb" id="fb3" aria-live="polite"></div>
+        </div>
+
+        <div class="case-done" id="caseDone">
+          <h3>Case closed.</h3>
+          <p>You did three things. You <b>found the question</b> hiding in a muddle. You <b>tested it</b> and let the evidence decide. And you <b>caught a confident answer that was wrong</b>. An AI can sound just as sure as Ari did, so that third one matters most.</p>
         </div>
       </div>
     </section>
@@ -626,7 +732,7 @@
 
     <section class="why">
       <h2>Why parents like it</h2>
-      <p>Built for children aged roughly 7 to 12.</p>
+      <p>Built for children aged roughly 7 to 11.</p>
       <div class="why-grid">
         <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
         <div class="why-item"><h3>They fly it, not watch it</h3><p>Nothing happens unless your child makes it happen: lift, tilt, turn, land, break.</p></div>
@@ -680,7 +786,7 @@
     { name: 'BL', x: -ARM, z: -ARM, spin: -1 }
   ];
 
-  var D, M = [false, false, false, false], flags = { same: false, cut: false };
+  var D, M = [false, false, false, false], flags = { same: false, cut: false, fault: -1 };
   function resetDrone() {
     D = { x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0, yaw: 0, yawRate: 0, pitch: 0, roll: 0, pRate: 0, rRate: 0,
           u: [0, 0, 0, 0], ang: [0, 1, 2, 3], crashed: false, landed: true, turned: 0, maxH: 0, flipping: false, crashT: 0 };
@@ -693,6 +799,7 @@
 
   // ===================== Flight controller + physics =====================
   var lastDiff = [0, 0, 0, 0];
+  var FAULT_K = 0.8;   // a chipped propeller throws less air: less push, and less twist
   function step(dt) {
     if (D.crashed) {
       D.u = D.u.map(function (u) { return u * Math.pow(0.02, dt); });
@@ -715,7 +822,9 @@
     var dR = clamp(0.32 * (tR - D.roll) - 0.05 * D.rRate, -0.16, 0.16);
     // --- yaw: controller assumes the normal CW/CCW layout ---
     var targetYawRate = input.yaw * 3.0;
-    var dY = clamp(0.07 * (targetYawRate - D.yawRate), -0.14, 0.14);
+    // with a damaged propeller the controller also learns a steady trim, as real ones do, so the nose holds still
+    if (flags.fault >= 0 && !onGround) D.yawI = clamp((D.yawI || 0) + 0.5 * (targetYawRate - D.yawRate) * dt, -0.1, 0.1); else D.yawI = 0;
+    var dY = clamp(0.07 * (targetYawRate - D.yawRate) + (D.yawI || 0), -0.14, 0.14);
     var want = [0, 0, 0, 0];
     for (var i = 0; i < 4; i++) {
       var m = MOTORS[i];
@@ -729,9 +838,10 @@
 
     // --- forces and torques from actual motor speeds ---
     var T = D.u.map(function (u) { return tmaxEff() * u * u; });
+    if (flags.fault >= 0) T[flags.fault] *= FAULT_K;
     var lift = T[0] + T[1] + T[2] + T[3];
     var yawTorque = 0;
-    for (i = 0; i < 4; i++) yawTorque += -spinOf(i) * KQ * D.u[i] * D.u[i];   // body twists opposite to the propeller
+    for (i = 0; i < 4; i++) yawTorque += -spinOf(i) * KQ * D.u[i] * D.u[i] * (i === flags.fault ? FAULT_K : 1);   // body twists opposite to the propeller
     D.yawRate += (yawTorque / IYAW - YAW_DAMP * D.yawRate) * dt;
     if (onGround && lift < MASS * G * 0.95) D.yawRate *= Math.pow(0.001, dt);
     D.yaw += D.yawRate * dt;
@@ -1081,7 +1191,7 @@
     var twist = 0;
     MOTORS.forEach(function (m, i) {
       var mx = cx + (m.x / ARM) * s, my = cy - (m.z / ARM) * s, u = D.u[i], sp = spinOf(i), col = sp > 0 ? BP.cw : BP.acw, rgb = 'rgb(' + col.join(',') + ')', r = s * 0.48;
-      twist += -sp * u * u;
+      twist += -sp * u * u * (i === flags.fault ? FAULT_K : 1);
       c.fillStyle = 'rgba(' + col.join(',') + ',' + (0.05 + 0.22 * u) + ')'; c.beginPath(); c.arc(mx, my, r, 0, 6.3); c.fill();
       c.setLineDash([4, 3]); c.strokeStyle = rgb; c.lineWidth = 1; c.stroke(); c.setLineDash([]);
       var a0 = D.ang[i] * 0.25, end = a0 + 4.2 * sp, ar = r * 0.74;
@@ -1346,6 +1456,11 @@
     if (D.crashed) return say('<b>Crunch!</b> That was a hard landing. Real drones break like that too. Tap <b>Reset</b> and come down gently.');
     if (flat && (lab.u > 0.3 || input.climb > 0.2 || D.y > 0.2)) return say('The propeller is spinning fast, but <b>flat blades just slice through the air</b>. No air is thrown down, so there\'s no push up. The tilt of the blade is what makes it work.');
     if (flags.same && Math.abs(D.yawRate) > 2) return say('It\'s <b>spinning out of control!</b> Every propeller twists the drone the opposite way to its own spin. Normally two spin each way, so the twists cancel. Now all four twist the same way, and nothing can stop it.');
+    if (flags.fault >= 0 && !D.crashed && !flat && !flags.same) {
+      if (D.y < 0.6) return say('<b>Faulty drone loaded.</b> One propeller is damaged, and it looks just like the others. <b>Push the left stick up</b> to take off.');
+      if (Math.abs(input.fwd) > 0.2 || Math.abs(input.right) > 0.2) return say('You\'re steering now. <b>Let go of the right stick</b> so you can see what the drone does by itself.');
+      return say('Hands off the right stick. <b>Which way does it slide?</b> Then open the <b>' + (flyMode ? 'motor speeds' : 'top view') + '</b>: which propeller is working hardest?');
+    }
     if (flags.same) return say('All four propellers now spin the <b>same way</b>. Guess what happens, then take off and find out.');
     if (!M[0] && !flyMode) {
       if (lab.tab !== 'lab') return say('First, find out how one propeller pushes. Tap <b>Inside a propeller</b>.');
@@ -1496,7 +1611,7 @@
   resize(); renderMissions();
   requestAnimationFrame(frame);
   if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) Array.prototype.forEach.call(document.querySelectorAll('svg.dwg'), function (sv) { if (sv.pauseAnimations) sv.pauseAnimations(); });
-  window.__ari = { D: function () { return D; }, input: input, flags: flags, M: M, lab: lab, push: labPush, reset: function () { resetBtn.click(); } };
+  window.__ari = { D: function () { return D; }, input: input, flags: flags, M: M, lab: lab, push: labPush, reset: function () { resetBtn.click(); }, setTab: function (t) { setTab(t, true); } };
 })();
 </script>
 <script src="exploded.js"></script>
@@ -1670,6 +1785,83 @@
 })();
 </script>
 <script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#soundBtn,#playBtn")){try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(x){}}},true);</script>
+<script>
+// ===== Case 04: spot the problem, investigate, catch Ari out =====
+(function () {
+  var A = window.__ari; if (!A) return;
+  function $(id) { return document.getElementById(id); }
+  function track(name) { try { if (window.va) window.va('event', { name: name, object: 'drone' }); } catch (e) {} }
+  var NAMES = ['front left', 'front right', 'back right', 'back left'];
+  var cs1 = $('cs1'), cs2 = $('cs2'), cs3 = $('cs3'), fb1 = $('fb1'), fb2 = $('fb2'), fb3 = $('fb3');
+  var faultBtn = $('faultBtn'), pick = $('pick');
+  var flown = false, tries2 = 0, solved2 = false;
+  function fb(el, html, ok) { el.innerHTML = html; el.classList.toggle('ok', !!ok); }
+  function finish(step, next) { step.classList.add('done'); if (next) next.classList.remove('locked'); }
+  function lockOpts(box) { Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) { b.disabled = true; }); }
+
+  // ---- Step 1: frame the question ----
+  $('q1').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled) return;
+    var a = b.dataset.a;
+    if (a === 'way') {
+      b.classList.add('right'); lockOpts($('q1')); finish(cs1, cs2); track('case_q1_right');
+      fb(fb1, '<b>That\'s the one.</b> The direction is a clue. It points at the part of the drone that is letting it down. Now go and find out.', true);
+    } else {
+      b.classList.add('wrong'); track('case_q1_wrong');
+      fb(fb1, a === 'fast'
+        ? 'Top speed tells you nothing about why it won\'t stay still. Pick a question whose answer points you somewhere.'
+        : 'Worth a thought, but a low battery makes a drone <b>sink</b>. This one slides <b>sideways</b>. Pick a question that fits the clue.');
+    }
+  });
+
+  // ---- Step 2: investigate with the real drone ----
+  function setFault(on) {
+    A.flags.fault = on ? Math.floor(Math.random() * 4) : -1;
+    A.reset(); flown = false;
+    faultBtn.textContent = on ? 'Swap in a good propeller' : 'Load the faulty drone';
+    faultBtn.classList.toggle('ghost', on);
+  }
+  faultBtn.addEventListener('click', function () {
+    var on = A.flags.fault < 0;
+    setFault(on); track(on ? 'case_fault_on' : 'case_fault_off');
+    if (on) {
+      A.setTab('top');
+      fb(fb2, 'Faulty drone loaded. Scroll up, take off, then <b>let go of the right stick</b> and watch.');
+      var rig = document.querySelector('.rig'); if (rig && rig.scrollIntoView) rig.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (!solved2) fb(fb2, '');
+  });
+  setInterval(function () { if (A.flags.fault >= 0 && A.D().y > 1.5) flown = true; }, 250);
+  pick.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || solved2) return;
+    if (A.flags.fault < 0) return fb(fb2, 'Tap <b>Load the faulty drone</b> first. There\'s nothing to investigate yet.');
+    if (!flown) return fb(fb2, '<b>Fly it first.</b> A guess isn\'t evidence. Take off, let go of the right stick and watch.');
+    var i = +b.dataset.i, f = A.flags.fault; tries2++;
+    if (i === f) {
+      solved2 = true; b.classList.add('right'); finish(cs2, cs3); track('case_q2_right_' + tries2);
+      fb(fb2, '<b>Got it: ' + NAMES[f] + '.</b> Both clues agree. The drone slid towards that corner, and that propeller was spinning fastest. Now see if Ari can explain why.', true);
+    } else {
+      b.classList.add('wrong'); track('case_q2_wrong');
+      fb(fb2, 'Not that one. Check your clues again. <b>Which corner does the drone slide towards?</b> In the top view, <b>which number is biggest?</b>');
+    }
+  });
+
+  // ---- Step 3: catch the confident wrong answer ----
+  $('q3').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled) return;
+    var a = b.dataset.a;
+    if (a === 'away') {
+      b.classList.add('right'); lockOpts($('q3')); finish(cs3, null); track('case_q3_right');
+      fb(fb3, '<b>Caught!</b> Ari got it backwards. The damaged corner has less push, so that corner <b>sags</b>. The drone tips <b>towards</b> it and slides that way. You saw it happen, so you knew.', true);
+      $('caseDone').classList.add('show');
+    } else {
+      b.classList.add('wrong'); track('case_q3_wrong');
+      fb(fb3, a === 'less'
+        ? 'That part is true. A chipped blade is a smaller wing, so it throws less air. Look for the sentence that doesn\'t match what you saw.'
+        : 'That part is true. You saw it in the top view: the damaged propeller had the biggest number. Look for the sentence that doesn\'t match what you saw.');
+    }
+  });
+})();
+</script>
   <script defer src="/ari-paywall.js"></script>
 </body>
 </html>

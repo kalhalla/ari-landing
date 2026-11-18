@@ -89,10 +89,11 @@
     <script>
       (function () {
         var P = window.AriPaywall; if (!P) return;
-        var c = P.config;
-        if (c.monthlyLink && c.lifetimeLink) {
-          document.getElementById('optMonthly').href = P.payLink(c.monthlyLink, 'join');
-          document.getElementById('optLifetime').href = P.payLink(c.lifetimeLink, 'join');
+        var c = P.links;
+        if (c.monthly && c.lifetime) {
+          document.getElementById('optMonthly').href = P.payLink(c.monthly, 'join');
+          document.getElementById('optLifetime').href = P.payLink(c.lifetime, 'join');
+          if (P.testMode) document.getElementById('optNote').textContent = 'TEST MODE. These buttons open Stripe\'s sandbox checkout. Use card 4242 4242 4242 4242. No real money is taken.';
         } else {
           document.getElementById('optNote').textContent = 'Membership opens soon. Leave your email and we will tell you first.';
         }
