@@ -154,10 +154,10 @@
         '<h2 id="ariw-title">Unlock ' + m.name + ', and every other machine</h2>' +
         '<span class="ariw-topic">Matches ' + m.topic + '</span>' +
         '<p>Your ' + CONFIG.freeMachines + ' free machines are used up. Join to open all <b>' + TOTAL + ' machines</b>, and every new one we add.</p>' +
-        '<p>Each machine is matched to a science topic your child meets at school in Years 3 to 6.</p>' +
+        '<p>Ari teaches children to <b>ask the right question, test it, and catch a confident answer that is wrong</b>, using the science they meet at school in Years 3 to 6.</p>' +
         '<a class="ariw-opt main" data-plan="monthly" href="' + payLink(LINKS.monthly, id) + '"><strong>' + CONFIG.monthlyPrice + ' a month</strong><span>Cancel any time. 14-day refund.</span></a>' +
         '<a class="ariw-opt" data-plan="lifetime" href="' + payLink(LINKS.lifetime, id) + '"><strong>' + CONFIG.lifetimePrice + ' once, founding family</strong><span>Pay once, keep Ari for good. First ' + CONFIG.lifetimeCap + ' families only. 14-day refund.</span></a>' +
-        '<div class="ariw-foot"><a href="/join.html">What your child learns</a> · <a href="/terms.html">Terms</a> · <a href="/">Back to the free machine</a></div>' +
+        '<div class="ariw-foot"><a href="/join.html">How Ari teaches</a> · <a href="/terms.html">Terms</a> · <a href="/">Back to the free machine</a></div>' +
       '</div>';
 
     var mount = function () {
