@@ -190,6 +190,13 @@
     }
     .why-item h3 { font-family: 'Fredoka', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 4px; }
     .why-item p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; }
+    .ask { background: white; border-radius: 18px; padding: 18px 16px; margin: 14px 0 10px; box-shadow: 0 6px 18px rgba(120,80,50,.07); border-left: 5px solid var(--orange); }
+    .ask-topic { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 600; line-height: 1.35; background: var(--peach-mid); color: var(--ink); border-radius: 12px; padding: 6px 11px; margin-bottom: 12px; }
+    .ask h3 { font-family: var(--mono); font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--orange-dark); margin-bottom: 4px; }
+    .ask-q { font-family: 'Fredoka', sans-serif; font-size: 21px; line-height: 1.25; color: var(--ink); margin: 0; }
+    .ask details { margin-top: 12px; }
+    .ask summary { cursor: pointer; font-size: 15px; font-weight: 800; color: var(--orange-dark); min-height: 32px; }
+    .ask details p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; margin-top: 4px; }
 
     footer {
       border-top: 1px solid var(--peach-mid); padding: 24px 0 32px;
@@ -743,6 +750,12 @@
     <section class="why">
       <h2>Why parents like it</h2>
       <p>Built for children aged roughly 7 to 11.</p>
+      <div class="ask">
+        <span class="ask-topic">Year 5 science · Forces: levers</span>
+        <h3>Ask them tonight</h3>
+        <p class="ask-q">“How does the toilet know when to stop filling?”</p>
+        <details><summary>What to listen for</summary><p>The float rises with the water and, through its long arm, pushes the valve shut.</p></details>
+      </div>
       <div class="why-grid">
         <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each object takes a few minutes to explore. Then it's done, and they can tell you how it works.</p></div>
         <div class="why-item"><h3>They poke, not scroll</h3><p>Nothing autoplays. Every change happens because your child pressed, jammed or broke something.</p></div>
