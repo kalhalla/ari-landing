@@ -50,20 +50,20 @@
   <div class="wrap">
     <nav>
       <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
-      <a class="nav-link" href="/machines.html">Every machine</a>
+      <a class="nav-link" href="/machines.html">Every question</a>
     </nav>
     <header>
       <div class="eyebrow">Welcome</div>
       <h1 id="wTitle">Checking your link…</h1>
       <p id="wText"></p>
-      <a class="big" id="wBtn" href="/machines.html" style="display:none">Open the workshop</a>
+      <a class="big" id="wBtn" href="/machines.html" style="display:none">See every question</a>
     </header>
     <section id="wHow" style="display:none">
       <h2>Getting the most from Ari</h2>
       <p>Ari is built to teach three habits: <b>ask the right question, test it, and catch a confident answer that is wrong.</b> You can help with almost no effort.</p>
       <p><b>Start with the <a href="/drone.html#case" style="color:inherit">drone case</a>.</b> It takes about ten minutes. When your child has finished, ask them one thing:</p>
       <p style="background:var(--peach-mid);border-radius:14px;padding:12px 16px;color:var(--ink)"><b>"Which bit did Ari get wrong, and how did you know?"</b></p>
-      <p>If they can tell you, they have understood it. That question works for every machine, and for anything an AI tells them.</p>
+      <p>If they can tell you, they have understood it. It works for every question on Ari, and for anything an AI tells them.</p>
     </section>
     <script>
       (function () {
@@ -72,7 +72,7 @@
         var ok = P && (P.unlock(key) || P.isMember());
         var t = document.getElementById('wTitle'), x = document.getElementById('wText'), b = document.getElementById('wBtn');
         if (ok) {
-          t.innerHTML = 'You are in. <em>Every machine is open.</em>';
+          t.innerHTML = 'You are in. <em>Every question is open.</em>';
           x.innerHTML = 'Thank you for backing Ari this early. <b>Keep this page link.</b> Open it on any other phone, tablet or computer your child uses and it will unlock that one too.';
           document.getElementById('wHow').style.display = 'block';
           b.style.display = 'inline-block';

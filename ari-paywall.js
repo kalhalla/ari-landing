@@ -151,13 +151,13 @@
     back.innerHTML =
       '<div class="ariw">' +
         '<div class="ariw-eye">One for the grown-up' + (testMode ? ' · TEST MODE, no real money' : '') + '</div>' +
-        '<h2 id="ariw-title">Unlock ' + m.name + ', and every other machine</h2>' +
+        '<h2 id="ariw-title">Open ' + m.name + ', and all ' + TOTAL + ' questions</h2>' +
         '<span class="ariw-topic">Matches ' + m.topic + '</span>' +
-        '<p>Your ' + CONFIG.freeMachines + ' free machines are used up. Join to open all <b>' + TOTAL + ' machines</b>, and every new one we add.</p>' +
+        '<p>You have tried your ' + CONFIG.freeMachines + ' free ones. Join to open all <b>' + TOTAL + ' questions</b>, and every new one we add.</p>' +
         '<p>Ari teaches children to <b>ask the right question, test it, and catch a confident answer that is wrong</b>, using the science they meet at school in Years 3 to 6.</p>' +
         '<a class="ariw-opt main" data-plan="monthly" href="' + payLink(LINKS.monthly, id) + '"><strong>' + CONFIG.monthlyPrice + ' a month</strong><span>Cancel any time. 14-day refund.</span></a>' +
         '<a class="ariw-opt" data-plan="lifetime" href="' + payLink(LINKS.lifetime, id) + '"><strong>' + CONFIG.lifetimePrice + ' once, founding family</strong><span>Pay once, keep Ari for good. First ' + CONFIG.lifetimeCap + ' families only. 14-day refund.</span></a>' +
-        '<div class="ariw-foot"><a href="/join.html">How Ari teaches</a> · <a href="/terms.html">Terms</a> · <a href="/">Back to the free machine</a></div>' +
+        '<div class="ariw-foot"><a href="/join.html">How Ari teaches</a> · <a href="/terms.html">Terms</a> · <a href="/">Back to the jet engine</a></div>' +
       '</div>';
 
     var mount = function () {
