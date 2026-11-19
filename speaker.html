@@ -150,6 +150,11 @@
     .ask details { margin-top: 12px; }
     .ask summary { cursor: pointer; font-size: 15px; font-weight: 800; color: var(--orange-dark); min-height: 32px; }
     .ask details p { font-size: 15px; color: var(--brown-mid); line-height: 1.5; margin-top: 4px; }
+    .ask-join { display: inline-block; margin-top: 14px; font-size: 15px; font-weight: 800; color: white; background: var(--ink); text-decoration: none; border-radius: 20px; padding: 10px 16px; }
+    .nav-right { display: flex; align-items: center; gap: 12px; margin-left: 10px; }
+    .nav-parents { font-weight: 800; font-size: 14px; color: var(--orange-dark); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; padding: 9px 0; }
+    .nav-right .nav-link { white-space: nowrap; }
+    @media (max-width: 400px) { .nav-right { gap: 8px; } .nav-parents, .nav-right .nav-link { font-size: 13px; } .nav-right .nav-link { padding: 6px 10px; } }
 
     footer { border-top: 1px solid var(--peach-mid); padding: 24px 0 32px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between; font-size: 14px; color: var(--brown-mid); }
     footer a { color: var(--brown-mid); text-decoration: none; margin-right: 16px; }
@@ -345,7 +350,10 @@
   <div class="wrap">
     <nav>
       <a class="logo" href="/"><div class="logo-icon">🦉</div>Ari</a>
-      <a class="nav-link" href="#signup">Get the next one</a>
+      <div class="nav-right">
+        <a class="nav-parents" href="/join.html?ref=speaker-nav">For parents</a>
+        <a class="nav-link" href="#signup">Get the next one</a>
+      </div>
     </nav>
 
     <header class="intro">
@@ -654,6 +662,7 @@
         <h3>Ask them tonight</h3>
         <p class="ask-q">“How does a speaker turn electricity into sound?”</p>
         <details><summary>What to listen for</summary><p>A magnet pushes and pulls the coil, the cone moves with it, and the cone shoves the air.</p></details>
+        <a class="ask-join" href="/join.html?ref=speaker-ask">How Ari teaches, and how to join →</a>
       </div>
       <div class="why-grid">
         <div class="why-item"><h3>Ten minutes, not two hours</h3><p>Each machine takes a few minutes to master. Then it's done, and they can tell you how it works.</p></div>
