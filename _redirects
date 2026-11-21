@@ -1,7 +1,7 @@
 # Short links. Mirrors vercel.json so both hosts behave the same during the move.
 # Home page: html_handling is "none", so serve index.html at / explicitly.
 / /index.html 200
-/ig /?utm_source=instagram&utm_medium=social&utm_content=bio 302
+/ig /join.html?utm_source=instagram&utm_medium=social&utm_content=bio 302
 /fb /solar.html?utm_source=facebook&utm_medium=social&utm_content=group 302
 /join /join.html?utm_source=instagram&utm_medium=social&utm_content=join 302
 /rocket /rocket.html?utm_source=instagram&utm_medium=social&utm_content=rocket 302

@@ -34,6 +34,21 @@
     .opt strong { display: block; font-family: 'Fredoka', sans-serif; font-size: 21px; font-weight: 700; }
     .opt span { display: block; font-size: 14.5px; margin-top: 3px; opacity: .93; }
     .fine { font-size: 14px; }
+    .herocta { margin-top: 14px; }
+    .herocta .fine { display: block; margin-top: 8px; }
+    .demo { display: grid; gap: 16px; align-items: start; margin: 12px 0 6px; }
+    @media (min-width: 720px) { .demo { grid-template-columns: 300px 1fr; } }
+    .demo img { width: 100%; max-width: 340px; height: auto; border-radius: 18px; box-shadow: 0 8px 24px rgba(120,80,50,.14); background: #fff; }
+    .ticks { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 8px; }
+    @media (min-width: 620px) { .ticks { grid-template-columns: 1fr 1fr; } }
+    .ticks li { position: relative; padding: 10px 12px 10px 38px; background: #fff; border-radius: 12px; font-size: 15.5px; line-height: 1.4; color: var(--brown-mid); }
+    .ticks li::before { content: '✓'; position: absolute; left: 13px; top: 9px; font-weight: 800; color: var(--mint-dark, #4FB3A0); }
+    .ticks b { color: var(--ink); }
+    .faq details { background: #fff; border-radius: 14px; padding: 12px 16px; margin: 8px 0; }
+    .faq summary { font-weight: 800; color: var(--ink); cursor: pointer; font-size: 16.5px; }
+    .faq details p { margin: 8px 0 2px; font-size: 15.5px; }
+    .closer { text-align: center; background: var(--peach-mid); border-radius: 22px; padding: 24px 16px; margin: 30px 0 10px; }
+    .closer h2 { margin-top: 0; }
     .how { display: grid; gap: 10px; margin: 12px 0 10px; }
     @media (min-width: 620px) { .how { grid-template-columns: repeat(3, 1fr); } }
     .how div { background: #fff; border-radius: 16px; padding: 14px 16px; }
@@ -63,6 +78,10 @@
       <h1>The science they do at school, <em>taught for a world with AI in it.</em></h1>
       <p>An AI can hand your child an answer in seconds. So the answer is no longer the hard part. The hard parts are knowing what to ask, and knowing whether the answer is any good.</p>
       <p><b>Ari teaches those two things.</b> It does it with questions your child answers by doing, each matched to a science topic from Years 3 to 6, because you can't judge an answer about something you don't understand.</p>
+      <div class="herocta">
+        <a class="big" href="/?ref=join-hero#case">Try the first case free</a>
+        <span class="fine">No sign-up. No card. Three are free, then £5 a month.</span>
+      </div>
     </header>
 
     <h2>How Ari teaches</h2>
@@ -73,6 +92,26 @@
     </div>
     <p class="pull">We want children who lead AI, not follow it. That starts with understanding how things really work.</p>
     <p class="fine">All ten are built this way. Each one has a case: a muddled report, a machine to test it on, and an explanation from Ari with one mistake in it. The <a href="/drone.html#case" style="color:inherit;font-weight:800">drone case</a> is a good place to start.</p>
+
+    <h2>See one for yourself</h2>
+    <div class="demo">
+      <img src="/case-example.png" width="716" height="1092" loading="lazy" alt="The last step of the drone case on a phone. Ari gives three confident sentences. The child has tapped the wrong one, and the page explains why it was wrong.">
+      <div>
+        <p>This is the end of the drone case. Your child has flown a drone with a damaged propeller and worked out which one it was. Then Ari explains what happened, and gets one part backwards.</p>
+        <p>Nothing is typed and nothing is marked. Your child taps the sentence that doesn't match what they saw.</p>
+        <p><b>Afterwards, ask them one thing:</b> "Which bit did Ari get wrong, and how did you know?" If they can tell you, it worked.</p>
+      </div>
+    </div>
+
+    <h2>What your child gets</h2>
+    <ul class="ticks">
+      <li><b>Ten questions, ten cases.</b> A jet engine, a drone, a rocket, a heart and six more.</li>
+      <li><b>Real science.</b> Each one matches a topic from Years 3 to 6.</li>
+      <li><b>About ten minutes each.</b> Short enough for after school.</li>
+      <li><b>Nothing to install.</b> It runs in the browser on a phone, tablet or computer.</li>
+      <li><b>No adverts, no chat, no account for your child.</b></li>
+      <li><b>Something to talk about.</b> Every page gives you a question to ask at dinner.</li>
+    </ul>
 
     <h2>Join</h2>
 
@@ -101,9 +140,23 @@
     </table>
     <p class="fine" style="margin-top:10px">Ari is not a replacement for school and does not cover the whole curriculum. It gives your child a hands-on feel for the ideas, so the lesson makes sense when it comes.</p>
 
-    <h2>Try before you pay</h2>
-    <p>Start with the jet engine. It is always free.</p>
-    <a class="big" href="/">Start the jet engine</a>
+    <h2>Questions parents ask</h2>
+    <div class="faq">
+      <details><summary>What age is it for?</summary><p>Seven to eleven, which is Years 3 to 6. Children that age can read it and play it alone. A younger child can enjoy it with a grown-up alongside.</p></details>
+      <details><summary>Is there an AI in it?</summary><p>No. Your child never chats to an AI on Ari, and nothing they do is sent to one. Ari the owl's lines are written by us, mistakes included. Checking a confident answer is a habit, and this is a safe place to build it before they meet the real thing.</p></details>
+      <details><summary>So how does it help with AI?</summary><p>An AI is useful to someone who can tell when it is wrong. That takes two things: knowing how the subject really works, and being in the habit of checking. Ari practises both, ten times over. It does not teach your child to use an AI tool.</p></details>
+      <details><summary>Does it replace school science?</summary><p>No. Ari does not cover the whole curriculum. It gives your child a hands-on feel for the ideas, so the lesson makes sense when it comes.</p></details>
+      <details><summary>What is free and what is paid?</summary><p>The first three your child plays are free, with no sign-up, and the jet engine is always free. Membership opens all ten and every new one: £5 a month, or £49 once for the first 50 families.</p></details>
+      <details><summary>Can I cancel?</summary><p>Yes, at any time. Email hello@learnwithari.co.uk and we will cancel within two working days. You can also have a full refund within 14 days of joining. The details are in the <a href="/terms.html" style="color:inherit;font-weight:800">terms</a>.</p></details>
+      <details><summary>What do you know about my child?</summary><p>Nothing. There is no account for your child and no chat. We count visits without cookies. Our <a href="/privacy.html" style="color:inherit;font-weight:800">privacy policy</a> has the rest.</p></details>
+    </div>
+
+    <div class="closer">
+      <h2>Try before you pay</h2>
+      <p>Start with the jet engine and its case. It is always free.</p>
+      <a class="big" href="/?ref=join-foot#case">Try the first case free</a>
+      <span class="fine" style="display:block;margin-top:8px">No sign-up. No card.</span>
+    </div>
 
     <script>
       (function () {
